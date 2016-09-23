@@ -43,6 +43,8 @@ See the dev/re_frisk/demo.cljs.
 
 Works weird in the Internet Explorer which doesn't support css resize property.
 
+If you are using `reagent.core/create-class` function for creating views, data for these views will be still showing in the re-frisk after this components will be unmounted.
+
 ## License
 
 Copyright © 2016 Shovkoplyas Andrey [motor4ik]
