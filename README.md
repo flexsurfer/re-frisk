@@ -1,8 +1,8 @@
 # re-frisk
 
-Visualize re-frame pattern data in your re-frame apps as a tree structure.
+Visualize [re-frame] pattern data in your re-frame apps as a tree structure.
 
-<img src="re-frisk.gif">
+<img src="re-frisk-show.gif">
 
 ## Overview
 
@@ -37,7 +37,7 @@ ENJOY!
 
 ### For more
 
-See the dev/re_frisk/demo.cljs.
+See the [dev/re_frisk/demo.cljs](https://github.com/flexsurfer/re-frisk/blob/master/dev/re_frisk/demo.cljs).
 
 ### Known issues
 
