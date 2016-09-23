@@ -1,6 +1,6 @@
 # re-frisk
 
-Visualize [re-frame] pattern data in your re-frame apps as a tree structure.
+Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-frame apps as a tree structure.
 
 <img src="re-frisk-show.gif">
 
