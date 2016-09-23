@@ -39,6 +39,10 @@ ENJOY!
 
 See the dev/re_frisk/demo.cljs.
 
+### Known issues
+
+Works weird in the Internet Explorer which doesn't support css resize property.
+
 ## License
 
 Copyright © 2016 Shovkoplyas Andrey [motor4ik]
