@@ -25,7 +25,8 @@ Define your views (components) with the def-view macro
 ```clojure
 (def-view greeting
  [message]
- [:h1 message])```
+ [:h1 message])
+```
 
 Наслаждайтесь :)
 ENJOY!
