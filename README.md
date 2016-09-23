@@ -18,9 +18,13 @@ Add `:external-config {:re-frisk {:enabled true}}}}` to the dev `:compiler` in y
 
 ## Usage
 
-Require macro `(:require [re-frisk.core :refer-macros [def-view]])`
+Require macro
 
-Define your views (components) with the def-view macro
+```clojure
+(:require [re-frisk.core :refer-macros [def-view]])
+```
+
+Define your views (components) with the `def-view` macro
 
 ```clojure
 (def-view greeting
@@ -28,8 +32,8 @@ Define your views (components) with the def-view macro
  [:h1 message])
 ```
 
-Наслаждайтесь :)
 ENJOY!
+Наслаждайтесь :)
 
 ### For more
 
