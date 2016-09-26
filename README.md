@@ -13,7 +13,7 @@ This lightweight library helps you to visualize re-frame data and easily debug r
 
 ## Setup
 
-Add `[re-frisk "0.1.1"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.1.2"]` to the dev `:dependencies` in your project.clj
 
 Add `:external-config {:re-frisk {:enabled true}}}}` to the dev `:compiler` in your project.clj
 
@@ -72,7 +72,8 @@ Finally, if you are not using re-frame in your app, you can run re-frisk without
 
 ### For more
 
-See the [dev/re_frisk/demo.cljs](https://github.com/flexsurfer/re-frisk/blob/master/dev/re_frisk/demo.cljs).
+re-frame [dev/re_frisk/demo.cljs](https://github.com/flexsurfer/re-frisk/blob/master/dev/re_frisk/demo.cljs).
+reagent [dev/re_frisk/reagent_demo.cljs](https://github.com/flexsurfer/re-frisk/blob/master/dev/re_frisk/reagent_demo.cljs).
 
 ### Known issues
 
