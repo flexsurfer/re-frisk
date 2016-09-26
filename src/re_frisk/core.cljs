@@ -18,18 +18,18 @@
     (r/render [ui/re-frisk-shell [:div {:style style}
                                   [f/FriskInline @re-frame-data]] params] div)))
 
-(defn enable-re-frisk! [params]
+(defn enable-re-frisk! [& params]
   (when-not (:app-db @re-frame-data)
     (do
       (def-sub :db (fn [db _] db))
       (reset! re-frame-data {:views (r/atom {})
                              :subs (r/atom {})
                              :app-db (subscribe [:db])})
-      (js/setTimeout render-re-frisk 100 params))))
+      (js/setTimeout render-re-frisk 100 (first params)))))
 
-(defn enable-frisk! [params]
+(defn enable-frisk! [& params]
   (when-not (:app-db @re-frame-data)
-    (js/setTimeout render-re-frisk 100 params)))
+    (js/setTimeout render-re-frisk 100 (first params))))
 
 (defn reg-view [view subs events]
   (do

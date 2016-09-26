@@ -25,12 +25,7 @@
                 ;; the presence of a :figwheel configuration here
                 ;; will cause figwheel to inject the figwheel client
                 ;; into your build
-                :figwheel {:on-jsload "re-frisk.core/on-js-reload"
-                           ;; :open-urls will pop open your application
-                           ;; in the default browser once Figwheel has
-                           ;; started and complied your application.
-                           ;; Comment this out once it no longer serves you.
-                           :open-urls ["http://localhost:3449/index.html"]}
+                :figwheel {:on-jsload "re-frisk.core/on-js-reload"}
 
                 :compiler {:main re-frisk.demo
                            :asset-path "js/compiled/out"
@@ -39,6 +34,20 @@
                            :source-map-timestamp true
                            :preloads [devtools.preload]
                            :external-config {:re-frisk {:enabled true}}}}
+               {:id "reagent"
+                :source-paths ["src" "dev"]
+
+                ;; the presence of a :figwheel configuration here
+                ;; will cause figwheel to inject the figwheel client
+                ;; into your build
+                :figwheel {:on-jsload "re-frisk.core/on-js-reload"}
+
+                :compiler {:main re-frisk.reagent-demo
+                           :asset-path "js/compiled/out"
+                           :output-to "resources/public/js/compiled/re_frisk_reagent.js"
+                           :output-dir "resources/public/js/compiled/out"
+                           :source-map-timestamp true
+                           :preloads [devtools.preload]}}
                ;; This next build is an compressed minified build for
                ;; production. You can build this with:
                ;; lein cljsbuild once min
