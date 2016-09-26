@@ -64,7 +64,7 @@ If you want to watch not re-frame data, you can add it using `add-data` function
 (add-data :data-key your-data-atom)
 ```
 
-Finally, if you are not using re-frame in your app, you can run re-frisk without re-frame by `enable-frisk!` function
+Finally, if you are not using re-frame in your app, you can run re-frisk without re-frame by `enable-frisk!` function, and also you don't need compiler option in this case
 
 ```clojure
 (enable-frisk!)
