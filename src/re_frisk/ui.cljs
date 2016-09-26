@@ -3,7 +3,7 @@
             [goog.events :as e])
   (:import [goog.events EventType]))
 
-;https://github.com/borkdude/draggable-button-in-reagent
+;reagent d'n'd - https://github.com/borkdude/draggable-button-in-reagent
 
 (defonce draggable (r/atom {:x 0 :y 0}))
 
@@ -29,15 +29,18 @@
     (e/listen js/window EventType.MOUSEMOVE on-move)
     (e/listen js/window EventType.MOUSEUP (mouse-up-handler on-move))))
 
-(defn re-frisk-shell [frisk]
-  (fn []
-    [:div {:style {:position "fixed"
-                   :left (str (:x @draggable) "px")
-                   :top (str (:y @draggable) "px")
-                   :z-index 999}}
-     [:div {:style {:width "80px"
-                    :height "20px"
-                    :background-color "#CCCCCC"
-                    :cursor "move"}
-            :on-mouse-down mouse-down-handler} "re-frisk"]
-     frisk]))
+(defn re-frisk-shell [frisk {:keys [x y]}]
+  (do
+    (when x (swap! draggable assoc :x x))
+    (when y (swap! draggable assoc :y y))
+    (fn []
+      [:div {:style {:position "fixed"
+                     :left (str (:x @draggable) "px")
+                     :top (str (:y @draggable) "px")
+                     :z-index 999}}
+       [:div {:style {:width "80px"
+                      :height "20px"
+                      :background-color "#CCCCCC"
+                      :cursor "move"}
+              :on-mouse-down mouse-down-handler} "re-frisk"]
+       frisk])))

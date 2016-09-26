@@ -1,5 +1,5 @@
 (ns re-frisk.demo
-  (:require  [re-frisk.core :refer-macros [def-view]]
+  (:require  [re-frisk.core :refer [enable-re-frisk! enable-frisk! add-data] :refer-macros [def-view]]
             [reagent.core :as reagent]
             [re-frame.core :as rf :refer [def-event
                                           path
@@ -11,6 +11,7 @@
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (enable-console-print!)
+(enable-re-frisk! {:x 200 :y 200 :width 400 :height 400})
 
 ;; trigger a dispatch every second
 (defonce time-updater (js/setInterval
@@ -89,7 +90,8 @@
  []
  (let [time-color (rf/subscribe [:time-color])
        timer (rf/subscribe [:timer])
-       clock? (rf/subscribe [:clock?])]
+       clock? (rf/subscribe [:clock?])
+       _ (add-data :timer timer)]
   (fn clock-render
    []
    (let [time-str (-> @timer
