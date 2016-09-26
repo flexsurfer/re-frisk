@@ -2,7 +2,7 @@
   (:require [reagent.core :as r]
             [re-frisk.ui :as ui]
             [datafrisk.core :as f]
-            [re-frame.core :refer [def-sub subscribe]])
+            [re-frame.core :refer [reg-sub subscribe]])
   (:import [goog.events EventType]))
 
 (defonce re-frame-data (r/atom {}))
@@ -21,7 +21,7 @@
 (defn enable-re-frisk! [& params]
   (when-not (:app-db @re-frame-data)
     (do
-      (def-sub :db (fn [db _] db))
+      (reg-sub :db (fn [db _] db))
       (reset! re-frame-data {:views (r/atom {})
                              :subs (r/atom {})
                              :app-db (subscribe [:db])})

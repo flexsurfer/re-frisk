@@ -1,7 +1,7 @@
 # re-frisk
 
 Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-frame apps as a tree structure.
-Since 0.1.1 not only for the re-frame app, you can use it for reagent apps too.
+Since 0.1.2 not only for the re-frame app, you can use it for reagent apps too.
 
 <img src="re-frisk-show.gif">
 
@@ -13,7 +13,7 @@ This lightweight library helps you to visualize re-frame data and easily debug r
 
 ## Setup
 
-Add `[re-frisk "0.1.2"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.1.3"]` to the dev `:dependencies` in your project.clj
 
 Add `:external-config {:re-frisk {:enabled true}}}}` to the dev `:compiler` in your project.clj if you are working with the re-frame app
 
