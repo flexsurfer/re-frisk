@@ -9,9 +9,7 @@ Since 0.1.1 not only for re-frame app, you can use it for reagent apps too.
 
 This lightweight library helps you to visualize re-frame data and easily debug re-frame apps in the real time.
 
-[![Clojars Project]](https://clojars.org/re-frisk)
-[![GitHub license]](LICENSE)
-[![Sample Project]](https://github.com/flexsurfer/re-frisk/blob/master/dev/re_frisk/)
+[![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
 
 ## Setup
 
