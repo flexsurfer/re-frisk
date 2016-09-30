@@ -2,8 +2,6 @@
   (:require [reagent.core :as r]
             [re-frisk.core :refer [enable-frisk! add-data]]))
 
-(enable-frisk!)
-
 (defn atom-input [value]
   [:input {:type "text"
            :value @value
@@ -19,5 +17,6 @@
 
 (defn ^:export run
   []
+  (enable-frisk!)
   (r/render [shared-state]
             (js/document.getElementById "app")))

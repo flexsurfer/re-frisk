@@ -1,9 +1,9 @@
 (ns re-frisk.demo
   (:require [re-frisk.core :refer [enable-re-frisk! enable-frisk! add-data] :refer-macros [def-view]]
             [reagent.core :as reagent]
-            [re-frame.core :as rf :refer [def-event
+            [re-frame.core :as rf :refer [reg-event-db
                                           path
-                                          def-sub
+                                          reg-sub
                                           dispatch
                                           dispatch-sync
                                           subscribe]]
@@ -25,14 +25,14 @@
 ;; -- Event Handlers ----------------------------------------------------------
 
 
-(def-event                 ;; setup initial state
+(reg-event-db                 ;; setup initial state
  :initialize                     ;; usage:  (dispatch [:initialize])
  (fn
   [db _]
   (merge db initial-state)))    ;; what it returns becomes the new state
 
 
-(def-event
+(reg-event-db
  :time-color                     ;; usage:  (dispatch [:time-color 34562])
  (path [:time-color])            ;; this is middleware
  (fn
@@ -40,7 +40,7 @@
   value))
 
 
-(def-event
+(reg-event-db
  :timer
  (fn
   ;; the first item in the second argument is :timer the second is the
@@ -49,7 +49,7 @@
   (assoc db :timer value)))    ;; return the new version of db
 
 
-(def-event
+(reg-event-db
   :clock?
   (fn
     ;; the first item in the second argument is :timer the second is the
@@ -59,21 +59,21 @@
 ;; -- Subscription Handlers ---------------------------------------------------
 
 
-(def-sub
+(reg-sub
  :timer
  (fn
   [db _]             ;; db is the value currently in the app-db atom
   (:timer db)))
 
 
-(def-sub
+(reg-sub
  :time-color
  (fn
   [db _]
   (:time-color db)))
 
 
-(def-sub
+(reg-sub
   :clock?
   (fn
     [db _]
@@ -128,5 +128,6 @@
 (defn ^:export run
  []
  (dispatch-sync [:initialize])
+ (enable-re-frisk!)
  (reagent/render [simple-example]
                  (js/document.getElementById "app")))
