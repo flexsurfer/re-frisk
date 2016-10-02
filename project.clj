@@ -11,7 +11,6 @@
                  [reagent "0.6.0"]
                  [re-frame "0.8.0"]
                  [data-frisk-reagent "0.3.0"]
-                 [com.cognitect/transit-cljs "0.8.239"]
                  [hiccups "0.3.0"]]
 
   :plugins [[lein-cljsbuild "1.1.3" :exclusions [[org.clojure/clojure]]]]

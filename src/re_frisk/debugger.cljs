@@ -2,18 +2,19 @@
   (:require [hiccups.runtime :as h]
             [re-frisk.data :refer [re-frame-data]]
             [reagent.core :as r]
-            [cognitect.transit :as t]
             [datafrisk.core :as f])
   (:require-macros [hiccups.core :refer [html]]
                    [reagent.ratom :refer [reaction]]))
 
 (defonce deb-data (r/atom {:w-c true}))
-(defonce rdr (t/reader :json))
-(defonce wr (t/writer :json))
 
 (defn debugger-shell []
   (let [expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range 1))
-        state-atom (r/atom expand-by-default)]
+        state-atom (r/atom expand-by-default)
+        ;; i have two issues with the cljs data structures after passing it between windows
+        ;; first problem frisk library doesn't colored keywords right
+        ;; second - reagent doesn't see ratom changes, this hack to avoid second issue
+        _ (js/setInterval #(swap! state-atom assoc :t (rand)) 100)]
     (fn []
       [:div {:style {:backgroundColor "#FAFAFA"
                      :fontFamily "Consolas,Monaco,Courier New,monospace"
@@ -25,7 +26,7 @@
                        ^{:key id} [f/Root x id state-atom]) [(:data @deb-data)])]])))
 
 (defn run [data]
-  (swap! deb-data assoc :data (t/read rdr data))
+  (swap! deb-data assoc :data data)
   (when-not (:rendered @deb-data)
     (do
       (swap! deb-data assoc :rendered true)
@@ -44,10 +45,6 @@
      [:p "ENJOY!"]]]
    [:script {:type "text/javascript", :src src}]])
 
-(defn i-h []
-  (swap! deb-data assoc :w-c (.-closed (:w @deb-data)))
-  ((:f @deb-data) (:w @deb-data) (t/write wr @(:app-db @re-frame-data))))
-
 (defn open-debugger-window []
   (let [w (js/window.open "" "Debugger" "width=500,height=400,resizable=yes,scrollbars=yes,status=no,directories=no,toolbar=no,menubar=no")
         d (.-document w)]
@@ -55,7 +52,10 @@
     (.open d)
     (.write d (html (debugger-page (:p @deb-data))))
     (.close d)
-    (aset w "onload" (fn [] (js/setInterval i-h 100)))))
+    (aset w "onunload" #(swap! deb-data assoc :w-c true))
+    (aset w "onload" #(do
+                       (swap! deb-data assoc :w-c false)
+                       ((:f @deb-data) (:w @deb-data) @re-frame-data)))))
 
 (defn register [p f]
   (swap! deb-data assoc :p p)
