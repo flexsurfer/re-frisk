@@ -1,16 +1,15 @@
 (ns re-frisk.core
   (:require [reagent.core :as r]
+            [re-frisk.data :refer [re-frame-data]]
+            [re-frisk.debugger :as d]
             [re-frisk.ui :as ui]
             [datafrisk.core :as f]
-            [re-frame.core :refer [reg-sub subscribe]])
-  (:import [goog.events EventType]))
-
-(defonce re-frame-data (r/atom {}))
+            [re-frame.core :refer [reg-sub subscribe]]))
 
 (defn- render-re-frisk [params]
   (let [div (js/document.createElement "div")]
     (js/document.body.appendChild div)
-    (r/render [ui/re-frisk-shell [f/FriskInline @re-frame-data] params] div)))
+    (r/render [ui/re-frisk-shell [f/FriskInline @re-frame-data] (merge {:on-click d/open-debugger-window} params)] div)))
 
 (defn enable-re-frisk! [& params]
   (when-not (:app-db @re-frame-data)
@@ -39,4 +38,3 @@
 
 (defn add-data [key data]
   (swap! re-frame-data assoc key data))
-

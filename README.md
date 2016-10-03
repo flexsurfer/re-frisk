@@ -2,22 +2,18 @@
 
 Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-frame apps or any ratom data in [regent](https://reagent-project.github.io) apps as a tree structure.
 
-<img src="re-frisk-show.gif">
-
-## Overview
-
-This lightweight library helps you to visualize re-frame data and easily debug re-frame apps in the real time.
-
-[![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
+<img src="re-frisk-debugger.gif">
 
 ## Setup
 
-Add `[re-frisk "0.1.4"]` to the dev `:dependencies` in your project.clj
+[![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
+
+Add `[re-frisk "0.2.0"]` to the dev `:dependencies` in your project.clj
 
 
 ## Usage
 
-If you want to watch re-frame app-db, run re-frisk before any rendering calls, using `enable-re-frisk!` function
+If you want to watch re-frame app-db, run re-frisk after document will be loaded and before any rendering calls, using `enable-re-frisk!` function
 
 ```clojure
 (:require [re-frisk.core :refer [enable-re-frisk!]])
@@ -28,6 +24,28 @@ If you want to watch re-frame app-db, run re-frisk before any rendering calls, u
  (enable-re-frisk!)
  (reagent/render [simple-example]
                  (js/document.getElementById "app")))
+```
+
+This runs only in-app panel, for more convenient and flexible way to watch your data, you can enable panel in the separate browser window, here are the steps:
+
+Add `:external-config {:re-frisk {:script-path "path/to/your/output.js"}}}}` to the dev `:compiler` in your project.clj
+
+<img src="re-frisk-project-debugger.png">
+
+"path/to/your/output.js" - should be the same path as in your project html page
+
+<img src="re-frisk-index.png">
+
+Require macro
+```clojure
+(:require [re-frisk.core :refer-macros [export-debugger!]])
+```
+
+And call this macro on the first lines of you main cljs file
+
+```clojure
+(enable-console-print!) ;; for example, not necessary for the re-frisk
+(export-debugger!)
 ```
 
 ENJOY!
@@ -69,7 +87,7 @@ Add `:external-config {:re-frisk {:enabled true}}}}` to the dev `:compiler` in y
 
 <img src="re-frisk-project.png">
 
-this config needs to do not generate any code in production.
+this config needed to do not generate any code in production.
 
 
 Require macro
