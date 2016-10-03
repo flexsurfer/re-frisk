@@ -20,7 +20,12 @@
                      :fontFamily "Consolas,Monaco,Courier New,monospace"
                      :fontSize "12px"
                      :height "100%"
-                     :width "100%"}}
+                     :width "100%"
+                     :top "0"
+                     :left "0"
+                     :z-index "1000"
+                     :position "absolute"
+                     :overflow "auto"}}
        [:div
         (map-indexed (fn [id x]
                        ^{:key id} [f/Root x id state-atom]) [(:data @deb-data)])]])))
@@ -28,9 +33,10 @@
 (defn run [data]
   (swap! deb-data assoc :data data)
   (when-not (:rendered @deb-data)
-    (do
+    (let [div (js/document.createElement "div")]
+      (js/document.body.appendChild div)
       (swap! deb-data assoc :rendered true)
-      (r/render [debugger-shell] (js/document.getElementById "app")))))
+      (r/render [debugger-shell] div))))
 
 (defn debugger-page [src]
   [:html
@@ -51,11 +57,11 @@
     (swap! deb-data assoc :w w)
     (.open d)
     (.write d (html (debugger-page (:p @deb-data))))
-    (.close d)
-    (aset w "onunload" #(swap! deb-data assoc :w-c true))
     (aset w "onload" #(do
                        (swap! deb-data assoc :w-c false)
-                       ((:f @deb-data) (:w @deb-data) @re-frame-data)))))
+                       ((:f @deb-data) (:w @deb-data) @re-frame-data)))
+    (aset w "onunload" #(swap! deb-data assoc :w-c true))
+    (.close d)))
 
 (defn register [p f]
   (swap! deb-data assoc :p p)

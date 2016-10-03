@@ -47,7 +47,7 @@
                               :top (str (:y @draggable) "px")
                               :z-index 999}
                              (when (or ie? (not (:x @draggable)))
-                               {:bottom   "-20px"
+                               {:bottom  (str (if ie? "-200" "-20") "px")
                                 :right "20px"}))}
          [:div {:style {:fontFamily "Consolas,Monaco,Courier New,monospace"
                         :fontSize "12px"

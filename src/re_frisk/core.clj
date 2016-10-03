@@ -3,7 +3,7 @@
 
 (defmacro export-debugger! []
   (when @cljs.env/*compiler*
-    (let [p (get-in @cljs.env/*compiler* [:options :external-config :re-frisk :script-src-path])
+    (let [p (get-in @cljs.env/*compiler* [:options :external-config :re-frisk :script-path])
           m (get-in @cljs.env/*compiler* [:options :main])]
       `(do
          (re-frisk.debugger/register ~p #(~(symbol (str "." m ".runrefriskdebbuger")) %1 %2))

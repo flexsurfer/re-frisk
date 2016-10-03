@@ -1,4 +1,4 @@
-(defproject re-frisk "0.1.4"
+(defproject re-frisk "0.2.0"
   :description "Visualize re-frame pattern data in your re-frame apps as a tree structure."
   :url "https://github.com/flexsurfer/re-frisk"
   :license {:name "MIT"
@@ -35,7 +35,7 @@
                            :source-map-timestamp true
                            :preloads [devtools.preload]
                            :external-config {:re-frisk {:enabled true
-                                                        :script-src-path "js/compiled/re_frisk.js"}}}}
+                                                        :script-path "js/compiled/re_frisk.js"}}}}
 
                {:id "reagent"
                 :source-paths ["src" "dev"]

@@ -6,8 +6,6 @@
             [datafrisk.core :as f]
             [re-frame.core :refer [reg-sub subscribe]]))
 
-(enable-console-print!)
-
 (defn- render-re-frisk [params]
   (let [div (js/document.createElement "div")]
     (js/document.body.appendChild div)
