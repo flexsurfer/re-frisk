@@ -6,10 +6,10 @@
     (let [p (get-in @cljs.env/*compiler* [:options :external-config :re-frisk :script-path])
           m (get-in @cljs.env/*compiler* [:options :main])]
       `(do
-         (re-frisk.debugger/register ~p #(~(symbol (str "." m ".runrefriskdebbuger")) %1 %2))
+         (re-frisk.devtool/register ~p #(~(symbol (str "." m ".runrefriskdebbuger")) %1 %2))
          (cljs.core/defn ~(vary-meta 'runrefriskdebbuger assoc :tag :export)
            [~'data]
-           (re-frisk.debugger/run ~'data))))))
+           (re-frisk.devtool/run ~'data))))))
 
 (defmacro def-view [fname params body]
   (if (and @cljs.env/*compiler* (get-in @cljs.env/*compiler* [:options :external-config :re-frisk :enabled]))

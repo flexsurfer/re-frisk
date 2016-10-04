@@ -1,4 +1,4 @@
-(ns re-frisk.debugger
+(ns re-frisk.devtool
   (:require [hiccups.runtime :as h]
             [re-frisk.data :refer [re-frame-data]]
             [reagent.core :as r]

@@ -1,6 +1,6 @@
 (ns re-frisk.ui
   (:require [reagent.core :as r]
-            [re-frisk.debugger :as d]
+            [re-frisk.devtool :as d]
             [goog.events :as e])
   (:import [goog.events EventType]))
 

@@ -1,15 +1,18 @@
 (ns re-frisk.reagent-demo
   (:require [reagent.core :as r]
-            [re-frisk.core :refer [enable-frisk! add-data]]))
+            [re-frisk.core :refer [enable-frisk! add-data add-in-data]]))
 
 (defn atom-input [value]
   [:input {:type "text"
            :value @value
-           :on-change #(reset! value (-> % .-target .-value))}])
+           :on-change #(let [v (-> % .-target .-value)]
+                        (add-in-data [:my-log :on-change] v)
+                        (reset! value v))}])
 
 (defn shared-state []
   (let [val (r/atom "foo")
-        _ (add-data :input-val val)]
+        _ (add-in-data [:my-log :input-val] val)
+        _ (add-data :input-val "test")]
     (fn []
       [:div
        [:p "The value is now: " @val]

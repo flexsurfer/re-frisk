@@ -8,7 +8,7 @@ Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-f
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
 
-Add `[re-frisk "0.2.0"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.2.1"]` to the dev `:dependencies` in your project.clj
 
 
 ## Usage
@@ -48,6 +48,8 @@ And call this macro on the first lines of you main cljs file
 (export-debugger!)
 ```
 
+Notice that it is additional panel, so you still need (enable-re-frisk!)
+
 ENJOY!
 
 If you are not using re-frame in your app, you can run re-frisk without re-frame by `enable-frisk!` function
@@ -56,10 +58,12 @@ If you are not using re-frame in your app, you can run re-frisk without re-frame
 (enable-frisk!)
 ```
 
-If you want to watch ratom, you can add it using `add-data` function
+If you want to watch ratom or log any data, you can add it using `add-data` or `add-in-data` functions
 
 ```clojure
-(add-data :data-key your-data-ratom)
+(add-data :data-key your-data)
+
+(add-in-data [:data-key1  :data-key2] your-data)
 ```
 
 You can provide starting position for the re-frisk panel
