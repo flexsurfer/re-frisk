@@ -8,7 +8,7 @@ Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-f
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
 
-Add `[re-frisk "0.2.1"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.2.2"]` to the dev `:dependencies` in your project.clj
 
 
 ## Usage

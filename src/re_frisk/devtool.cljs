@@ -8,7 +8,7 @@
 
 (defonce deb-data (r/atom {:w-c true}))
 
-(defn debugger-shell []
+(defn debugger-shell [data]
   (let [expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range 1))
         state-atom (r/atom expand-by-default)
         ;; i have two issues with the cljs data structures after passing it between windows
@@ -16,27 +16,27 @@
         ;; second - reagent doesn't see ratom changes, this hack to avoid second issue
         _ (js/setInterval #(swap! state-atom assoc :t (rand)) 100)]
     (fn []
-      [:div {:style {:backgroundColor "#FAFAFA"
-                     :fontFamily "Consolas,Monaco,Courier New,monospace"
-                     :fontSize "12px"
-                     :height "100%"
-                     :width "100%"
-                     :top "0"
-                     :left "0"
-                     :z-index "1000"
-                     :position "absolute"
-                     :overflow "auto"}}
-       [:div
-        (map-indexed (fn [id x]
-                       ^{:key id} [f/Root x id state-atom]) [(:data @deb-data)])]])))
+      (let [_ @state-atom] ;; this hack to avoid second issue
+        [:div {:style {:backgroundColor "#FAFAFA"
+                       :fontFamily "Consolas,Monaco,Courier New,monospace"
+                       :fontSize "12px"
+                       :height "100%"
+                       :width "100%"
+                       :top "0"
+                       :left "0"
+                       :z-index "1000"
+                       :position "absolute"
+                       :overflow "auto"}}
+         [:div
+          (map-indexed (fn [id x]
+                         ^{:key id} [f/Root x id state-atom]) [@data])]]))))
 
 (defn run [data]
-  (swap! deb-data assoc :data data)
   (when-not (:rendered @deb-data)
     (let [div (js/document.createElement "div")]
       (js/document.body.appendChild div)
       (swap! deb-data assoc :rendered true)
-      (r/render [debugger-shell] div))))
+      (r/render [debugger-shell data] div))))
 
 (defn debugger-page [src]
   [:html
@@ -59,7 +59,7 @@
     (.write d (html (debugger-page (:p @deb-data))))
     (aset w "onload" #(do
                        (swap! deb-data assoc :w-c false)
-                       ((:f @deb-data) (:w @deb-data) @re-frame-data)))
+                       ((:f @deb-data) (:w @deb-data) re-frame-data)))
     (aset w "onunload" #(swap! deb-data assoc :w-c true))
     (.close d)))
 
