@@ -22,8 +22,8 @@
                        :fontSize "12px"
                        :height "100%"
                        :width "100%"
-                       :top "0"
-                       :left "0"
+                       :top "0px"
+                       :left "0px"
                        :z-index "1000"
                        :position "absolute"
                        :overflow "auto"}}
@@ -45,7 +45,7 @@
     [:meta {:charset "UTF-8"}]
     [:meta
      {:content "width=device-width, initial-scale=1", :name "viewport"}]]
-   [:body  {:style {:margin "0" :padding "0"}};}}
+   [:body  {:style {:margin "0px" :padding "0px"}};}}
     [:div#app {:style {:height "100%" :width "100%"}}
      [:h2 "re-frisk debugger"]
      [:p "ENJOY!"]]]

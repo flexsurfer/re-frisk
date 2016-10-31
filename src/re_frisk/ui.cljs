@@ -57,8 +57,8 @@
                         :padding "6px"
                         :text-align "left"
                         :border-radius "2px"
-                        :border-bottom-left-radius "0"
-                        :border-bottom-right-radius "0"
+                        :border-bottom-left-radius "0px"
+                        :border-bottom-right-radius "0px"
                         :padding-left "2rem"}
                 :on-mouse-down mouse-down-handler}
           "re-frisk"]
@@ -71,8 +71,8 @@
                          :background-color "#CCCCCC"
                          :cursor "pointer"
                          :border-radius "2px"
-                         :border-bottom-left-radius "0"
-                         :border-bottom-right-radius "0"
+                         :border-bottom-left-radius "0px"
+                         :border-bottom-right-radius "0px"
                          :padding-left "2rem"}
                   :on-click on-click}
             "\u2197"])

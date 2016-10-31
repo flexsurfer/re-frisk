@@ -1,6 +1,6 @@
 # re-frisk
 
-Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-frame apps or any ratom data in [reagent](https://reagent-project.github.io) apps as a tree structure.
+Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-frame apps or any ratom data in [reagent](https://reagent-project.github.io) apps as a [tree structure](https://github.com/Odinodin/data-frisk-reagent).
 
 <img src="re-frisk-debugger.gif">
 
