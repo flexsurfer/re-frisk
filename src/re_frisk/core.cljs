@@ -18,10 +18,10 @@
 (defn enable-re-frisk! [& params]
   (when-not @initialized
     (do
-      (reg-sub :db (fn [db _] db))
+      (reg-sub ::db (fn [db _] db))
       (reset! re-frame-data {:views (r/atom {})
                              :subs (r/atom {})
-                             :app-db (subscribe [:db])})
+                             :app-db (subscribe [::db])})
       (reset! initialized true)
       (js/setTimeout render-re-frisk 100 (first params)))))
 
