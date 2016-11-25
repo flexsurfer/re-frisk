@@ -90,7 +90,7 @@
  (let [time-color (rf/subscribe [:time-color])
        timer (rf/subscribe [:timer])
        clock? (rf/subscribe [:clock?])
-       _ (add-data :timer timer)]
+       _ (add-data :test {:timer timer})]
   (fn clock-render
    []
    (let [time-str (-> @timer

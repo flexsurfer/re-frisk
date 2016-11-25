@@ -1,10 +1,13 @@
 (ns re-frisk.core
   (:require [reagent.core :as r]
-            [re-frisk.data :refer [re-frame-data initialized]]
+            [re-frisk.data :refer [re-frame-events re-frame-data initialized]]
             [re-frisk.devtool :as d]
             [re-frisk.ui :as ui]
             [datafrisk.core :as f]
-            [re-frame.core :refer [reg-sub subscribe]]))
+            [re-frame.core :refer [reg-sub reg-event-db subscribe] :as rfr]
+            [re-frame.registrar :as rgr]))
+
+(enable-console-print!)
 
 (defn frisk-inline []
   (fn []
@@ -21,9 +24,27 @@
       (reg-sub ::db (fn [db _] db))
       (reset! re-frame-data {:views (r/atom {})
                              :subs (r/atom {})
-                             :app-db (subscribe [::db])})
+                             :app-db (subscribe [::db])
+                             :kind->id->handler rgr/kind->id->handler})
       (reset! initialized true)
       (js/setTimeout render-re-frisk 100 (first params)))))
+
+(reg-event-db
+  :re-frisk/update-db
+  (fn
+    [db [_ value]]
+    value))
+
+(rfr/add-post-event-callback
+   #(swap! re-frame-events conj %))
+
+#_(rfr/add-post-event-callback
+    #(do
+      (println (first (last @re-frame-events)) (first %))
+      (if (= (first (last @re-frame-events)) (first %))
+        (swap! re-frame-events update-in [(dec (count @re-frame-events)) 2] inc)
+        (swap! re-frame-events conj (conj % 0)))))
+
 
 (defn enable-frisk! [& params]
   (when-not @initialized

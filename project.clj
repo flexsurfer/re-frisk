@@ -9,9 +9,10 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.89"]
                  [reagent "0.6.0"]
+                 [hiccups "0.3.0"]
                  [re-frame "0.8.0"]
-                 [data-frisk-reagent "0.3.1"]
-                 [hiccups "0.3.0"]]
+                 [data-frisk-reagent "0.3.5"]
+                 [com.cognitect/transit-cljs "0.8.239"]]
 
   :plugins [[lein-cljsbuild "1.1.3" :exclusions [[org.clojure/clojure]]]]
 

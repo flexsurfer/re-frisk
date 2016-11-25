@@ -3,3 +3,4 @@
 
 (defonce initialized (r/atom false))
 (defonce re-frame-data (r/atom {}))
+(defonce re-frame-events (r/atom []))
