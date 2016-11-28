@@ -12,7 +12,7 @@
 (defn shared-state []
   (let [val (r/atom "foo")
         _ (add-in-data [:my-log :input-val] val)
-        _ (add-data :input-val "test")]
+        _ (add-data :test "test")]
     (fn []
       [:div
        [:p "The value is now: " @val]

@@ -1,5 +1,5 @@
 (ns re-frisk.demo
-  (:require [re-frisk.core :refer [enable-re-frisk! enable-frisk! add-data] :refer-macros [export-debugger! def-view]]
+  (:require [re-frisk.core :refer [enable-re-frisk! enable-frisk! add-data] :refer-macros [def-view]]
             [reagent.core :as reagent]
             [re-frame.core :as rf :refer [reg-event-db
                                           path
@@ -11,7 +11,6 @@
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (enable-console-print!)
-(export-debugger!)
 ;; trigger a dispatch every second
 (defonce time-updater (js/setInterval
                        #(dispatch [:timer (js/Date.)]) 1000))

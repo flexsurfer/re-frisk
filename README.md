@@ -8,7 +8,7 @@ Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-f
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
 
-Add `[re-frisk "0.2.2"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.3.0-rc"]` to the dev `:dependencies` in your project.clj
 
 
 ## Usage
@@ -26,30 +26,6 @@ If you want to watch re-frame app-db, run re-frisk after document will be loaded
                  (js/document.getElementById "app")))
 ```
 
-This runs only in-app panel, for more convenient and flexible way to watch your data, you can enable panel in the separate browser window, here are the steps:
-
-Add `:external-config {:re-frisk {:script-path "path/to/your/output.js"}}}}` to the dev `:compiler` in your project.clj
-
-<img src="re-frisk-project-debugger.png">
-
-"path/to/your/output.js" - should be the same path as in your project html page
-
-<img src="re-frisk-index.png">
-
-Require macro
-```clojure
-(:require [re-frisk.core :refer-macros [export-debugger!]])
-```
-
-And call this macro on the first lines of you main cljs file
-
-```clojure
-(enable-console-print!) ;; for example, not necessary for the re-frisk
-(export-debugger!)
-```
-
-Notice that it is additional panel, so you still need (enable-re-frisk!)
-
 ENJOY!
 
 If you are not using re-frame in your app, you can run re-frisk without re-frame by `enable-frisk!` function
@@ -57,6 +33,13 @@ If you are not using re-frame in your app, you can run re-frisk without re-frame
 ```clojure
 (enable-frisk!)
 ```
+
+### Debugger
+
+You can export and import app state, and watch events in the separate debugger window.
+Unfortunately debugger doesn't work in IE.
+
+<img src="debugger.png">
 
 If you want to watch ratom or log any data, you can add it using `add-data` or `add-in-data` functions
 
@@ -116,6 +99,7 @@ reagent [dev/re_frisk/reagent_demo.cljs](https://github.com/flexsurfer/re-frisk/
 ### Known issues
 
 Works weird in the Internet Explorer which doesn't support css resize property.
+Debugger doesn't work in IE.
 
 If you are using `reagent.core/create-class` function for creating views, data for these views will be still showing in the re-frisk after this components will be unmounted.
 
