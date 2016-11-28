@@ -2,7 +2,7 @@
 
 Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-frame apps or any ratom data in [reagent](https://reagent-project.github.io) apps as a [tree structure](https://github.com/Odinodin/data-frisk-reagent).
 
-<img src="re-frisk-debugger.gif">
+<img src="img/re-frisk-debugger.gif">
 
 ## Setup
 
@@ -39,7 +39,7 @@ If you are not using re-frame in your app, you can run re-frisk without re-frame
 You can export and import app state, and watch events in the separate debugger window.
 Unfortunately debugger doesn't work in IE.
 
-<img src="debugger.png">
+<img src="img/debugger.png">
 
 If you want to watch ratom or log any data, you can add it using `add-data` or `add-in-data` functions
 
@@ -72,7 +72,7 @@ You can watch all re-frame views which are rendering now
 
 Add `:external-config {:re-frisk {:enabled true}}}}` to the dev `:compiler` in your project.clj if you are working with the re-frame app
 
-<img src="re-frisk-project.png">
+<img src="img/re-frisk-project.png">
 
 this config needed to do not generate any code in production.
 
