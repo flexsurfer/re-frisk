@@ -8,7 +8,7 @@ Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-f
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
 
-Add `[re-frisk "0.3.0-rc"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.3.0-rc2"]` to the dev `:dependencies` in your project.clj
 
 
 ## Usage
@@ -38,6 +38,8 @@ If you are not using re-frame in your app, you can run re-frisk without re-frame
 
 You can export and import app state, and watch events in the separate debugger window.
 Unfortunately debugger doesn't work in IE.
+
+Export works only for the cljs [data structures](https://github.com/cognitect/transit-cljs#default-type-mapping).
 
 <img src="img/debugger.png">
 

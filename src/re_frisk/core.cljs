@@ -47,7 +47,7 @@
 
 (defn unmount-view [view]
   (when (:app-db @re-frame-data)
-    (swap! (:views @re-frame-data) dissoc view)))
+    (swap! re-frame-data update-in [:views] dissoc view)))
 
 (reg-event-db :re-frisk/update-db (fn [db [_ value]] value))
 

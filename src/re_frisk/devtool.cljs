@@ -46,8 +46,8 @@
                      [:div
                       (map-indexed (fn [id x]
                                      ^{:key id} [f/Root x id state-atom]) [@re-frame-data])]]
-        [:div {:style {:height "5%" :overflow "auto"}} (str "Event " (first (:event-data @deb-data)))]
-        [:div {:style (merge ui/frisk-style {:height "35%"})}
+        [:div {:style (merge ui/frisk-style {:height "40%"})}
+         [:div (str "Event " (first (:event-data @deb-data)))]
          [:div
           (map-indexed (fn [id x]
                          ^{:key id} [f/Root x id state-atom2]) [(second (:event-data @deb-data))])]]]])))
