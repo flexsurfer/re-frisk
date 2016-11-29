@@ -12,7 +12,7 @@
 (defn- render-re-frisk [params]
   (let [div (js/document.createElement "div")]
     (js/document.body.appendChild div)
-    (r/render [ui/re-frisk-shell [(fn [] [f/FriskInline @re-frame-data])] (merge {:on-click d/open-debugger-window} params)] div)))
+    (r/render [ui/re-frisk-shell re-frame-data (merge {:on-click d/open-debugger-window} params)] div)))
 
 (defn enable-re-frisk! [& params]
   (when-not @initialized

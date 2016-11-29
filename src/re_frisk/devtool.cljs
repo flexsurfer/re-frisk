@@ -9,7 +9,11 @@
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (defn export-json []
-  (.saveAs (:win @deb-data) (js/Blob. (js/Array. (t/write (t/writer :json) @(:app-db @re-frame-data))) {:type "application/json"}) "app-db.json"))
+  (if-let [str (try (t/write (t/writer :json) @(:app-db @re-frame-data))
+                 (catch js/Object e (.alert (:win @deb-data) e)))]
+      (.saveAs (:win @deb-data)
+        (js/Blob. (js/Array. str) {:type "application/json"})
+        "app-db.json")))
 
 (defn json-on-change [event]
   (let [rdr (js/FileReader.)]
@@ -47,10 +51,9 @@
                       (map-indexed (fn [id x]
                                      ^{:key id} [f/Root x id state-atom]) [@re-frame-data])]]
         [:div {:style (merge ui/frisk-style {:height "40%"})}
-         [:div (str "Event " (first (:event-data @deb-data)))]
          [:div
           (map-indexed (fn [id x]
-                         ^{:key id} [f/Root x id state-atom2]) [(second (:event-data @deb-data))])]]]])))
+                         ^{:key id} [f/Root x id state-atom2]) [(:event-data @deb-data)])]]]])))
 
 (defn reagent-debugger-shell []
   (let [expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range 1))

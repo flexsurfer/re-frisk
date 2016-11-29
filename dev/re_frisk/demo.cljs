@@ -13,7 +13,7 @@
 (enable-console-print!)
 ;; trigger a dispatch every second
 (defonce time-updater (js/setInterval
-                       #(dispatch [:timer (js/Date.)]) 1000))
+                       #(dispatch [:timer (js/Date.) "test"]) 1000))
 
 (def initial-state
  {:timer (js/Date.)

@@ -1,4 +1,4 @@
-(defproject re-frisk "0.3.0-rc2"
+(defproject re-frisk "0.3.0"
   :description "Visualize re-frame pattern data in your re-frame apps as a tree structure."
   :url "https://github.com/flexsurfer/re-frisk"
   :license {:name "MIT"

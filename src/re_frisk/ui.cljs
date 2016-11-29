@@ -1,8 +1,43 @@
 (ns re-frisk.ui
   (:require [reagent.core :as r]
             [goog.events :as e]
+            [datafrisk.core :as f]
             [re-frisk.data :refer [deb-data]])
   (:import [goog.events EventType]))
+
+(def frisk-style
+  {:backgroundColor "#FAFAFA"
+   :fontFamily "Consolas,Monaco,Courier New,monospace"
+   :fontSize "12px"
+   :height "100%"
+   :overflow "auto"
+   :width "100%"})
+
+(def re-frisk-button-style
+  {:fontFamily "Consolas,Monaco,Courier New,monospace"
+   :fontSize "12px"
+   :display "inline-block"
+   :background-color "#CCCCCC"
+   :cursor "move"
+   :padding "6px"
+   :text-align "left"
+   :border-radius "2px"
+   :border-bottom-left-radius "0px"
+   :border-bottom-right-radius "0px"
+   :padding-left "2rem"})
+
+(def arrow-style
+  {:margin-left "5px"
+   :display "inline-block"
+   :padding "3px"
+   :width "15px"
+   :text-align "center"
+   :background-color "#CCCCCC"
+   :cursor "pointer"
+   :border-radius "2px"
+   :border-bottom-left-radius "0px"
+   :border-bottom-right-radius "0px"
+   :padding-left "2rem"})
 
 ;reagent d'n'd - https://github.com/borkdude/draggable-button-in-reagent
 
@@ -33,58 +68,51 @@
     (e/listen js/window EventType.MOUSEMOVE on-move)
     (e/listen js/window EventType.MOUSEUP (mouse-up-handler on-move))))
 
-(defn re-frisk-shell [frisk {:keys [on-click x y w h]}]
-  (let [style {}
-        h (when (and ie? (not h)) 200)
-        style (merge style (when h {:height h :max-height h :overflow "auto"}))
-        style (merge style (when w {:width w :max-width w :overflow "auto"}))]
+(defn visibility-button
+  [visible? update-fn]
+  [:button {:style {:border 0
+                    :backgroundColor "transparent" :width "20px" :height "10px"}
+            :onClick update-fn}
+   [:svg {:viewBox "0 0 100 100"
+          :width "100%" :height "100%"
+          :style {:transition "all 0.2s ease"
+                  :transform (when visible? "rotate(90deg)")}}
+    [:polygon {:points "0,0 0,100 100,50" :stroke "black"}]]])
+
+(defn re-frisk-panel [& data]
+  (let [expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range (count data)))
+        state-atom (r/atom expand-by-default)]
+    (fn [& data]
+       [:div
+        (map-indexed (fn [id x]
+                       ^{:key id} [f/Root x id state-atom]) [data])])))
+
+(defn re-frisk-shell [data {:keys [on-click x y width height]}]
+  (let [style (merge frisk-style {:resize "both" :width "300px" :height "200px"})
+        height (if (and ie? (not height)) 200 height)
+        style (merge style (when height {:height height :max-height height :overflow "auto"}))
+        style (merge style (when width {:width width :max-width width :overflow "auto"}))]
     (when x (swap! draggable assoc :x x))
     (when y (swap! draggable assoc :y y))
-    (fn []
+    (fn [data]
       (when (:deb-win-closed? @deb-data)
         [:div {:style (merge {:position "fixed"
                               :left (str (:x @draggable) "px")
                               :top (str (:y @draggable) "px")
                               :z-index 999}
                              (when (or ie? (not (:x @draggable)))
-                               {:bottom  (str (if ie? "-200" "-20") "px")
-                                :right "20px"}))}
-         [:div {:style {:fontFamily "Consolas,Monaco,Courier New,monospace"
-                        :fontSize "12px"
-                        :display "inline-block"
-                        :background-color "#CCCCCC"
-                        :cursor "move"
-                        :padding "6px"
-                        :text-align "left"
-                        :border-radius "2px"
-                        :border-bottom-left-radius "0px"
-                        :border-bottom-right-radius "0px"
-                        :padding-left "2rem"}
+                               {:bottom "0px"
+                                :right  "20px"}))}
+         [:div {:style re-frisk-button-style
                 :on-mouse-down mouse-down-handler}
+          [visibility-button (:visible? (:data-frisk @deb-data)) (fn [_] (swap! deb-data assoc-in [:data-frisk :visible?] (not (:visible? (:data-frisk @deb-data)))))]
           "re-frisk"]
-         [:div {:style{:margin-left "5px"
-                       :display "inline-block"
-                       :padding "3px"
-                       :width "15px"
-                       :text-align "center"
-                       :background-color "#CCCCCC"
-                       :cursor "pointer"
-                       :border-radius "2px"
-                       :border-bottom-left-radius "0px"
-                       :border-bottom-right-radius "0px"
-                       :padding-left "2rem"}
+         [:div {:style arrow-style
                 :on-click on-click}
           "\u2197"]
-         [:div {:style style}
-          frisk]]))))
-
-(def frisk-style
-  {:backgroundColor "#FAFAFA"
-   :fontFamily "Consolas,Monaco,Courier New,monospace"
-   :fontSize "12px"
-   :height "100%"
-   :overflow "auto"
-   :width "100%"})
+         (when (:visible? (:data-frisk @deb-data))
+           [:div {:style style}
+            [re-frisk-panel @data]])]))))
 
 (def debugger-page
   "<!DOCTYPE html>

@@ -8,7 +8,7 @@ Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-f
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
 
-Add `[re-frisk "0.3.0-rc2"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.3.0"]` to the dev `:dependencies` in your project.clj
 
 
 ## Usage
@@ -62,9 +62,9 @@ You can provide starting position for the re-frisk panel
 also, it will be helpful for the IE, because it doesn't support resize property, you can provide width and height
 
 ```clojure
-(enable-re-frisk! {:width 400 :height 400})
+(enable-re-frisk! {:width "400px" :height "400px"})
 
-(enable-frisk! {:width 400 :height 400})
+(enable-frisk! {:width "400px" :height "400px"})
 ```
 
 
