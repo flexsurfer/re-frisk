@@ -1,7 +1,8 @@
 # re-frisk
 
-Visualize [re-frame](https://github.com/Day8/re-frame) pattern data in your re-frame apps or any ratom data in [reagent](https://reagent-project.github.io) apps as a [tree structure](https://github.com/Odinodin/data-frisk-reagent).
+Visualize [re-frame](https://github.com/Day8/re-frame) pattern data or [reagent](https://reagent-project.github.io) ratom data as a [tree structure](https://github.com/Odinodin/data-frisk-reagent).
 
+Also you can watch re-frame events and export state in the debugger.
 <img src="img/re-frisk-debugger.gif">
 
 ## Setup
@@ -13,7 +14,8 @@ Add `[re-frisk "0.3.0"]` to the dev `:dependencies` in your project.clj
 
 ## Usage
 
-If you want to watch re-frame app-db, run re-frisk after document will be loaded and before any rendering calls, using `enable-re-frisk!` function
+### re-frame
+run re-frisk after document will be loaded and before any rendering calls, using `enable-re-frisk!` function
 
 ```clojure
 (:require [re-frisk.core :refer [enable-re-frisk!]])
@@ -28,10 +30,19 @@ If you want to watch re-frame app-db, run re-frisk after document will be loaded
 
 ENJOY!
 
+### reagent
 If you are not using re-frame in your app, you can run re-frisk without re-frame by `enable-frisk!` function
 
 ```clojure
 (enable-frisk!)
+```
+
+If you want to watch ratom or log any data, you can add it using `add-data` or `add-in-data` functions
+
+```clojure
+(add-data :data-key your-data)
+
+(add-in-data [:data-key1  :data-key2] your-data)
 ```
 
 ### Debugger
@@ -43,13 +54,7 @@ Export works only for the cljs [data structures](https://github.com/cognitect/tr
 
 <img src="img/debugger.png">
 
-If you want to watch ratom or log any data, you can add it using `add-data` or `add-in-data` functions
-
-```clojure
-(add-data :data-key your-data)
-
-(add-in-data [:data-key1  :data-key2] your-data)
-```
+### Settings
 
 You can provide starting position for the re-frisk panel
 
