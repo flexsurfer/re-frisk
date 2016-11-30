@@ -1,4 +1,4 @@
-(defproject re-frisk "0.3.0"
+(defproject re-frisk "0.3.1"
   :description "Visualize re-frame pattern data in your re-frame apps as a tree structure."
   :url "https://github.com/flexsurfer/re-frisk"
   :license {:name "MIT"
@@ -17,7 +17,7 @@
 
   :source-paths ["src"]
 
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
+  :clean-targets ^{:protect false} ["devresources/public/js/compiled" "target"]
 
   :cljsbuild {:builds
               [{:id "dev"
@@ -26,8 +26,8 @@
 
                 :compiler {:main re-frisk.demo
                            :asset-path "js/compiled/out"
-                           :output-to "resources/public/js/compiled/re_frisk.js"
-                           :output-dir "resources/public/js/compiled/out"
+                           :output-to "devresources/public/js/compiled/re_frisk.js"
+                           :output-dir "devresources/public/js/compiled/out"
                            :source-map-timestamp true
                            :preloads [devtools.preload]
                            :external-config {:re-frisk {:enabled true}}}}
@@ -37,8 +37,8 @@
                 :figwheel {:on-jsload "re-frisk.core/on-js-reload"}
                 :compiler {:main re-frisk.reagent-demo
                            :asset-path "js/compiled/out"
-                           :output-to "resources/public/js/compiled/re_frisk_reagent.js"
-                           :output-dir "resources/public/js/compiled/out"
+                           :output-to "devresources/public/js/compiled/re_frisk_reagent.js"
+                           :output-dir "devresources/public/js/compiled/out"
                            :source-map-timestamp true
                            :preloads [devtools.preload]}}]}
 

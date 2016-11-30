@@ -9,7 +9,7 @@ Also you can watch re-frame events and export state in the debugger.
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
 
-Add `[re-frisk "0.3.0"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.3.1"]` to the dev `:dependencies` in your project.clj
 
 
 ## Usage
