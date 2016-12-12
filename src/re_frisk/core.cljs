@@ -4,6 +4,7 @@
             [re-frisk.data :refer [re-frame-events re-frame-data initialized deb-data]]
             [re-frisk.devtool :as d]
             [re-frisk.ui :as ui]
+            [re-frisk.help :as h]
             [re-frame.registrar :refer [kind->id->handler]]
             [re-frame.core :refer [reg-sub reg-event-db subscribe] :as rfr]))
 
@@ -23,7 +24,23 @@
 (defn enable-re-frisk! [& params]
   (when-not @initialized
     (let [prefs (first params)
-          event (reaction (into {} (map (fn [a] (hash-map (first a) (map #(merge {(:id %) "id"} (when (:before %) {:before "fn"}) (when (:after %) {:after "fn"})) (second a))))
+          event (reaction (into {} (map (fn [a]
+                                          (hash-map (first a)
+                                                    (let [intc (map #(merge {(:id %1) (cond (and (= %2 0) (= (:id %1) :coeffects)) (:coeffects h/intrcp)
+                                                                                            (and (= %2 1) (= (:id %1) :do-fx)) (:do-fx h/intrcp)
+                                                                                            (= (:id %1) :db-handler) (:db-handler h/intrcp)
+                                                                                            (= (:id %1) :fx-handler) (:fx-handler h/intrcp)
+                                                                                            :else "id")}
+                                                                            (when (:before %1) {:before (cond (and (= %2 0) (= (:id %1) :coeffects)) (:coeffects h/intrcp-fn)
+                                                                                                              (= (:id %1) :db-handler) (:db-handler h/intrcp-fn)
+                                                                                                              (= (:id %1) :fx-handler) (:fx-handler h/intrcp-fn)
+                                                                                                                :else "fn")})
+                                                                            (when (:after %1) {:after (cond (and (= %2 1) (= (:id %1) :do-fx)) (:do-fx h/intrcp-fn)
+                                                                                                             :else "fn")}))
+                                                                    (second a)
+                                                                    (range (count (second a))))]
+                                                      (hash-map (str (count intc) " interceptors")
+                                                                intc))))
                                         (filter #(not= (key %) :re-frisk/update-db) @(reaction (:event @kind->id->handler))))))
           sub (reaction (into {} (map #(let [k (first %)]
                                          (hash-map k (subscribe [k])))
@@ -31,8 +48,8 @@
       (reg-sub ::db (fn [db _] db))
       (reset! re-frame-data {:handlers {:event {(count @event) event}
                                         :sub {(count @sub) sub}
-                                        :fx (reaction (keys (:fx @kind->id->handler)))
-                                        :cofx (reaction (keys (:cofx @kind->id->handler)))}
+                                        :fx (reaction (map #(if (% h/fx) {% (% h/fx)} %) (keys (:fx @kind->id->handler))))
+                                        :cofx (reaction (map #(if (% h/cofx) {% (% h/cofx)} %) (keys (:cofx @kind->id->handler))))}
                              :app-db (subscribe [::db])})
       (reset! initialized true)
       (swap! deb-data assoc :prefs prefs)

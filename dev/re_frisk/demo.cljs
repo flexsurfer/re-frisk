@@ -51,13 +51,13 @@
   (assoc db :timer value)))    ;; return the new version of db
 
 
-(reg-event-db
+(reg-event-fx
   :clock?-db
   (fn
     ;; the first item in the second argument is :timer the second is the
     ;; new value
-    [db [_ value]]
-    (assoc db :clock? value)))
+    [{db :db} [_ value]]
+    {:db (assoc db :clock? value)}))
 ;; -- Subscription Handlers ---------------------------------------------------
 
 
