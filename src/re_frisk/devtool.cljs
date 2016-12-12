@@ -23,11 +23,45 @@
     (.readAsText rdr (aget (.-files (.-target event)) 0))))
 
 (defn debugger-messages []
-  (fn []
-    [:div.debugger-sidebar-messages
-     (map-indexed (fn [id item]
-                    ^{:key id} [:div.messages-entry {:on-click #(swap! deb-data assoc :event-data item)}
-                                [:span.messages-entry-content (str (first item) " " (second item))]]) @re-frame-events)]))
+  (r/create-class
+    {:display-name "debugger-messages"
+     :component-did-update
+     (fn [this]
+       (let [n (r/dom-node this)]
+         (when (:scroll-bottom? @deb-data)
+           (set! (.-scrollTop n) (.-scrollHeight n)))))
+     :reagent-render
+     (fn []
+       (let [clrs (:evnt-colors @deb-data)]
+         [:div.debugger-sidebar-messages {:on-scroll #(let [t (.-target %)]
+                                                        (swap! deb-data assoc :scroll-bottom? (= (.-scrollTop t) (- (.-scrollHeight t) (.-offsetHeight t)))))}
+          (map-indexed (fn [id item]
+                         (let [event (first (if (:event item) (:event item) item))
+                               fx? (boolean (re-find #"-fx" (str event)))
+                               db? (boolean (re-find #"-db" (str event)))
+                               clr (event clrs)]
+                           ^{:key id} [:div.messages-entry {:on-click #(swap! deb-data assoc :event-data item)}
+                                       [:span {:style {:display "inline-block"
+                                                       :background-color (cond clr clr fx? "#FF0000" db? "#00FF00" :else "#3d3d3d")
+                                                       :opacity 0.5
+                                                       :width "15px"
+                                                       :height "15px"
+                                                       :overflow "hidden"
+                                                       :padding-bottom "4px"}}
+                                        (cond fx? "fx" db? "db" :else "  ")]
+                                       [:span.messages-entry-content (str event)]])) @re-frame-events)]))}))
+
+(defn event-bar []
+  (let [evnt-key (reaction (first (or (:event (:event-data @deb-data)) (:event-data @deb-data))))
+        clr (reaction (if @evnt-key (@evnt-key (:evnt-colors @deb-data)) ""))]
+    (fn []
+      [:div {:style {:width "100%" :height "20px" :background-color "#3d3d3d" :color "#ffffff" :position "relative"}}
+       [:div "Event"]
+       [:input {:style {:position "absolute" :left "50px" :top "0px" :width "60px"}
+                :placeholder "#000000" :type "text" :value @clr :max-length "7"
+                :on-change #(swap! deb-data assoc-in [:evnt-colors @evnt-key] (-> % .-target .-value))}]
+       [:div {:style {:position "absolute" :right "0px" :top "0px" :width "20px" :cursor "pointer"}
+              :on-click #(swap! deb-data assoc :event-data nil)} "X"]])))
 
 (defn debugger-shell []
   (let [expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range 1))
@@ -46,14 +80,17 @@
           " / "
           [:span {:style {:cursor "pointer"}
                   :on-click export-json} "Export"]]]]
-       [:div#values [:div {:style (merge ui/frisk-style {:height "60%"})}
-                     [:div
-                      (map-indexed (fn [id x]
-                                     ^{:key id} [f/Root x id state-atom]) [@re-frame-data])]]
-        [:div {:style (merge ui/frisk-style {:height "40%"})}
+       [:div#values
+        [:div {:style (merge ui/frisk-style {:height (if (:event-data @deb-data) "60%" "100%")})}
          [:div
           (map-indexed (fn [id x]
-                         ^{:key id} [f/Root x id state-atom2]) [(:event-data @deb-data)])]]]])))
+                         ^{:key id} [f/Root x id state-atom]) [@re-frame-data])]]
+        [:div {:style (merge ui/frisk-style {:height "40%" :overflow "hidden" :display (if (:event-data @deb-data) "block" "none")})}
+         [event-bar]
+         [:div {:style {:overflow "auto" :height "100%"}}
+          (map-indexed (fn [id x]
+                         ^{:key id} [f/Root x id state-atom2]) [(:event-data @deb-data)])
+          [:div {:style {:height "20px"}}]]]]])))
 
 (defn reagent-debugger-shell []
   (let [expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range 1))
@@ -75,7 +112,7 @@
     (swap! deb-data assoc :deb-win-closed? false :doc d :win w :app app)
     (r/render [:div  {:style {:height "100%"}}
                [:input {:type "file" :id "json-file-field" :on-change json-on-change :style {:display "none"}}]
-               (if re-frame?
+               (if (and re-frame? (not= (:events? (:prefs @deb-data)) false))
                  [debugger-shell]
                  [reagent-debugger-shell])]
               app)))

@@ -2,6 +2,9 @@
   (:require [re-frisk.core :refer [enable-re-frisk! enable-frisk! add-data] :refer-macros [def-view]]
             [reagent.core :as reagent]
             [re-frame.core :as rf :refer [reg-event-db
+                                          reg-event-fx
+                                          reg-cofx
+                                          inject-cofx
                                           path
                                           reg-sub
                                           dispatch
@@ -13,7 +16,7 @@
 (enable-console-print!)
 ;; trigger a dispatch every second
 (defonce time-updater (js/setInterval
-                       #(dispatch [:timer (js/Date.) "test"]) 1000))
+                       #(dispatch [:timer-db (js/Date.) "test"]) 1000))
 
 (def initial-state
  {:timer (js/Date.)
@@ -25,7 +28,7 @@
 
 
 (reg-event-db                 ;; setup initial state
- :initialize                     ;; usage:  (dispatch [:initialize])
+ :initialize-db                     ;; usage:  (dispatch [:initialize])
  (fn
   [db _]
   (merge db initial-state)))    ;; what it returns becomes the new state
@@ -38,9 +41,9 @@
   [time-color [_ value]]        ;; path middleware adjusts the first parameter
   value))
 
-
 (reg-event-db
- :timer
+ :timer-db
+ [re-frisk.core/watch-context]
  (fn
   ;; the first item in the second argument is :timer the second is the
   ;; new value
@@ -49,7 +52,7 @@
 
 
 (reg-event-db
-  :clock?
+  :clock?-db
   (fn
     ;; the first item in the second argument is :timer the second is the
     ;; new value
@@ -106,7 +109,7 @@
   (fn color-input-render
    []
    [:div.color-input
-    "Time color: "
+    "Time color:"
     [:input {:type "text"
              :value @time-color
              :on-change #(dispatch [:time-color (-> % .-target .-value)])}]])))
@@ -122,11 +125,18 @@
                          (when @clock? [clock])
                          [color-input]]))}))
 
+(defn mount []
+  (reagent/render [simple-example]
+                  (js/document.getElementById "app")))
+
+(defn on-js-reload []
+  (mount))
+
 ;; -- Entry Point -------------------------------------------------------------
 
 (defn ^:export run
  []
- (dispatch-sync [:initialize])
+ (dispatch-sync [:initialize-db])
  (enable-re-frisk!)
- (reagent/render [simple-example]
-                 (js/document.getElementById "app")))
+ (mount))
+

@@ -6,7 +6,7 @@
   (:import [goog.events EventType]))
 
 (def frisk-style
-  {:backgroundColor "#FAFAFA"
+  {:background-color "#FAFAFA"
    :fontFamily "Consolas,Monaco,Courier New,monospace"
    :fontSize "12px"
    :height "100%"

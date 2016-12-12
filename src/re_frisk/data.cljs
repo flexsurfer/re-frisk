@@ -4,5 +4,4 @@
 (defonce initialized (r/atom false))
 (defonce re-frame-data (r/atom {}))
 (defonce re-frame-events (r/atom []))
-(defonce deb-data (r/atom {:deb-win-closed? true
-                           :event-data ""}))
+(defonce deb-data (r/atom {:deb-win-closed? true}))

@@ -9,7 +9,7 @@ Also you can watch re-frame events and export state in the debugger.
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
 
-Add `[re-frisk "0.3.1"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk "0.3.2"]` to the dev `:dependencies` in your project.clj
 
 
 ## Usage
@@ -54,6 +54,25 @@ Export works only for the cljs [data structures](https://github.com/cognitect/tr
 
 <img src="img/debugger.png">
 
+### Events
+
+If you don't want to watch events you can turn it off providing settings `{:events? false}`
+
+```clojure
+(enable-re-frisk! {:events? false})
+```
+
+Also you can watch interceptor's context providing `re-frisk.core/watch-context` in the reg-event interceptors list
+
+```clojure
+(reg-event-db
+ :timer-db
+ [re-frisk.core/watch-context]
+ (fn
+  [db [_ value]]
+  (assoc db :timer value)))
+```
+
 ### Settings
 
 You can provide starting position for the re-frisk panel
@@ -75,7 +94,9 @@ also, it will be helpful for the IE, because it doesn't support resize property,
 
 ## Advanced thing
 
-You can watch all re-frame views which are rendering now
+For me, it's very handy to name events with the appropriate suffix, for example for reg-event-db :event-key-db, and for reg-event-fx :event-key-fx, in that case re-frisk automatically highlight these events
+
+Also you can watch all re-frame views which are rendering now
 
 Add `:external-config {:re-frisk {:enabled true}}}}` to the dev `:compiler` in your project.clj if you are working with the re-frame app
 

@@ -1,27 +1,44 @@
 (ns re-frisk.core
   (:require [reagent.core :as r]
-            [re-frisk.data :refer [re-frame-events re-frame-data initialized]]
+            [reagent.ratom :refer-macros [reaction]]
+            [re-frisk.data :refer [re-frame-events re-frame-data initialized deb-data]]
             [re-frisk.devtool :as d]
             [re-frisk.ui :as ui]
-            [datafrisk.core :as f]
+            [re-frame.registrar :refer [kind->id->handler]]
             [re-frame.core :refer [reg-sub reg-event-db subscribe] :as rfr]))
 
 (defn post-event-callback [value]
-  (swap! re-frame-events conj value))
+  (let [cntx ((first value) (:contexts @deb-data))]
+    (swap! re-frame-events conj
+           (if cntx
+             (assoc cntx :event value)
+             value))))
 
 (defn- render-re-frisk [params]
   (let [div (js/document.createElement "div")]
     (js/document.body.appendChild div)
+    (set! js/window.onbeforeunload #(when (:win @deb-data) (.alert (:win @deb-data) "Application has been closed or refreshed. Debugger has been stoped!")))
     (r/render [ui/re-frisk-shell re-frame-data (merge {:on-click d/open-debugger-window} params)] div)))
 
 (defn enable-re-frisk! [& params]
   (when-not @initialized
-    (do
+    (let [prefs (first params)
+          event (reaction (into {} (map (fn [a] (hash-map (first a) (map #(merge {(:id %) "id"} (when (:before %) {:before "fn"}) (when (:after %) {:after "fn"})) (second a))))
+                                        (filter #(not= (key %) :re-frisk/update-db) @(reaction (:event @kind->id->handler))))))
+          sub (reaction (into {} (map #(let [k (first %)]
+                                         (hash-map k (subscribe [k])))
+                                      (filter #(not= (first %) ::db) @(reaction (:sub @kind->id->handler))))))]
       (reg-sub ::db (fn [db _] db))
-      (reset! re-frame-data {:app-db (subscribe [::db])})
+      (reset! re-frame-data {:handlers {:event {(count @event) event}
+                                        :sub {(count @sub) sub}
+                                        :fx (reaction (keys (:fx @kind->id->handler)))
+                                        :cofx (reaction (keys (:cofx @kind->id->handler)))}
+                             :app-db (subscribe [::db])})
       (reset! initialized true)
-      (rfr/add-post-event-callback post-event-callback)
-      (js/setTimeout render-re-frisk 100 (first params)))))
+      (swap! deb-data assoc :prefs prefs)
+      (when-not (= (:events? prefs) false)
+        (rfr/add-post-event-callback post-event-callback))
+      (js/setTimeout render-re-frisk 100 prefs))))
 
 (defn enable-frisk! [& params]
   (when-not @initialized
@@ -30,17 +47,22 @@
       (js/setTimeout render-re-frisk 100 (first params)))))
 
 (defn add-data [key data]
-  (when @initialized
-    (swap! re-frame-data assoc key data)))
+    (swap! re-frame-data assoc key data))
 
 (defn add-in-data [keys data]
-  (when @initialized
-    (swap! re-frame-data assoc-in keys data)))
+    (swap! re-frame-data assoc-in keys data))
+
+(def watch-context
+  (re-frame.core/->interceptor
+    :id      :re-frisk-watch-context
+    :before  (fn [context]
+               (swap! deb-data assoc-in [:contexts (-> context :coeffects :event first) :before] context)
+               context)))
 
 (defn reg-view [view subs events]
   (when (:app-db @re-frame-data)
     (do
-      (swap! re-frame-data assoc-in [:views view :events] events)
+      (swap! re-frame-data assoc-in [:views view :events] (set events))
       (swap! re-frame-data assoc-in [:views view :subs] (into {} (map #(hash-map % (subscribe [%])) subs)))
       (doseq [s subs]
         (swap! re-frame-data assoc-in [:subs s] (subscribe [s]))))))
