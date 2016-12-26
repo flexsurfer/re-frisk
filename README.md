@@ -73,6 +73,11 @@ Also you can watch interceptor's context providing `re-frisk.core/watch-context`
   (assoc db :timer value)))
 ```
 
+### re-frame 6-domino cascade and re-frisk
+
+[<img src="https://docs.google.com/drawings/d/1ptKAIPfb_gtwwSqYmt-JGTkwPVm_6LeWjjm-FcWznBs/pub?w=1786&amp;h=916">](
+https://docs.google.com/drawings/d/1ptKAIPfb_gtwwSqYmt-JGTkwPVm_6LeWjjm-FcWznBs/edit?usp=sharing)
+
 ### Settings
 
 You can provide starting position for the re-frisk panel
