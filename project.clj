@@ -13,21 +13,21 @@
                  [data-frisk-reagent "0.3.5"]
                  [com.cognitect/transit-cljs "0.8.239"]]
 
-  :plugins [[lein-cljsbuild "1.1.3" :exclusions [[org.clojure/clojure]]]]
+  :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
 
   :source-paths ["src"]
 
-  :clean-targets ^{:protect false} ["devresources/public/js/compiled" "target"]
-
+  :clean-targets ^{:protect false} ["resources/re-frisk/js/compiled" "target"]
+  :figwheel {:http-server-root "re-frisk"}
   :cljsbuild {:builds
               [{:id "dev"
                 :source-paths ["src" "dev"]
                 :figwheel {:on-jsload "re-frisk.demo/on-js-reload"}
 
                 :compiler {:main re-frisk.demo
-                           :asset-path "js/compiled/out"
-                           :output-to "devresources/public/js/compiled/re_frisk.js"
-                           :output-dir "devresources/public/js/compiled/out"
+                           :asset-path "js/compiled/out/re-frisk"
+                           :output-to "resources/re-frisk/js/compiled/re_frisk.js"
+                           :output-dir "resources/re-frisk/js/compiled/out/re-frisk"
                            :source-map-timestamp true
                            :preloads [devtools.preload]
                            :external-config {:re-frisk {:enabled true}}}}
@@ -36,9 +36,9 @@
                 :source-paths ["src" "dev"]
                 :figwheel {:on-jsload "re-frisk.reagent_demo/on-js-reload"}
                 :compiler {:main re-frisk.reagent-demo
-                           :asset-path "js/compiled/out"
-                           :output-to "devresources/public/js/compiled/re_frisk_reagent.js"
-                           :output-dir "devresources/public/js/compiled/out"
+                           :asset-path "js/compiled/out/reagent"
+                           :output-to "resources/re-frisk/js/compiled/re_frisk_reagent.js"
+                           :output-dir "resources/re-frisk/js/compiled/out/reagent"
                            :source-map-timestamp true
                            :preloads [devtools.preload]}}]}
 

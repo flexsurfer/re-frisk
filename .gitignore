@@ -13,3 +13,4 @@ pom.xml
 .nrepl-port
 .idea/
 re-frisk.iml
+resources/re-frisk/js/
