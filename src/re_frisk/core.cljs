@@ -18,7 +18,7 @@
 (defn- render-re-frisk [params]
   (let [div (js/document.createElement "div")]
     (js/document.body.appendChild div)
-    (set! js/window.onbeforeunload #(when (:win @deb-data) (.alert (:win @deb-data) "Application has been closed or refreshed. Debugger has been stoped!")))
+    (set! js/window.onbeforeunload #(when (:win @deb-data) (.alert (:win @deb-data) "Application has been closed or refreshed. Debugger has been stopped!")))
     (r/render [ui/re-frisk-shell re-frame-data (merge {:on-click d/open-debugger-window} params)] div)))
 
 (defn enable-re-frisk! [& params]
