@@ -41,7 +41,7 @@ Select a different port by supplying the port number on the command line:
     $ lein re-frisk 8095
 
 
-Add `[re-frisk-remote "0.4.0"]` to the dev `:dependencies` in your project.clj
+Add `[re-frisk-remote "0.4.1"]` to the dev `:dependencies` in your project.clj
                                 
 run re-frisk after document will be loaded and before any rendering calls, using `enable-re-frisk-remote!` function on the localhost and default port (4567)
 
@@ -64,8 +64,7 @@ Select a different host and port by supplying the host and port number:
 
 Run an application
 
-#### Important, an application will not work if you do not start the server. Will be fixed in the next version! Contributions are welcomed!
-
+ENJOY!
 
 
 ### web applications with re-frame
