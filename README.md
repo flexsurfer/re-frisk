@@ -62,8 +62,10 @@ Select a different host and port by supplying the host and port number:
 (enable-re-frisk-remote! {:host "192.168.1.1:8095"})
 ```
 
-Run an application,
-Enjoy!
+Run an application
+
+#### Important, an application will not work if you do not start the server. Will be fixed in the next version! Contributions are welcomed!
+
 
 
 ### web applications with re-frame
