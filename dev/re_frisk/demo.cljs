@@ -20,6 +20,7 @@
 
 (def initial-state
  {:timer (js/Date.)
+  :jsobj js/setInterval
   :time-color "#f88"
   :clock? true})
 
@@ -137,6 +138,6 @@
 (defn ^:export run
  []
  (dispatch-sync [:initialize-db])
- (enable-re-frisk!)
+ (enable-re-frisk! {:kind->id->handler? true})
  (mount))
 

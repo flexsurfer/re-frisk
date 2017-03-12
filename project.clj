@@ -1,4 +1,4 @@
-(defproject re-frisk "0.3.2"
+(defproject re-frisk "0.4.4"
   :description "Visualize re-frame pattern data in your re-frame apps as a tree structure."
   :url "https://github.com/flexsurfer/re-frisk"
   :license {:name "MIT"
@@ -10,10 +10,11 @@
                  [org.clojure/clojurescript "1.9.89"]
                  [reagent "0.6.0"]
                  [re-frame "0.8.0"]
-                 [data-frisk-reagent "0.3.5"]
+                 [re-frisk-shell "0.4.4"]
                  [com.cognitect/transit-cljs "0.8.239"]]
 
-  :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
+  :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]
+            [lein-figwheel "0.5.9"]]
 
   :source-paths ["src"]
 
@@ -31,7 +32,6 @@
                            :source-map-timestamp true
                            :preloads [devtools.preload]
                            :external-config {:re-frisk {:enabled true}}}}
-
                {:id "reagent"
                 :source-paths ["src" "dev"]
                 :figwheel {:on-jsload "re-frisk.reagent_demo/on-js-reload"}

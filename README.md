@@ -1,21 +1,82 @@
 # re-frisk
 
-Visualize [re-frame](https://github.com/Day8/re-frame) pattern data or [reagent](https://reagent-project.github.io) ratom data as a [tree structure](https://github.com/Odinodin/data-frisk-reagent).
+Visualize [re-frame](https://github.com/Day8/re-frame) pattern data or [reagent](https://reagent-project.github.io) ratom data as a tree structure, watch re-frame events and export state.
 
-Also you can watch re-frame events and export state in the debugger.
 <img src="img/re-frisk-debugger.gif">
 
-## Setup
+## Changes
 
-[![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
+### 0.4.4
 
-Add `[re-frisk "0.3.2"]` to the dev `:dependencies` in your project.clj
+- Remote debugger for react native and electron
+- app-db cljs live filter
+- сompatibility with previous versions of re-frame
 
 
 ## Usage
 
-### re-frame
-run re-frisk after document will be loaded and before any rendering calls, using `enable-re-frisk!` function
+### web, react native, electron applications with re-frame 
+
+Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://github.com/flexsurfer/lein-re-frisk)
+
+Add `[lein-re-frisk "0.4.4"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
+
+```clojure
+{:user {:plugins [[lein-re-frisk "0.4.4"]]}}
+```
+
+or into the :plugins vector of your project.clj
+
+```clojure
+(defproject your-project "0.1.1"
+  {:plugins [[lein-re-frisk "0.4.4"]]})
+```
+
+Start a web server in the current directory on the default port (4567):
+
+    $ lein re-frisk
+
+Select a different port by supplying the port number on the command line:
+
+    $ lein re-frisk 8095
+
+
+Add `[re-frisk-remote "0.4.0"]` to the dev `:dependencies` in your project.clj
+                                
+run re-frisk after document will be loaded and before any rendering calls, using `enable-re-frisk-remote!` function on the localhost and default port (4567)
+
+```clojure
+(:require [re-frisk-remote.core :refer [enable-re-frisk-remote!]])
+
+(defn ^:export run
+ []
+ (dispatch-sync [:initialize])
+ (enable-re-frisk-remote!)
+ (reagent/render [simple-example]
+                 (js/document.getElementById "app")))
+```
+
+Select a different host and port by supplying the host and port number:
+
+```clojure
+(enable-re-frisk-remote! {:host "192.168.1.1:8095"})
+```
+
+Run an application,
+Enjoy!
+
+
+### web applications with re-frame
+
+In-app re-frisk debugger 
+
+You don't need leiningen plugin for using this version.
+ 
+[![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
+ 
+Add `[re-frisk "0.4.4"]` to the dev `:dependencies` in your project.clj
+
+Run re-frisk after document will be loaded and before any rendering calls, using `enable-re-frisk!` function
 
 ```clojure
 (:require [re-frisk.core :refer [enable-re-frisk!]])
@@ -43,6 +104,12 @@ If you want to watch ratom or log any data, you can add it using `add-data` or `
 (add-data :data-key your-data)
 
 (add-in-data [:data-key1  :data-key2] your-data)
+```
+
+### re-frame handlers
+
+```clojure
+(enable-re-frisk! {:kind->id->handler? true})
 ```
 
 ### Debugger
@@ -138,6 +205,6 @@ If you are using `reagent.core/create-class` function for creating views, data f
 
 ## License
 
-Copyright © 2016 Shovkoplyas Andrey [motor4ik]
+Copyright © 2016-2017 Shovkoplyas Andrey [motor4ik]
 
 Distributed under the MIT License (MIT)
