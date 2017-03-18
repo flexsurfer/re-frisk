@@ -19,10 +19,10 @@ Visualize [re-frame](https://github.com/Day8/re-frame) pattern data or [reagent]
 
 Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://github.com/flexsurfer/lein-re-frisk)
 
-Add `[lein-re-frisk "0.4.4"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
+Add `[lein-re-frisk "0.4.5"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
 
 ```clojure
-{:user {:plugins [[lein-re-frisk "0.4.4"]]}}
+{:user {:plugins [[lein-re-frisk "0.4.5"]]}}
 ```
 
 or into the :plugins vector of your project.clj
