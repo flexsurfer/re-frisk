@@ -96,6 +96,8 @@ Run an application
 
 ENJOY!
 
+See also [Using re-frisk with re-natal](https://github.com/flexsurfer/re-frisk/wiki/Using-re-frisk-with-re-natal)
+
 ### re-frame handlers
 
 You can also watch all re-frame subscriptions and events
