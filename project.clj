@@ -1,4 +1,4 @@
-(defproject re-frisk "0.4.4"
+(defproject re-frisk "0.4.5"
   :description "Visualize re-frame pattern data in your re-frame apps as a tree structure."
   :url "https://github.com/flexsurfer/re-frisk"
   :license {:name "MIT"
@@ -10,7 +10,7 @@
                  [org.clojure/clojurescript "1.9.89"]
                  [reagent "0.6.0"]
                  [re-frame "0.8.0"]
-                 [re-frisk-shell "0.4.4"]
+                 [re-frisk-shell "0.4.5"]
                  [com.cognitect/transit-cljs "0.8.239"]]
 
   :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]

@@ -19,7 +19,7 @@
     (.appendChild (.-body js/document) div)
     (set! js/onbeforeunload
           #(when (:win @deb-data)
-             (.alert (:win @deb-data) "Application has been closed or refreshed. Debugger has been stoped!")))
+             (.alert (:win @deb-data) "Application has been closed or refreshed. Debugger has been stopped!")))
     (reagent/render [ui/re-frisk-shell re-frame-data deb-data (merge {:on-click dev/open-debugger-window} params)] div)))
 
 (defn enable-re-frisk! [& [{:keys [kind->id->handler?] :as opts}]]
