@@ -20,6 +20,7 @@
 
 (def initial-state
  {:timer (js/Date.)
+  :form1 true
   :jsobj js/setInterval
   :time-color "#f88"
   :clock? true})
@@ -59,6 +60,12 @@
     ;; new value
     [{db :db} [_ value]]
     {:db (assoc db :clock? value)}))
+
+(reg-event-db
+  ::change-form
+  (fn [db _]
+    (update db :form1 not)))
+
 ;; -- Subscription Handlers ---------------------------------------------------
 
 
@@ -67,6 +74,12 @@
  (fn
   [db _]             ;; db is the value currently in the app-db atom
   (:timer db)))
+
+(reg-sub
+  :form1?
+  (fn
+    [db _]             ;; db is the value currently in the app-db atom
+    (:form1 db)))
 
 
 (reg-sub
@@ -115,17 +128,30 @@
              :value @time-color
              :on-change #(dispatch [:time-color (-> % .-target .-value)])}]])))
 
+(defn form1 []
+  (fn []
+    (let [clock? (rf/subscribe [:clock?])]
+      [:div
+       [greeting "Hello world, it is now"]
+       (when @clock? [clock])
+       [color-input]])))
+
+(defn form2 []
+  (fn []
+    [:div "form2"]))
+
 (def-view simple-example
  []
  (reagent/create-class
    {
     :reagent-render (fn []
-                      (let [clock? (rf/subscribe [:clock?])]
+                      (let [form1? (subscribe [:form1?])]
                         [:div
-                         [greeting "Hello world, it is now"]
-                         (when @clock? [clock])
-                         [color-input]]))}))
-
+                         (if @form1?
+                           [form1]
+                           [form2])
+                         [:div]
+                         [:div {:on-click #(dispatch [::change-form])} "change form"]]))}))
 (defn mount []
   (reagent/render [simple-example]
                   (js/document.getElementById "app")))
@@ -138,6 +164,5 @@
 (defn ^:export run
  []
  (dispatch-sync [:initialize-db])
- (enable-re-frisk! {:kind->id->handler? true})
  (mount))
 

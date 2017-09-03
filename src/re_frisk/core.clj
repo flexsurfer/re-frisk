@@ -1,8 +1,8 @@
 (ns re-frisk.core
   (:require [cljs.env]))
 
-;TODO: implement reactions
-;TODO: events should be set not vector
+;TODO: OUTDATED (Not supproted)
+
 (defmacro def-view [fname params body]
   (if (and @cljs.env/*compiler* (get-in @cljs.env/*compiler* [:options :external-config :re-frisk :enabled]))
     (let [v (keyword (str (:name (:ns &env)) "/" (name fname)))
