@@ -142,7 +142,6 @@ Also you can watch interceptor's context providing `re-frisk.core/watch-context`
 
 Export works only for the cljs [data structures](https://github.com/cognitect/transit-cljs#default-type-mapping).
 
-<img src="img/debugger.png">
 
 ### re-frame 6-domino cascade and re-frisk
 
