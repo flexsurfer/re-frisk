@@ -71,7 +71,7 @@ Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://gi
     `$ lein re-frisk 8095`
 
 
-3. Add `[re-frisk-remote "0.5.0"]` to the dev `:dependencies` in your project.clj
+3. Add `[re-frisk-remote "0.5.1"]` to the dev `:dependencies` in your project.clj
                                 
     run re-frisk using `enable-re-frisk-remote!` function on the localhost and default port (4567)
     
