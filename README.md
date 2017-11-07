@@ -4,14 +4,6 @@ Visualize [re-frame](https://github.com/Day8/re-frame) pattern data or [reagent]
 
 <img src="img/re-frisk.png">
 
-## Support re-frisk
-
-If re-frisk makes your work with re-frame applications easier and you like it please take a moment and support it:
-
-💎BTC: 3K37vEEyBsKSat2rS74CXUA3LnVR9QPztD
-
-💎ETH: 0x612E124d922a6DE46953226965C8e773166891E9
-
 ## Usage
 
 ### Web application
@@ -20,13 +12,13 @@ In-app re-frisk debugger. The debugger will be embedded into the interface of yo
  
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
  
-1. Add re-frisk as a dev dependency by placing `[re-frisk "0.5.0"]` within `:profiles :dev :dependencies`. For example:
+1. Add re-frisk as a dev dependency by placing `[re-frisk "0.5.1"]` within `:profiles :dev :dependencies`. For example:
    
      ```cljs
      :profiles
         {:dev
            {:dependencies [[some-other-package  "0.0.0"]
-                           [re-frisk "0.5.0"]] }}
+                           [re-frisk "0.5.1"]] }}
      ```
 
 2. Locate the `:compiler` map under `:dev` and add:
@@ -49,17 +41,17 @@ ENJOY!
 
 Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://github.com/flexsurfer/lein-re-frisk) following next steps:
 
-1. Add `[lein-re-frisk "0.5.1"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
+1. Add `[lein-re-frisk "0.5.2"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
 
     ```cljs
-    {:user {:plugins [[lein-re-frisk "0.5.1"]]}}
+    {:user {:plugins [[lein-re-frisk "0.5.2"]]}}
     ```
     
     or into the `:plugins` vector of your project.clj
     
     ```cljs
     (defproject your-project "0.1.1"
-      {:plugins [[lein-re-frisk "0.5.1"]]})
+      {:plugins [[lein-re-frisk "0.5.2"]]})
     ```
 
 2. Start a web server in the current directory on the default port (4567):
@@ -175,6 +167,13 @@ reagent [dev/re_frisk/reagent_demo.cljs](https://github.com/flexsurfer/re-frisk/
 Works weird in the Internet Explorer which doesn't support css resize property.
 Debugger doesn't work in IE.
 
+## Support re-frisk
+
+If re-frisk makes your work with re-frame applications easier and you like it please take a moment and support it:
+
+💎BTC: 3K37vEEyBsKSat2rS74CXUA3LnVR9QPztD
+
+💎ETH: 0x612E124d922a6DE46953226965C8e773166891E9
 
 ## License
 
