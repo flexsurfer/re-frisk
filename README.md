@@ -12,13 +12,13 @@ In-app re-frisk debugger. The debugger will be embedded into the interface of yo
  
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
  
-1. Add re-frisk as a dev dependency by placing `[re-frisk "0.5.1"]` within `:profiles :dev :dependencies`. For example:
+1. Add re-frisk as a dev dependency by placing `[re-frisk "0.5.2"]` within `:profiles :dev :dependencies`. For example:
    
      ```cljs
      :profiles
         {:dev
            {:dependencies [[some-other-package  "0.0.0"]
-                           [re-frisk "0.5.1"]] }}
+                           [re-frisk "0.5.2"]] }}
      ```
 
 2. Locate the `:compiler` map under `:dev` and add:
