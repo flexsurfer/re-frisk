@@ -14,3 +14,4 @@ pom.xml
 .idea/
 re-frisk.iml
 resources/re-frisk/js/
+/resources/test/
