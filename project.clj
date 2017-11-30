@@ -10,11 +10,12 @@
                  [org.clojure/clojurescript "1.9.671"]
                  [reagent "0.7.0"]
                  [re-frame "0.10.1"]
-                 [re-frisk-shell "0.5.0"]
+                 [re-frisk-shell "100.500.0"]
                  [com.cognitect/transit-cljs "0.8.239"]]
 
   :plugins [[lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]
-            [lein-figwheel "0.5.13"]]
+            [lein-figwheel "0.5.13"]
+            [lein-doo "0.1.8"]]
 
   :source-paths ["src"]
 
@@ -41,7 +42,16 @@
                            :output-to "resources/re-frisk/js/compiled/re_frisk_reagent.js"
                            :output-dir "resources/re-frisk/js/compiled/out/reagent"
                            :source-map-timestamp true
-                           :preloads [devtools.preload]}}]}
+                           :preloads [devtools.preload]}}
+               {:id "test"
+                :source-paths ["src" "dev" "test"]
+                :compiler {:main re-frisk.test-runner
+                           :output-to "resources/test/test.js"
+                           :optimizations :none
+                           :target :nodejs}}]}
+
+  :doo {:build "test"
+        :alias {:default [:node]}}
 
   :profiles {:dev {:dependencies [[binaryage/devtools "0.7.2"]
                                   [figwheel-sidecar "0.5.4-7"]
