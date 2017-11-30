@@ -5,17 +5,22 @@
             [re-frame.db :refer [app-db]]
             [re-frame.subs :refer [query->reaction]]
             [re-frisk.data :as data]
-            [re-frisk.devtool :as devtool]))
+            [re-frisk.devtool :as devtool]
+            [re-frisk.diff :as diff]))
 
+(defn- app-db-diff []
+  (diff/diff @data/app-db-prev-event @(:app-db @data/re-frame-data)))
 
 (defn post-event-callback [value]
   (let [cntx (get (:contexts @data/deb-data) (first value))
-        indx (count @data/re-frame-events)]
+        indx (count @data/re-frame-events)
+        diff {:app-db-diff (app-db-diff)}]
+    (reset! data/app-db-prev-event @(:app-db @data/re-frame-data))
     (swap! data/re-frame-events conj
            (if cntx
-             (assoc cntx :event value
+             (assoc cntx :event (conj value diff)
                          :indx indx)
-             {:event value
+             {:event (conj value diff)
               :indx indx}))))
 
 (defn re-frame-sub [& rest]
