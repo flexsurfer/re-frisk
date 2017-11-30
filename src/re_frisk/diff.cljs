@@ -13,8 +13,8 @@
     (keys coll)
     (keep-indexed #(when-not (nil? %2) %1) coll)))
 
-(defn- diff-coll [kind a b]
-  (into {:changed kind}
+(defn- diff-coll [a b]
+  (into {}
         (for [key (set/union (set (mv-keys a)) (set (mv-keys b)))]
           (let [val-a (get a key)
                 val-b (get b key)]
@@ -25,8 +25,7 @@
               val-b [key val-b])))))
 
 (defn- diff-set [a b]
-  {:changed :set
-   :deleted (set/difference a b)
+  {:deleted (set/difference a b)
    :added (set/difference b a)})
 
 (defn- diff-rest [a b]
@@ -35,7 +34,7 @@
 (defn diff [a b]
   (cond
     (= a b) nil
-    (and (map? a) (map? b)) (diff-coll :map a b)
-    (and (vector? a) (vector? b)) (diff-coll :vector a b)
+    (and (map? a) (map? b)) (diff-coll a b)
+    (and (vector? a) (vector? b)) (diff-coll a b)
     (and (set? a) (set? b)) (diff-set a b)
     :else (diff-rest a b)))
