@@ -29,7 +29,7 @@
    :added (set/difference b a)})
 
 (defn- diff-rest [a b]
-  {:was a :now b})
+  {:before a :after b})
 
 (defn diff [a b]
   (cond
