@@ -14,14 +14,10 @@
 (defn post-event-callback [value]
   (let [cntx (get (:contexts @data/deb-data) (first value))
         indx (count @data/re-frame-events)
-        diff {:app-db-diff (app-db-diff)}]
+        diff (app-db-diff)]
     (reset! data/app-db-prev-event @(:app-db @data/re-frame-data))
     (swap! data/re-frame-events conj
-           (if cntx
-             (assoc cntx :event (conj value diff)
-                         :indx indx)
-             {:event (conj value diff)
-              :indx indx}))))
+           (assoc (or cntx {}) :event value :app-db-diff diff :indx indx))))
 
 (defn re-frame-sub [& rest]
   (reset! (:id-handler @data/re-frame-data)
