@@ -10,7 +10,7 @@
                  [org.clojure/clojurescript "1.9.671"]
                  [reagent "0.7.0"]
                  [re-frame "0.10.1"]
-                 [re-frisk-shell "100.500.0"]
+                 [re-frisk-shell "0.5.2"]
                  [com.cognitect/transit-cljs "0.8.239"]]
 
   :plugins [[lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]
