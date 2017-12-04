@@ -57,7 +57,7 @@
         doc js/document]
     (aset w "onunload" on-window-unload)
     (swap! data/deb-data assoc :deb-win-closed? false :doc d :win w :app app)
-    (reagent/render [:div  {:style {:height "100%"}}
+    (reagent/render [:div {:id "re-frisk-debugger" :style {:height "100%"}}
                      [:input {:type "file" :id "json-file-field" :on-change json-on-change :style {:display "none"}}]
                      [:div  {:style {:height "100%"}}
                       (if (and re-frame? (not= (:events? (:prefs @data/deb-data)) false))
