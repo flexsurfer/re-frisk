@@ -55,7 +55,7 @@
   (let [app (.getElementById d "app")
         re-frame? (:app-db @data/re-frame-data)
         doc js/document]
-    (aset w "onunload" on-window-unload)
+    (goog.object/set w "onunload" on-window-unload)
     (swap! data/deb-data assoc :deb-win-closed? false :doc d :win w :app app)
     (reagent/render [:div  {:style {:height "100%"}}
                      [:input {:type "file" :id "json-file-field" :on-change json-on-change :style {:display "none"}}]
@@ -78,7 +78,7 @@
         d (.-document w)]
     (.open d)
     (.write d html-doc)
-    (aset w "onload" #(mount w d))
+    (goog.object/set w "onload" #(mount w d))
     (.close d)))
 
 (defn visibility-button
