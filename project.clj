@@ -55,7 +55,8 @@
 
   :profiles {:dev {:dependencies [[binaryage/devtools "0.7.2"]
                                   [figwheel-sidecar "0.5.4-7"]
-                                  [com.cemerick/piggieback "0.2.1"]]
+                                  [com.cemerick/piggieback "0.2.1"]
+                                  [org.clojure/test.check "0.9.0"]]
                    ;; need to add dev source path here to get user.clj loaded
                    :source-paths ["src" "dev"]
                    ;; for CIDER
