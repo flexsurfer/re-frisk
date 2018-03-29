@@ -167,13 +167,6 @@ reagent [dev/re_frisk/reagent_demo.cljs](https://github.com/flexsurfer/re-frisk/
 Works weird in the Internet Explorer which doesn't support css resize property.
 Debugger doesn't work in IE.
 
-## Support re-frisk
-
-If re-frisk makes your work with re-frame applications easier and you like it please take a moment and support it:
-
-💎BTC: 3K37vEEyBsKSat2rS74CXUA3LnVR9QPztD
-
-💎ETH: 0x612E124d922a6DE46953226965C8e773166891E9
 
 ## License
 
