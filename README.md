@@ -37,21 +37,21 @@ In-app re-frisk debugger. The debugger will be embedded into the interface of yo
       
 ENJOY!
 
-### React native, Electron and Web applications using re-frisk remote server 
+### React Native, Electron or Web using re-frisk remote server with the [re-frame-10x](https://github.com/Day8/re-frame-10x) support
 
 Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://github.com/flexsurfer/lein-re-frisk) following next steps:
 
-1. Add `[lein-re-frisk "0.5.5"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
+1. Add `[lein-re-frisk "0.5.7"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
 
     ```cljs
-    {:user {:plugins [[lein-re-frisk "0.5.5"]]}}
+    {:user {:plugins [[lein-re-frisk "0.5.7"]]}}
     ```
     
     or into the `:plugins` vector of your project.clj
     
     ```cljs
     (defproject your-project "0.1.1"
-      {:plugins [[lein-re-frisk "0.5.5"]]})
+      {:plugins [[lein-re-frisk "0.5.7"]]})
     ```
 
 2. Start a web server in the current directory on the default port (4567):
@@ -62,8 +62,7 @@ Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://gi
 
     `$ lein re-frisk 8095`
 
-
-3. Add `[re-frisk-remote "0.5.3"]` to the dev `:dependencies` in your project.clj
+3. Add `[re-frisk-remote "0.5.5"]` to the dev `:dependencies` in your project.clj
                                 
     run re-frisk using `enable-re-frisk-remote!` function on the localhost and default port (4567)
     
@@ -72,7 +71,7 @@ Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://gi
     
     (enable-re-frisk-remote!)
     ```
-    
+        
     Or select a different host and port by supplying the host and port number:
     
     ```cljs
@@ -80,6 +79,13 @@ Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://gi
     ```
     
     This is just an example, it's better to enable re-frisk in the dev environment
+    
+    If you want to use re-frame-10x, localhost:4567/10x will be available
+    
+    ```cljs
+    (enable-re-frisk-remote! {:enable-re-frame-10x? true})
+    ```
+    
 
 Run an application
 
