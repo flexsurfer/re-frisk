@@ -41,17 +41,17 @@ ENJOY!
 
 Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://github.com/flexsurfer/lein-re-frisk) following next steps:
 
-1. Add `[lein-re-frisk "0.5.7"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
+1. Add `[lein-re-frisk "0.5.8"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
 
     ```cljs
-    {:user {:plugins [[lein-re-frisk "0.5.7"]]}}
+    {:user {:plugins [[lein-re-frisk "0.5.8"]]}}
     ```
     
     or into the `:plugins` vector of your project.clj
     
     ```cljs
     (defproject your-project "0.1.1"
-      {:plugins [[lein-re-frisk "0.5.7"]]})
+      {:plugins [[lein-re-frisk "0.5.8"]]})
     ```
 
 2. Start a web server in the current directory on the default port (4567):
