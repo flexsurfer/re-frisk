@@ -36,13 +36,15 @@
                            :external-config {:re-frisk {:enabled true}}}}
                {:id "reagent"
                 :source-paths ["src" "dev"]
-                :figwheel {:on-jsload "re-frisk.reagent_demo/on-js-reload"}
+                :figwheel {:on-jsload "re-frisk.reagent_demo/on-js-reload"
+                           :open-urls ["http://localhost:3449/reagent.html"]}
                 :compiler {:main re-frisk.reagent-demo
                            :asset-path "js/compiled/out/reagent"
                            :output-to "resources/re-frisk/js/compiled/re_frisk_reagent.js"
                            :output-dir "resources/re-frisk/js/compiled/out/reagent"
                            :source-map-timestamp true
-                           :preloads [devtools.preload]}}
+                           :preloads [devtools.preload
+                                      frisk.preload]}}
                {:id "test"
                 :source-paths ["src" "dev" "test"]
                 :compiler {:main re-frisk.test-runner
