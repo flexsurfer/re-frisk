@@ -4,18 +4,18 @@
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
 
-  :min-lein-version "2.6.1"
+  :min-lein-version "2.9.0"
 
-  :dependencies [[org.clojure/clojure "1.9.0-RC1"]
-                 [org.clojure/clojurescript "1.9.946"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.520"]
                  [reagent "0.7.0"]
                  [re-frame "0.10.1"]
                  [re-frisk-shell "0.5.2"]
-                 [com.cognitect/transit-cljs "0.8.243"]]
+                 [com.cognitect/transit-cljs "0.8.256"]]
 
   :plugins [[lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]
-            [lein-figwheel "0.5.13"]
-            [lein-doo "0.1.8"]]
+            [lein-figwheel "0.5.18"]
+            [lein-doo "0.1.11"]]
 
   :source-paths ["src"]
 
@@ -24,8 +24,8 @@
   :cljsbuild {:builds
               [{:id "dev"
                 :source-paths ["src" "dev"]
-                :figwheel {:on-jsload "re-frisk.demo/on-js-reload"}
-
+                :figwheel {:on-jsload "re-frisk.demo/on-js-reload"
+                           :open-urls ["http://localhost:3449/index.html"]}
                 :compiler {:main re-frisk.demo
                            :asset-path "js/compiled/out/re-frisk"
                            :output-to "resources/re-frisk/js/compiled/re_frisk.js"
@@ -55,16 +55,8 @@
   :doo {:build "test"
         :alias {:default [:node]}}
 
-  :profiles {:dev {:dependencies [[binaryage/devtools "0.7.2"]
-                                  [figwheel-sidecar "0.5.4-7"]
-                                  [com.cemerick/piggieback "0.2.1"]
+  :profiles {:dev {:dependencies [[binaryage/devtools "0.9.10"]
+                                  [figwheel-sidecar "0.5.18"]
                                   [org.clojure/test.check "0.9.0"]]
                    ;; need to add dev source path here to get user.clj loaded
-                   :source-paths ["src" "dev"]
-                   ;; for CIDER
-                   ;; :plugins [[cider/cider-nrepl "0.12.0"]]
-                   :repl-options {; for nREPL dev you really need to limit output
-                                  :init (set! *print-length* 50)
-                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}})
-
-
+                   :source-paths ["src" "dev"]}})
