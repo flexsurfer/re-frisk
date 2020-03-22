@@ -6,15 +6,15 @@
 
   :min-lein-version "2.9.0"
 
-  :dependencies [[org.clojure/clojure "1.10.0"]
-                 [org.clojure/clojurescript "1.10.520"]
-                 [reagent "0.7.0"]
-                 [re-frame "0.10.1"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/clojurescript "1.10.597"]
+                 [reagent "0.10.0"]
+                 [re-frame "0.12.0"]
                  [re-frisk-shell "0.5.2"]
                  [com.cognitect/transit-cljs "0.8.256"]]
 
   :plugins [[lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]
-            [lein-figwheel "0.5.18"]
+            [lein-figwheel "0.5.19"]
             [lein-doo "0.1.11"]]
 
   :source-paths ["src"]
@@ -55,8 +55,8 @@
   :doo {:build "test"
         :alias {:default [:node]}}
 
-  :profiles {:dev {:dependencies [[binaryage/devtools "0.9.10"]
-                                  [figwheel-sidecar "0.5.18"]
-                                  [org.clojure/test.check "0.9.0"]]
+  :profiles {:dev {:dependencies [[binaryage/devtools "1.0.0"]
+                                  [figwheel-sidecar "0.5.19"]
+                                  [org.clojure/test.check "1.0.0"]]
                    ;; need to add dev source path here to get user.clj loaded
                    :source-paths ["src" "dev"]}})

@@ -1,6 +1,7 @@
 (ns re-frisk.devtool
   (:require-macros [re-frisk.slurp :refer [slurp]])
-  (:require [reagent.core :as reagent]
+  (:require [reagent.dom :as rdom]
+            [reagent.core :as reagent]
             [reagent.dom :as reagent-dom]
             [re-frisk.drag :as drag]
             [re-frame.core :refer [dispatch]]
@@ -57,7 +58,7 @@
         doc js/document]
     (goog.object/set w "onunload" on-window-unload)
     (swap! data/deb-data assoc :deb-win-closed? false :doc d :win w :app app)
-    (reagent/render [:div {:id "re-frisk-debugger" :style {:height "100%"}}
+    (rdom/render [:div {:id "re-frisk-debugger" :style {:height "100%"}}
                      [:input {:type "file" :id "json-file-field" :on-change json-on-change :style {:display "none"}}]
                      [:div  {:style {:height "100%"}}
                       (if (and re-frame? (not= (:events? (:prefs @data/deb-data)) false))
