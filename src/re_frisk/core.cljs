@@ -1,5 +1,6 @@
 (ns re-frisk.core
-  (:require [reagent.core :as reagent]
+  (:require [reagent.dom :as rdom]
+            [reagent.core :as reagent]
             [reagent.ratom :refer-macros [reaction]]
             [re-frame.core :refer [subscribe] :as re-frame]
             [re-frame.db :refer [app-db]]
@@ -37,7 +38,7 @@
              ;;TODO https://github.com/flexsurfer/re-frisk/issues/28
              (.alert (:win @data/deb-data) "Application has been closed or refreshed. Debugger has been stopped!")))
 
-    (reagent/render [devtool/re-frisk-shell params] div)))
+    (rdom/render [devtool/re-frisk-shell params] div)))
 
 
 ;;ENTRY
