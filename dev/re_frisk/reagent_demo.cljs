@@ -1,5 +1,6 @@
 (ns re-frisk.reagent-demo
   (:require [reagent.core :as r]
+            [reagent.dom :as rdom]
             [re-frisk.core :refer [add-data add-in-data]]))
 
 (defn atom-input [value]
@@ -20,5 +21,4 @@
 
 (defn ^:export run
   []
-  (r/render [shared-state]
-            (js/document.getElementById "app")))
+  (rdom/render [shared-state] (js/document.getElementById "app")))

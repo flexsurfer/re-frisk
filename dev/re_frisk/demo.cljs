@@ -1,6 +1,7 @@
 (ns re-frisk.demo
   (:require [re-frisk.core :refer [enable-re-frisk! enable-frisk! add-data] :refer-macros [def-view]]
             [reagent.core :as reagent]
+            [reagent.dom :as rdom]
             [re-frame.core :as rf :refer [reg-event-db
                                           reg-event-fx
                                           reg-cofx
@@ -9,8 +10,7 @@
                                           reg-sub
                                           dispatch
                                           dispatch-sync
-                                          subscribe]]
-            [reagent.interop :refer-macros [$ $!]])
+                                          subscribe]])
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (enable-console-print!)
@@ -153,8 +153,7 @@
                          [:div]
                          [:div {:on-click #(dispatch [::change-form])} "change form"]]))}))
 (defn mount []
-  (reagent/render [simple-example]
-                  (js/document.getElementById "app")))
+  (rdom/render [simple-example] (js/document.getElementById "app")))
 
 (defn on-js-reload []
   (mount))
