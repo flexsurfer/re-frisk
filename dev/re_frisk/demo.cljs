@@ -1,22 +1,23 @@
 (ns re-frisk.demo
-  (:require [re-frisk.core :refer [enable-re-frisk! enable-frisk! add-data] :refer-macros [def-view]]
-            [reagent.core :as reagent]
-            [reagent.dom :as rdom]
-            [re-frame.core :as rf :refer [reg-event-db
-                                          reg-event-fx
-                                          reg-cofx
-                                          inject-cofx
-                                          path
-                                          reg-sub
-                                          dispatch
-                                          dispatch-sync
-                                          subscribe]])
+  (:require [reagent.core :as reagent]
+            ;[reagent.dom :as rdom]
+            [re-frame.core :as re-frame])
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (enable-console-print!)
-;; trigger a dispatch every second
-(defonce time-updater (js/setInterval
-                       #(dispatch [:timer-db (js/Date.) "test"]) 1000))
+
+(def time-interval (atom nil))
+
+(re-frame/reg-fx
+ ::start-time
+ (fn []
+   (when @time-interval (js/clearInterval @time-interval))
+   (reset! time-interval (js/setInterval #(re-frame/dispatch [::timer-db (js/Date.) "test"]) 1000))))
+
+(re-frame/reg-fx
+ ::stop-time
+ (fn []
+   (when @time-interval (js/clearInterval @time-interval))))
 
 (def initial-state
  {:timer (js/Date.)
@@ -25,27 +26,24 @@
   :time-color "#f88"
   :clock? true})
 
-
 ;; -- Event Handlers ----------------------------------------------------------
 
-
-(reg-event-db                 ;; setup initial state
+(re-frame/reg-event-db                 ;; setup initial state
  :initialize-db                     ;; usage:  (dispatch [:initialize])
  (fn
   [db _]
   (merge db initial-state)))    ;; what it returns becomes the new state
 
 
-(reg-event-db
+(re-frame/reg-event-db
  :time-color                     ;; usage:  (dispatch [:time-color 34562])
- (path [:time-color])            ;; this is middleware
+ (re-frame/path [:time-color])            ;; this is middleware
  (fn
   [time-color [_ value]]        ;; path middleware adjusts the first parameter
   value))
 
-(reg-event-db
- :timer-db
- [re-frisk.core/watch-context]
+(re-frame/reg-event-db
+ ::timer-db
  (fn
   ;; the first item in the second argument is :timer the second is the
   ;; new value
@@ -53,7 +51,15 @@
   (assoc db :timer value)))    ;; return the new version of db
 
 
-(reg-event-fx
+(re-frame/reg-event-db
+ ::set-trace
+ (fn
+   ;; the first item in the second argument is :timer the second is the
+   ;; new value
+   [db [_ value]]
+   (update db :traces conj value)))    ;; return the new version of db
+
+(re-frame/reg-event-fx
   :clock?-db
   (fn
     ;; the first item in the second argument is :timer the second is the
@@ -61,52 +67,90 @@
     [{db :db} [_ value]]
     {:db (assoc db :clock? value)}))
 
-(reg-event-db
+(re-frame/reg-event-db
   ::change-form
   (fn [db _]
     (update db :form1 not)))
 
-;; -- Subscription Handlers ---------------------------------------------------
+(re-frame/reg-event-fx
+ ::start-time
+ (fn [_ _]
+   {::start-time nil}))
+
+(re-frame/reg-event-fx
+ ::stop-time
+ (fn [_ _]
+   {::stop-time nil}))
+
+(re-frame/reg-event-fx
+ ::change-db1
+ (fn [{db :db} _]
+   {:db (assoc db :change-db 1)}))
+
+(re-frame/reg-event-fx
+ ::change-db2
+ (fn [{db :db} _]
+   {:db (assoc db :change-db 2)}))
+
+(re-frame/reg-event-fx
+ ::change-db3
+ (fn [{db :db} _]
+   {:db (assoc db :change-db 3)}))
+
+(re-frame/reg-event-fx
+ ::do-nothing1
+ (fn [_ _]
+   nil))
+
+(re-frame/reg-event-fx
+ ::do-nothing2
+ (fn [_ _]
+   nil))
+
+(re-frame/reg-event-fx
+ ::do-nothing3
+ (fn [_ _]
+   nil))
+
+; -- Subscription Handlers ---------------------------------------------------
 
 
-(reg-sub
+(re-frame/reg-sub
  :timer
  (fn
   [db _]             ;; db is the value currently in the app-db atom
   (:timer db)))
 
-(reg-sub
+(re-frame/reg-sub
   :form1?
   (fn
     [db _]             ;; db is the value currently in the app-db atom
     (:form1 db)))
 
 
-(reg-sub
+(re-frame/reg-sub
  :time-color
  (fn
   [db _]
   (:time-color db)))
 
 
-(reg-sub
+(re-frame/reg-sub
   :clock?
   (fn
     [db _]
     (:clock? db)))
+
 ;; -- View Components ---------------------------------------------------------
 
-(def-view greeting
+(defn greeting
  [message]
  [:h1 message])
 
-
-(def-view clock
+(defn clock
  []
- (let [time-color (rf/subscribe [:time-color])
-       timer (rf/subscribe [:timer])
-       clock? (rf/subscribe [:clock?])
-       _ (add-data :test {:timer timer})]
+ (let [time-color (re-frame/subscribe [:time-color])
+       timer (re-frame/subscribe [:timer])]
   (fn clock-render
    []
    (let [time-str (-> @timer
@@ -116,21 +160,20 @@
          style {:style {:color @time-color}}]
     [:div.example-clock style time-str]))))
 
-
-(def-view color-input
+(defn color-input
  []
- (let [time-color (subscribe [:time-color])]
+ (let [time-color (re-frame/subscribe [:time-color])]
   (fn color-input-render
    []
    [:div.color-input
     "Time color:"
     [:input {:type "text"
              :value @time-color
-             :on-change #(dispatch [:time-color (-> % .-target .-value)])}]])))
+             :on-change #(re-frame/dispatch [:time-color (-> % .-target .-value)])}]])))
 
 (defn form1 []
   (fn []
-    (let [clock? (rf/subscribe [:clock?])]
+    (let [clock? (re-frame/subscribe [:clock?])]
       [:div
        [greeting "Hello world, it is now"]
        (when @clock? [clock])
@@ -140,20 +183,40 @@
   (fn []
     [:div "form2"]))
 
-(def-view simple-example
+(defn simple-example
  []
  (reagent/create-class
    {
     :reagent-render (fn []
-                      (let [form1? (subscribe [:form1?])]
+                      (let [form1? (re-frame/subscribe [:form1?])]
                         [:div
                          (if @form1?
                            [form1]
                            [form2])
                          [:div]
-                         [:div {:on-click #(dispatch [::change-form])} "change form"]]))}))
+                         [:div {:style {:background-color "#CCCCCC" :width 150 :margin-top 10}
+                                :on-click #(re-frame/dispatch [::start-time])}
+                          "start time"]
+                         [:div {:style {:background-color "#CCCCCC" :width 150 :margin-top 10}
+                                :on-click #(re-frame/dispatch [::stop-time])}
+                          "stop time"]
+                         [:div {:style {:background-color "#CCCCCC" :width 150 :margin-top 10}
+                                :on-click #(re-frame/dispatch [::change-form])}
+                          "change form"]
+                         [:div {:style {:background-color "#CCCCCC" :width 150 :margin-top 10}
+                                :on-click #(do (re-frame/dispatch [::change-db1])
+                                               (re-frame/dispatch [::change-db2])
+                                               (re-frame/dispatch [::change-db3]))}
+                          "dispatch 3 events change app db"]
+                         [:div {:style {:background-color "#CCCCCC" :width 150 :margin-top 10}
+                                :on-click #(do (re-frame/dispatch [::do-nothing1])
+                                               (re-frame/dispatch [::do-nothing2])
+                                               (re-frame/dispatch [::do-nothing3]))}
+                          "dispatch 3 events doing nothing"]]))}))
+
 (defn mount []
-  (rdom/render [simple-example] (js/document.getElementById "app")))
+  (reagent/render [simple-example] (js/document.getElementById "app")))
+  ;(rdom/render [simple-example] (js/document.getElementById "app")))
 
 (defn on-js-reload []
   (mount))
@@ -162,6 +225,5 @@
 
 (defn ^:export run
  []
- (dispatch-sync [:initialize-db])
+ (re-frame/dispatch-sync [:initialize-db])
  (mount))
-

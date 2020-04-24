@@ -1,6 +1,6 @@
 (ns re-frisk.diff-test
   (:require [cljs.test :refer [deftest is]]
-            [re-frisk.diff :as sut]))
+            [re-frisk.diff.diff :as sut]))
 
 (deftest test-empty
   (is (= nil (sut/diff 1 1))))

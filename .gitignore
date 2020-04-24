@@ -1,4 +1,4 @@
-/resources/public/js/compiled/**
+/public/js/compiled/**
 figwheel_server.log
 pom.xml
 *jar
@@ -15,3 +15,7 @@ pom.xml
 re-frisk.iml
 resources/re-frisk/js/
 /resources/test/
+/public/client/js/
+/public/js/
+/node_modules/
+/.shadow-cljs/
