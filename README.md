@@ -81,6 +81,18 @@ When remote debugging on an Android device you might need to enable reverse sock
 ```bash
 adb reverse tcp:4567 tcp:4567
 ```
+### Enable traces
+
+shadow-cljs
+```clojure
+:compiler-options {:closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}}
+```
+
+OR
+
+```clojure
+:compiler         {:closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}}
+```
 
 ### Settings
 
