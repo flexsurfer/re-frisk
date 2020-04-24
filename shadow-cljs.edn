@@ -1,8 +1,8 @@
 {:source-paths ["src" "re-frisk/src" "dev" "test"]
 
- :dependencies [[reagent "0.9.1"]
+ :dependencies [[reagent "0.10.0"]
                 [re-frame "0.12.0"]
-                [re-com "2.7.0"]
+                [re-com "2.8.0"]
                 [org.clojure/test.check "1.0.0"]
                 ;;REMOTE
                 [ring/ring-core "1.8.0"]

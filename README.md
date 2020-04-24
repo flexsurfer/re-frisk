@@ -61,7 +61,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
     
     add in `deps.edn`
     
-    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.0.0"}}}}}`
+    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.1.0"}}}}}`
     
     create `re_frisk.clj`
     

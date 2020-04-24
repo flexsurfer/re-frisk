@@ -1,6 +1,6 @@
 (ns re-frisk.demo
   (:require [reagent.core :as reagent]
-            ;[reagent.dom :as rdom]
+            [reagent.dom :as rdom]
             [re-frame.core :as re-frame])
   (:require-macros [reagent.ratom :refer [reaction]]))
 
@@ -215,8 +215,7 @@
                           "dispatch 3 events doing nothing"]]))}))
 
 (defn mount []
-  (reagent/render [simple-example] (js/document.getElementById "app")))
-  ;(rdom/render [simple-example] (js/document.getElementById "app")))
+  (rdom/render [simple-example] (js/document.getElementById "app")))
 
 (defn on-js-reload []
   (mount))

@@ -1,16 +1,17 @@
 (ns re-frisk.ui.views
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require ;[reagent.dom :as rdom]
-            [reagent.core :as reagent]
-            [re-com.core :as re-com]
-            [re-frisk.db :as db]
-            [re-frisk.ui.events :as events]
-            [re-frisk.ui.components.splits :as splits]
-            [re-frisk.ui.components.frisk :as frisk]
-            [re-frisk.ui.style :as style]
-            [re-frisk.ui.components.drag :as drag]
-            [re-frisk.ui.external-hml :as external-hml]
-            [re-frisk.utils :as utils]))
+  (:require
+   [reagent.dom :as rdom]
+   [reagent.core :as reagent]
+   [re-com.core :as re-com]
+   [re-frisk.db :as db]
+   [re-frisk.ui.events :as events]
+   [re-frisk.ui.components.splits :as splits]
+   [re-frisk.ui.components.frisk :as frisk]
+   [re-frisk.ui.style :as style]
+   [re-frisk.ui.components.drag :as drag]
+   [re-frisk.ui.external-hml :as external-hml]
+   [re-frisk.utils :as utils]))
 
 (defn subs-view [subs checkbox-sorted-val]
   (let [state-atom (reagent/atom frisk/expand-by-default)]
@@ -74,14 +75,14 @@
 
 (defn on-external-window-unload [app]
   (fn []
-    (reagent/unmount-component-at-node app)
+    (rdom/unmount-component-at-node app)
     (swap! db/tool-state assoc :ext-win-opened? false)))
 
 (defn mount-external [window doc re-frame-data]
   (let [app (.getElementById doc "re-frisk-debugger-div")]
     (goog.object/set window "onunload" (on-external-window-unload app))
     (swap! db/tool-state assoc :ext-win-opened? true)
-    (reagent/render
+    (rdom/render
      [:div {:style {:height "100%"}}
       [external-main-view re-frame-data db/tool-state doc]]
      app)))
@@ -102,7 +103,7 @@
 (defn on-iframe-load [re-frame-data]
   (fn []
     (let [doc (.-contentDocument (.getElementById js/document "re-frisk-iframe"))]
-      (reagent/render
+      (rdom/render
        [:div {:style {:height "100%"}}
         [external-main-view re-frame-data db/tool-state doc]]
        (.getElementById doc "re-frisk-debugger-div")))))
@@ -141,4 +142,4 @@
           (str "position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none;"
                "margin:0; padding:0; z-index:999999999;pointer-events: none;"))
     (.appendChild (.-body js/document) div)
-    (reagent/render [inner-view re-frame-data] div)))
+    (rdom/render [inner-view re-frame-data] div)))

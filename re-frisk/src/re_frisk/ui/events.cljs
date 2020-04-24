@@ -1,13 +1,15 @@
 (ns re-frisk.ui.events
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [reagent.core :as reagent]                      ;[reagent.dom :as rdom]
-            [clojure.string :as string]
-            [re-com.core :as re-com]
-            [re-frisk.ui.components.frisk :as frisk]
-            [re-frisk.ui.components.components :as components]
-            [re-frisk.ui.components.github :as github]
-            [re-frisk.ui.trace :as trace]
-            [re-frisk.utils :as utils]))
+  (:require
+   [reagent.core :as reagent]
+   [reagent.dom :as rdom]
+   [clojure.string :as string]
+   [re-com.core :as re-com]
+   [re-frisk.ui.components.frisk :as frisk]
+   [re-frisk.ui.components.components :as components]
+   [re-frisk.ui.components.github :as github]
+   [re-frisk.ui.trace :as trace]
+   [re-frisk.utils :as utils]))
 
 (defn event-item [_ tool-state]
   (fn [{:keys [color name app-db-diff selected? op-type] :as item} _]
@@ -36,7 +38,7 @@
    {:display-name "debugger-messages"
     :component-did-update
     (fn [this]
-      (let [n (reagent/dom-node this)]
+      (let [n (rdom/dom-node this)]
         (when (:scroll-bottom? @tool-state)
           (set! (.-scrollTop n) (.-scrollHeight n)))))
     :reagent-render

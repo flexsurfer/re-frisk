@@ -1,7 +1,7 @@
 (ns re-frisk-remote.server.client.main
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require                                                 ;[reagent.dom :as rdom]
-   [reagent.core :as reagent]
+  (:require
+   [reagent.dom :as rdom]
    [taoensso.sente :as sente]
    [taoensso.sente.packers.transit :as sente-transit]
    [re-frisk.core :as re-frisk]
@@ -60,10 +60,8 @@
 
 (defn mount []
   (goog.object/set (.getElementById js/document "app") "innerHTML" external-hml/html-doc)
-  (reagent/render [ui/external-main-view re-frisk/re-frame-data db/tool-state js/document]
-                  (.getElementById js/document "re-frisk-debugger-div"))
-  #_(rdom/render [ui/external-main-view re-frisk/re-frame-data db/tool-state js/document]
-                 (.getElementById js/document "re-frisk-debugger-div")))
+  (rdom/render [ui/external-main-view re-frisk/re-frame-data db/tool-state js/document]
+               (.getElementById js/document "re-frisk-debugger-div")))
 
 ;ENTRY POINT
 (defn ^:export main [& [port]]
