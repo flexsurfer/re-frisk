@@ -1,174 +1,117 @@
 # re-frisk
 
-Visualize [re-frame](https://github.com/Day8/re-frame) pattern data or [reagent](https://reagent-project.github.io) ratom data as a tree structure, watch re-frame events and export state.
+Take the full control on your [re-frame](https://github.com/Day8/re-frame) application.
 
-<img src="img/re-frisk.png">
+<img src="re-frisk.png">
+
+## DEMO
+
+https://flexsurfer.github.io/conduit-re-frisk-demo/
 
 ## Usage
 
+**Important**: Please note the following compatibility table:
+
+re-frisk Version     | React Version     | Reagent Versions
+-------------------- | ----------------- | ----------------
+`1.1.0`              | React 16.13.0     | 0.10.x |
+`1.0.0`              | React 16.9.0      | 0.9.x |
+`0.5.3`              | React 16 - 16.8.6 | 0.8.x | 
+
 ### Web application
 
-In-app re-frisk debugger. The debugger will be embedded into the interface of your application.
- 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk)
+
+re-frisk will be embedded in the DOM of your application. So my suggestion is to use re-frisk-remote, it doesn't affect your application and has more features such as traces for rendering etc
  
-1. Add re-frisk as a dev dependency by placing `[re-frisk "0.5.5"]` within `:profiles :dev :dependencies`. For example:
-   
-     ```cljs
-     :profiles
-        {:dev
-           {:dependencies [[some-other-package  "0.0.0"]
-                           [re-frisk "0.5.5"]] }}
-     ```
+1. Add re-frisk as a dev dependency  `[re-frisk "1.1.0"]` 
 
-2. Locate the `:compiler` map under `:dev` and add:
-   
-     `:preloads             [re-frisk.preload]`
+2. Enable re-frisk
 
-    For example:
+    `:preloads  [re-frisk.preload]`
+
+    OR
     
-      ```cljs
-      {:builds
-         [{:id           "dev"
-           :source-paths ["src" "dev"]
-           :compiler     {...
-                          :preloads [re-frisk.preload]}}]}
-      ```
+    `(:require [re-frisk.core :as re-frisk])`
+    
+    `(re-frisk/enable)`
       
-ENJOY!
 
-### React Native, Electron or Web using re-frisk remote server with the [re-frame-10x](https://github.com/Day8/re-frame-10x) support
+### React Native, Electron or Web applications
 
-Run remote re-frisk debugger server using leiningen re-frisk [plugin](https://github.com/flexsurfer/lein-re-frisk) following next steps:
+[![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-1. Add `[lein-re-frisk "0.5.8"]` into your global Leiningen config (`~/.lein/profiles.clj`) like so:
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.1.0"]` 
 
-    ```cljs
-    {:user {:plugins [[lein-re-frisk "0.5.8"]]}}
+2. Enable re-frisk on default port (4567):
+
+    `:preloads [re-frisk-remote.preload]`
+
+    OR
+    
+    `(:require [re-frisk-remote.core :as re-frisk-remote])`
+    
+    `(re-frisk-remote/enable)`
+    
+3. Start re-frisk on default port (4567):
+
+    `shadow-cljs run re-frisk-remote.core/start`
+
+    OR
+    
+    add in `deps.edn`
+    
+    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.0.0"}}}}}`
+    
+    create `re_frisk.clj`
+    
+    ```clojure
+   (ns re-frisk
+     (:require [re-frisk-remote.core :as re-frisk-remote]))
+   
+   (re-frisk-remote/start)
     ```
     
-    or into the `:plugins` vector of your project.clj
-    
-    ```cljs
-    (defproject your-project "0.1.1"
-      {:plugins [[lein-re-frisk "0.5.8"]]})
-    ```
+    `clj -R:dev re_frisk.clj`
 
-2. Start a web server in the current directory on the default port (4567):
+Open re-frisk in a browser at http://localhost:4567
 
-    `$ lein re-frisk`
+When remote debugging on an Android device you might need to enable reverse socket connections on port 4567:
 
-    Or select a different port by supplying the port number on the command line:
-
-    `$ lein re-frisk 8095`
-
-3. Add `[re-frisk-remote "0.5.5"]` to the dev `:dependencies` in your project.clj
-                                
-    run re-frisk using `enable-re-frisk-remote!` function on the localhost and default port (4567)
-    
-    ```cljs
-    (:require [re-frisk-remote.core :refer [enable-re-frisk-remote!]])
-    
-    (enable-re-frisk-remote!)
-    ```
-        
-    Or select a different host and port by supplying the host and port number:
-    
-    ```cljs
-    (enable-re-frisk-remote! {:host "192.168.1.1:8095"})
-    ```
-    
-    This is just an example, it's better to enable re-frisk in the dev environment
-    
-    If you want to use re-frame-10x, localhost:4567/10x will be available
-    
-    ```cljs
-    (enable-re-frisk-remote! {:enable-re-frame-10x? true})
-    ```
-    
-
-Run an application
-
-ENJOY!
-
-See also [Using re-frisk with re-natal](https://github.com/flexsurfer/re-frisk/wiki/Using-re-frisk-with-re-natal)
+```bash
+adb reverse tcp:4567 tcp:4567
+```
 
 ### Settings
 
-You can provide starting position for the re-frisk panel
+External window dimensions
 
-```cljs
-(enable-re-frisk! {:x 100 :y 500})
-
-(enable-frisk! {:x 100 :y 500})
+```clojure
+(re-frisk/enable {:ext_height 1000 :ext_width 1200})
 ```
 
-also, it will be helpful for the IE, because it doesn't support resize property, you can provide width and height
+If you don't need to watch events you can disable them
 
-```cljs
-(enable-re-frisk! {:width "400px" :height "400px"})
-
-(enable-frisk! {:width "400px" :height "400px"})
+```clojure
+(re-frisk/enable {:events? false})
 ```
 
-You can provide external window dimensions
+Using custom IP or port
 
-```cljs
-(enable-re-frisk! {:ext_height 1000 :ext_width 1200})
+```clojure
+(re-frisk-remote/enable {:host "192.168.0.2:7890"})
+
+(re-frisk-remote/start {"7890"})
 ```
 
-### Events
+Normalize app-db before send to re-frisk
 
-If you don't want to watch events you can turn it off providing settings `{:events? false}`
-
-```cljs
-(enable-re-frisk! {:events? false})
+```clojure
+(re-frisk-remote/enable {:normalize-db-fn (fn [app-db] (reduce ...))})
 ```
 
-Also you can watch interceptor's context providing `re-frisk.core/watch-context` in the reg-event interceptors list
 
-```cljs
-(reg-event-db
- :timer-db
- [re-frisk.core/watch-context]
- (fn
-  [db [_ value]]
-  (assoc db :timer value)))
-```
-
-### Export and Import state of your re-frame application
-
-Export works only for the cljs [data structures](https://github.com/cognitect/transit-cljs#default-type-mapping).
-
-
-### re-frame 6-domino cascade and re-frisk
+### bonus re-frame 6-domino cascade
 
 [<img src="https://docs.google.com/drawings/d/1ptKAIPfb_gtwwSqYmt-JGTkwPVm_6LeWjjm-FcWznBs/pub?w=1786&amp;h=916">](
 https://docs.google.com/drawings/d/1ptKAIPfb_gtwwSqYmt-JGTkwPVm_6LeWjjm-FcWznBs/edit?usp=sharing)
-
-
-### reagent
-If you are not using re-frame in your app, you can run re-frisk without re-frame by `enable-frisk!` function
-
-```cljs
-(enable-frisk!)
-```
-
-If you want to watch ratom or log any data, you can add it using `add-data` or `add-in-data` functions
-
-```cljs
-(add-data :data-key your-data)
-
-(add-in-data [:data-key1  :data-key2] your-data)
-```
-
-
-### For more
-
-re-frame [dev/re_frisk/demo.cljs](https://github.com/flexsurfer/re-frisk/blob/master/dev/re_frisk/demo.cljs).
-reagent [dev/re_frisk/reagent_demo.cljs](https://github.com/flexsurfer/re-frisk/blob/master/dev/re_frisk/reagent_demo.cljs).
-
-### Known issues
-
-Works weird in the Internet Explorer which doesn't support css resize property.
-Debugger doesn't work in IE.

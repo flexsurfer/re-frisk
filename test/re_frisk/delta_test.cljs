@@ -3,7 +3,7 @@
             [clojure.test.check.generators :as gen]
             [clojure.test.check]
             [clojure.test.check.properties :as prop :include-macros true]
-            [re-frisk.delta :as sut]))
+            [re-frisk-remote.delta.delta :as delta]))
 
 ;; NaNs make everything hard, and break clojure.core/=
 (defn nonans [a]
@@ -18,4 +18,4 @@
 (ct/defspec delta-patch-is-identity
   {:num-tests 10000 :max-size 15}
   (prop/for-all [a any-no-nan b any-no-nan]
-                (= (sut/apply a (sut/delta a b)) b)))
+                (= (delta/apply a (delta/delta a b)) b)))

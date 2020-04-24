@@ -1,0 +1,19 @@
+{
+  "name": "re-frisk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flexsurfer/re-frisk"
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "shadow-cljs watch dev",
+    "dev-remote": "shadow-cljs watch dev-remote",
+    "client": "shadow-cljs watch client",
+    "client-release": "shadow-cljs release client-release",
+    "test": "shadow-cljs compile test"
+  },
+  "dependencies": {
+    "react": "16.13.0",
+    "react-dom": "16.13.0"
+  }
+}

@@ -1,62 +1,23 @@
-(defproject re-frisk "0.5.5"
-  :description "Visualize re-frame pattern data in your re-frame apps as a tree structure."
+(defproject re-frisk-remote "1.0.0"
+  :description "Take the full control on your re-frame app"
   :url "https://github.com/flexsurfer/re-frisk"
   :license {:name "MIT"
-            :url "https://opensource.org/licenses/MIT"}
-
-  :min-lein-version "2.9.0"
-
+            :url  "https://opensource.org/licenses/MIT"}
+  :source-paths ["src" "dev" "re-frisk/src"]
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.597"]
-                 [reagent "0.10.0"]
+                 ;[reagent "0.10.0"]
+                 [reagent "0.9.1"]
                  [re-frame "0.12.0"]
-                 [re-frisk-shell "0.5.3"]
-                 [com.cognitect/transit-cljs "0.8.256"]]
-
-  :plugins [[lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]
-            [lein-figwheel "0.5.19"]
-            [lein-doo "0.1.11"]]
-
-  :source-paths ["src"]
-
-  :clean-targets ^{:protect false} ["resources/re-frisk/js/compiled" "target"]
-  :figwheel {:http-server-root "re-frisk"}
-  :cljsbuild {:builds
-              [{:id "dev"
-                :source-paths ["src" "dev"]
-                :figwheel {:on-jsload "re-frisk.demo/on-js-reload"
-                           :open-urls ["http://localhost:3449/index.html"]}
-                :compiler {:main re-frisk.demo
-                           :asset-path "js/compiled/out/re-frisk"
-                           :output-to "resources/re-frisk/js/compiled/re_frisk.js"
-                           :output-dir "resources/re-frisk/js/compiled/out/re-frisk"
-                           :source-map-timestamp true
-                           :preloads [devtools.preload
-                                      re-frisk.preload]
-                           :external-config {:re-frisk {:enabled true}}}}
-               {:id "reagent"
-                :source-paths ["src" "dev"]
-                :figwheel {:on-jsload "re-frisk.reagent_demo/on-js-reload"
-                           :open-urls ["http://localhost:3449/reagent.html"]}
-                :compiler {:main re-frisk.reagent-demo
-                           :asset-path "js/compiled/out/reagent"
-                           :output-to "resources/re-frisk/js/compiled/re_frisk_reagent.js"
-                           :output-dir "resources/re-frisk/js/compiled/out/reagent"
-                           :source-map-timestamp true
-                           :preloads [devtools.preload
-                                      frisk.preload]}}
-               {:id "test"
-                :source-paths ["src" "dev" "test"]
-                :compiler {:main re-frisk.test-runner
-                           :output-to "resources/test/test.js"
-                           :optimizations :none
-                           :target :nodejs}}]}
-
-  :doo {:build "test"
-        :alias {:default [:node]}}
-
-  :profiles {:dev {:dependencies [[binaryage/devtools "1.0.0"]
-                                  [figwheel-sidecar "0.5.19"]
-                                  [org.clojure/test.check "1.0.0"]]
-                   ;; need to add dev source path here to get user.clj loaded
-                   :source-paths ["src" "dev"]}})
+                 ;[re-com "2.8.0"]
+                 [re-com "2.7.0"]
+                 ;;REMOTE
+                 [ring/ring-core "1.8.0"]
+                 [ring-cors "0.1.8"]
+                 [http-kit "2.2.0"]
+                 [com.taoensso/sente "1.11.0"]
+                 [compojure "1.5.2"]
+                 [com.cognitect/transit-clj  "0.8.319"]
+                 [com.cognitect/transit-cljs "0.8.256"]
+                 [javax.servlet/servlet-api "2.5"]
+                 [org.clojure/core.async "0.7.559"]])
