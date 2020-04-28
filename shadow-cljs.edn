@@ -12,8 +12,7 @@
                 [compojure "1.6.1"]
                 [com.cognitect/transit-clj "0.8.319"]
                 [com.cognitect/transit-cljs "0.8.256"]
-                [javax.servlet/servlet-api "2.5"]
-                [org.clojure/core.async "0.7.559"]]
+                [javax.servlet/servlet-api "2.5"]]
 
  :builds       {:dev            {:target           :browser
                                  :output-dir       "public/js"
@@ -37,7 +36,7 @@
                                               :after-load re-frisk.demo/on-js-reload
                                               :preloads   [re-frisk-remote.preload]
                                               :http-root  "public"
-                                              :http-port  3000}}
+                                              :http-port  3001}}
 
                 :client         {:target     :browser
                                  :output-dir "public/client/js"
@@ -46,7 +45,7 @@
                                  :devtools   {:autoload   true
                                               :after-load re-frisk-remote.server.client.main/on-js-reload
                                               :http-root  "public/client"
-                                              :http-port  3000}}
+                                              :http-port  3002}}
 
                 :client-release {:target     :browser
                                  :output-dir "resources/public/js"

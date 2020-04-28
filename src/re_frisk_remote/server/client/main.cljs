@@ -33,10 +33,12 @@
       (swap! db/tool-state assoc :subs-delta-error true))))
 
 (defn update-events [{:keys [event op-type] :as value}]
-  (let [value (assoc value :indx (count @(:events re-frisk/re-frame-data)))]
+  (let [events @(:events re-frisk/re-frame-data)
+        first-event (first events)
+        value (assoc value :indx (count events))]
     (swap! (:events re-frisk/re-frame-data)
            conj (if op-type
-                  (trace/normalize-durations value)
+                  ((trace/normalize-durations (or first-event value)) value)
                   (assoc value :truncated-name (utils/truncate-name (str (first event))))))))
 
 ;SENTE HANDLERS
@@ -59,6 +61,7 @@
     :noop))
 
 (defn mount []
+  (swap! db/tool-state assoc :doc js/document)
   (goog.object/set (.getElementById js/document "app") "innerHTML" external-hml/html-doc)
   (rdom/render [ui/external-main-view re-frisk/re-frame-data db/tool-state js/document]
                (.getElementById js/document "re-frisk-debugger-div")))

@@ -1,4 +1,4 @@
-(defproject re-frisk "1.1.0"
+(defproject re-frisk "1.2.0"
   :description "Take the full control on your re-frame app"
   :url "https://github.com/flexsurfer/re-frisk"
   :license {:name "MIT"

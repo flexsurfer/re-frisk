@@ -1,5 +1,7 @@
 (ns re-frisk.ui.trace
-  (:require [re-frisk.ui.components.components :as components]))
+  (:require-macros [reagent.ratom :refer [reaction]])
+  (:require [re-frisk.ui.components.components :as components]
+            [re-frisk.utils :as utils]))
 
 (def sub-colors
   {:sub/run     "#219653"
@@ -8,7 +10,7 @@
    :render      "#007CC2"})
 
 (defn subs-count [label val color duration-ms]
-  [:div {:style {:display :flex :align-items :center :margin-right 10
+  [:div {:style {:display        :flex :align-items :center :margin-right 10
                  :flex-direction :column}}
    label
    [:div {:style {:display :flex :align-items :center}}
@@ -53,20 +55,22 @@
        render-count])]])
 
 (defn trace-item [{:keys [op-type]} tool-state]
-  (when-not (= op-type :re-frame.router/fsm-trigger)
-    (fn [{:keys [selected? op-type] :as item} _]
-      [:a
-       {:href     "#"
-        :class    (str "list-group-item" (when selected? " active"))
-        :style    {:padding           0 :font-size 11 :opacity "0.7"
-                   :border-left-width 2 :white-space :pre :width "100%"}
-        :on-click (fn [event]
-                    (swap! tool-state assoc :selected-event item)
-                    (.preventDefault event))}
-       (if (= :subs op-type)
-         [subs-item item]
-         [:div {:style {:display :flex :flex-direction :row :flex 1 :justify-content :space-between}}
-          [:div (str op-type)]])])))
+  ;(when-not (= op-type :re-frame.router/fsm-trigger)
+  (fn [{:keys [selected? op-type indx] :as item} _]
+    [:a
+     {:href     "#"
+      :id       (str "events-list-item" indx)
+      :class    (str "list-group-item" (when selected? " active"))
+      :style    {:padding           0 :font-size 11 :opacity "0.7"
+                 :border-left-width 2 :white-space :pre :width "100%"}
+      :on-click (fn [event]
+                  (swap! tool-state assoc :selected-event item)
+                  (utils/scroll-timeline-event-item (:doc @tool-state) indx)
+                  (.preventDefault event))}
+     (if (= :subs op-type)
+       [subs-item item]
+       [:div {:style {:display :flex :flex-direction :row :flex 1 :justify-content :space-between}}
+        [:div (str op-type)]])]))
 
 (defn trace-event-item [{:keys [name duration-ms]}]
   [:div {:style {:display :flex :flex-direction :row :flex 1 :justify-content :space-between :align-items :center}}

@@ -14,7 +14,7 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 
 re-frisk Version     | React Version     | Reagent Versions
 -------------------- | ----------------- | ----------------
-`1.1.0`              | React 16.13.0     | 0.10.x |
+`^1.1.0`             | React 16.13.0     | 0.10.x |
 `1.0.0`              | React 16.9.0      | 0.9.x |
 `0.5.3`              | React 16 - 16.8.6 | 0.8.x | 
 
@@ -24,7 +24,7 @@ re-frisk Version     | React Version     | Reagent Versions
 
 re-frisk will be embedded in the DOM of your application. So my suggestion is to use re-frisk-remote, it doesn't affect your application and has more features such as traces for rendering etc
  
-1. Add re-frisk as a dev dependency  `[re-frisk "1.1.0"]` 
+1. Add re-frisk as a dev dependency  `[re-frisk "1.2.0"]` 
 
 2. Enable re-frisk
 
@@ -41,7 +41,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-1. Add re-frisk as a dev dependency `[re-frisk-remote "1.1.0"]` 
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.2.0"]` 
 
 2. Enable re-frisk on default port (4567):
 
@@ -61,7 +61,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
     
     add in `deps.edn`
     
-    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.1.0"}}}}}`
+    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.2.0"}}}}}`
     
     create `re_frisk.clj`
     

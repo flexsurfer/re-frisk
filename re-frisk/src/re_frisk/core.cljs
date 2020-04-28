@@ -23,11 +23,14 @@
   (reset! (:app-db re-frame-data) @db/app-db))
 
 (defn trace-cb [traces]
-  (swap! (:events re-frame-data)
-         concat (->> traces
-                    (trace/normalize-traces)
-                    (map trace/normalize-durations)))
-  (utils/call-and-chill update-db-and-subs 500))
+  (let [normalized (trace/normalize-traces traces)
+        first-event (first @(:events re-frame-data))]
+    (swap! (:events re-frame-data)
+           concat
+           (map (trace/normalize-durations (or first-event
+                                               (first normalized)))
+                normalized))
+    (utils/call-and-chill update-db-and-subs 500)))
 
 (defn- post-event-callback [value queue]
   (let [app-db @db/app-db

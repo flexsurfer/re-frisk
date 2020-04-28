@@ -2,8 +2,9 @@
 
 (defn small-button
   ([label] (small-button {} label))
-  ([{:keys [on-click]} label]
-   [:a {:class "btn btn-primary btn-xs" :on-click on-click} label]))
+  ([{:keys [on-click active?] :or {active? true}} label]
+   [:a {:class (str "btn btn-xs" (when active? " btn-primary"))
+        :on-click on-click} label]))
 
 (defn scroller
   ([div] (scroller {} div))

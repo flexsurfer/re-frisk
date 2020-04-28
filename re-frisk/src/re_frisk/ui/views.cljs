@@ -11,7 +11,9 @@
    [re-frisk.ui.style :as style]
    [re-frisk.ui.components.drag :as drag]
    [re-frisk.ui.external-hml :as external-hml]
-   [re-frisk.utils :as utils]))
+   [re-frisk.utils :as utils]
+   [re-frisk.ui.timeline :as timeline]
+   [re-frisk.ui.components.components :as components]))
 
 (defn subs-view [subs checkbox-sorted-val]
   (let [state-atom (reagent/atom frisk/expand-by-default)]
@@ -64,10 +66,19 @@
                              ;; EVENT
                              :panel-2 [events/event-view tool-state]]]]])))
 
+(defn controls [tool-state]
+  [re-com/h-box :style {:background-color "#4e5d6c"}
+   :children
+   [[components/small-button {:on-click #(swap! tool-state update :timeline-opened? not)
+                              :active? (:timeline-opened? @tool-state)}
+     "Timeline"]]])
+
 (defn external-main-view [re-frame-data tool-state & [doc]]
   [re-com/v-box :height "100%"
    :children
-   [[splits/h-split :size "1" :initial-split "25" :document doc
+   [[timeline/timeline-visibility re-frame-data tool-state]
+    [controls tool-state]
+    [splits/h-split :size "1" :initial-split "25" :document doc
      ;;EVENTS
      :panel-1 [events/events-view re-frame-data tool-state]
      ;;MAIN (subs, app-db, event)
@@ -81,7 +92,7 @@
 (defn mount-external [window doc re-frame-data]
   (let [app (.getElementById doc "re-frisk-debugger-div")]
     (goog.object/set window "onunload" (on-external-window-unload app))
-    (swap! db/tool-state assoc :ext-win-opened? true)
+    (swap! db/tool-state assoc :ext-win-opened? true :doc doc)
     (rdom/render
      [:div {:style {:height "100%"}}
       [external-main-view re-frame-data db/tool-state doc]]
@@ -103,6 +114,7 @@
 (defn on-iframe-load [re-frame-data]
   (fn []
     (let [doc (.-contentDocument (.getElementById js/document "re-frisk-iframe"))]
+      (swap! db/tool-state assoc :doc doc)
       (rdom/render
        [:div {:style {:height "100%"}}
         [external-main-view re-frame-data db/tool-state doc]]

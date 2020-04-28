@@ -12,9 +12,10 @@
    [re-frisk.utils :as utils]))
 
 (defn event-item [_ tool-state]
-  (fn [{:keys [color name app-db-diff selected? op-type] :as item} _]
+  (fn [{:keys [color name app-db-diff selected? op-type indx] :as item} _]
     [:a
      {:href     "#"
+      :id       (str "events-list-item" indx)
       :class    (str "list-group-item" (when selected? " active"))
       :style    (merge {:padding     5 :font-size 13 :border-left-width 2
                         :white-space :pre :width "100%"}
@@ -22,7 +23,10 @@
                          {:opacity "0.7"})
                        (when-not (string/blank? color)
                          {:border-left-color (str "#" color)}))
-      :on-click (fn [event] (swap! tool-state assoc :selected-event item) (.preventDefault event))}
+      :on-click (fn [event]
+                  (swap! tool-state assoc :selected-event item)
+                  (utils/scroll-timeline-event-item (:doc @tool-state) indx)
+                  (.preventDefault event))}
      (if op-type
        [trace/trace-event-item item]
        [:span name])]))

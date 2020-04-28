@@ -61,3 +61,11 @@
     (reset! call-state nil)
     (when (= state :call)
       (call-and-chill handler time))))
+
+(defn scroll-timeline-event-item [doc indx]
+  (when-let [elem (.getElementById doc (str "timeline-event-item" indx))]
+    (.scrollIntoView elem #js {:inline "center"})))
+
+(defn scroll-event-list-item [doc indx]
+  (when-let [elem (.getElementById doc (str "events-list-item" indx))]
+    (.scrollIntoView elem #js {:block "center"})))

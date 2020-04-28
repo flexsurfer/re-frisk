@@ -25,4 +25,10 @@
    ;Events colors set by user
    :events-colors      nil
    ;re-frame trace enabled
-   :trace?             (trace/is-trace-enabled?)}))
+   :trace?             (trace/is-trace-enabled?)
+   ;js documant
+   :doc                nil
+   ;timeline opened
+   :timeline-opened?   false
+   ;timeline zoom
+   :timeline-zoom      0.1}))
