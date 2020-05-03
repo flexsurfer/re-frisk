@@ -5,7 +5,8 @@
 (defonce
  tool-state
  (reagent/atom
-  {;; Internal tool
+  {;; INTERNAL TOOL
+
    ;External window opened
    :ext-win-opened?    false
    ;Latest opened position
@@ -13,11 +14,15 @@
    ;Options provided by user {:ext_height :ext_width :events?}
    :opts               nil
 
-   ;; External tool
+   ;; EXTERNAL TOOL
+
    :app-db-delta-error false
    :subs-delta-error   false
 
-   ;; Common
+   ;; COMMON
+
+   ;Listening paused
+   :paused?            false
    ;Selected event {:event  :app-db-diff  :indx  :queue}
    :selected-event     nil
    ;Auto-scroll events to bottom
@@ -28,6 +33,10 @@
    :trace?             (trace/is-trace-enabled?)
    ;js documant
    :doc                nil
+   ;global subscriptions graph opened
+   :graph-opened?      false
+   ;event subs graph opened
+   :subs-graph-opened? false
    ;timeline opened
    :timeline-opened?   false
    ;timeline zoom

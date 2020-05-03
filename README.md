@@ -1,14 +1,45 @@
 # re-frisk
 
-Take the full control on your [re-frame](https://github.com/Day8/re-frame) application.
-
-<img src="re-frisk.png">
+Take full control of [re-frame](https://github.com/Day8/re-frame) application.
 
 ## DEMO
 
 https://flexsurfer.github.io/conduit-re-frisk-demo/
 
+## Features
+
+### Current state for app-db and subscriptions sorted by keys
+
+<img src="./img/feature-app-db.png" height="300">
+
+### Events with app-db difference for each event
+
+<img src="./img/feature-event.png" height="300">
+
+### re-frame tracing (**Important**: trace should be [enabled](https://github.com/flexsurfer/re-frisk#enable-traces))
+
+#### Events and timeline (**Important**: with lots of events and high zoom might be slow, pause or clear events when working with timeline)
+
+<img src="./img/feature-timeline.png" height="300">
+
+#### Subscriptions
+
+<img src="/img/feature-subs.png" height="300">
+
+#### Graph for an epoch
+
+<img src="/img/feature-event-subs-graph.png" height="300">
+
+#### Graph accumulated for an app life with weights (**Important**: with lots of subscriptions rendering might be slow!)
+
+<img src="/img/feature-subs-app-graph.png" height="300">
+
 ## Usage
+
+Latest stable version: [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk) [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
+
+`[re-frisk "1.3.0"]` 
+`[re-frisk-remote "1.3.1"]` 
 
 **Important**: Please note the following compatibility table:
 
@@ -24,7 +55,7 @@ re-frisk Version     | React Version     | Reagent Versions
 
 re-frisk will be embedded in the DOM of your application. So my suggestion is to use re-frisk-remote, it doesn't affect your application and has more features such as traces for rendering etc
  
-1. Add re-frisk as a dev dependency  `[re-frisk "1.2.0"]` 
+1. Add re-frisk as a dev dependency  `[re-frisk "1.3.0"]` 
 
 2. Enable re-frisk
 
@@ -41,7 +72,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-1. Add re-frisk as a dev dependency `[re-frisk-remote "1.2.0"]` 
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.3.1"]` 
 
 2. Enable re-frisk on default port (4567):
 
@@ -61,7 +92,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
     
     add in `deps.edn`
     
-    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.2.0"}}}}}`
+    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.3.1"}}}}}`
     
     create `re_frisk.clj`
     

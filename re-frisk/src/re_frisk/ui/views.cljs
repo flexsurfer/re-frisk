@@ -1,19 +1,16 @@
 (ns re-frisk.ui.views
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require
-   [reagent.dom :as rdom]
    [reagent.core :as reagent]
    [re-com.core :as re-com]
-   [re-frisk.db :as db]
    [re-frisk.ui.events :as events]
    [re-frisk.ui.components.splits :as splits]
    [re-frisk.ui.components.frisk :as frisk]
-   [re-frisk.ui.style :as style]
-   [re-frisk.ui.components.drag :as drag]
-   [re-frisk.ui.external-hml :as external-hml]
    [re-frisk.utils :as utils]
    [re-frisk.ui.timeline :as timeline]
-   [re-frisk.ui.components.components :as components]))
+   [re-frisk.ui.components.components :as components]
+   [re-frisk.ui.subs :as subs]
+   [re-frisk.ui.components.github :as github]))
 
 (defn subs-view [subs checkbox-sorted-val]
   (let [state-atom (reagent/atom frisk/expand-by-default)]
@@ -38,7 +35,7 @@
             [re-com/label :label "update error" :style {:margin-left "4px" :color "#df691a"}])]]
         [frisk/Root (utils/sort-map @app-db @checkbox-sorted-val checkbox-sorted-val) 0 state-atom]]])))
 
-(defn main-view [re-frame-data tool-state doc]
+(defn frisks-view [re-frame-data tool-state doc]
   (let [subs-checkbox-sorted-val (reagent/atom true)
         open-event-split?        (reaction (boolean (get @tool-state :selected-event)))]
     (fn [_ _ _]
@@ -57,101 +54,58 @@
                    ;; SUBS
                    :panel-1 [subs-view (:subs re-frame-data) subs-checkbox-sorted-val]
                    :panel-2 [splits/v-split :size "1" :initial-split "100" :style {:padding "0" :margin "0"}
-                             :document doc :open-bottom-split? open-event-split?
+                             :document doc :open-bottom-split? @open-event-split?
                              :panel-1 [re-com/v-box :size "1" :style {:background-color "#4e5d6c"}
                                        :children
                                        ;; APP-DB
                                        [[app-db-view (:app-db re-frame-data) tool-state]
                                         [events/event-bar tool-state]]]
                              ;; EVENT
-                             :panel-2 [events/event-view tool-state]]]]])))
+                             :panel-2 [events/frisk-view tool-state]]]]])))
 
-(defn controls [tool-state]
-  [re-com/h-box :style {:background-color "#4e5d6c"}
-   :children
-   [[components/small-button {:on-click #(swap! tool-state update :timeline-opened? not)
-                              :active? (:timeline-opened? @tool-state)}
-     "Timeline"]]])
+(defn controls [re-frame-data tool-state]
+  (let [{:keys [timeline-opened? paused? graph-opened?]}  @tool-state]
+    [re-com/h-box :style {:background-color "#4e5d6c"} :align :center
+     :children
+     [[components/label-button {:on-click #(swap! tool-state update :paused? not)
+                                :active? paused?}
+       (if paused? "Resume" "Pause")]
+      [re-com/gap :size "5px"]
+      [components/label-button
+       {:on-click #(do (reset! (:events re-frame-data) [])
+                       (swap! tool-state dissoc :selected-event))
+        :active? false}
+       "Clear"]
+      [re-com/gap :size "1"]
+      [components/label-button {:on-click #(do
+                                             (swap! tool-state assoc :graph-opened? false)
+                                             (swap! tool-state update :timeline-opened? not))
+                                :active? timeline-opened?}
+       "Timeline"]
+      [re-com/gap :size "5px"]
+      [components/label-button {:on-click #(do
+                                             (swap! tool-state assoc :timeline-opened? false)
+                                             (swap! tool-state update :graph-opened? not))
+                                :active? graph-opened?}
+       "Subs"]
+      [re-com/gap :size "15px"]
+      [github/link]
+      [re-com/gap :size "5px"]]]))
 
-(defn external-main-view [re-frame-data tool-state & [doc]]
-  [re-com/v-box :height "100%"
-   :children
-   [[timeline/timeline-visibility re-frame-data tool-state]
-    [controls tool-state]
-    [splits/h-split :size "1" :initial-split "25" :document doc
-     ;;EVENTS
-     :panel-1 [events/events-view re-frame-data tool-state]
-     ;;MAIN (subs, app-db, event)
-     :panel-2 [main-view re-frame-data tool-state doc]]]])
-
-(defn on-external-window-unload [app]
-  (fn []
-    (rdom/unmount-component-at-node app)
-    (swap! db/tool-state assoc :ext-win-opened? false)))
-
-(defn mount-external [window doc re-frame-data]
-  (let [app (.getElementById doc "re-frisk-debugger-div")]
-    (goog.object/set window "onunload" (on-external-window-unload app))
-    (swap! db/tool-state assoc :ext-win-opened? true :doc doc)
-    (rdom/render
-     [:div {:style {:height "100%"}}
-      [external-main-view re-frame-data db/tool-state doc]]
-     app)))
-
-(defn open-debugger-window [re-frame-data]
-  (fn []
-    (let [{:keys [ext_height ext_width]} (:opts @db/tool-state)
-          win (js/window.open "" "Debugger" (str "width=" (or ext_width 800)
-                                                 ",height=" (or ext_height 800)
-                                                 ",resizable=yes,scrollbars=yes,status=no"
-                                                 ",directories=no,toolbar=no,menubar=no"))
-          doc (.-document win)]
-      (.open doc)
-      (.write doc external-hml/html-doc)
-      (goog.object/set win "onload" #(mount-external win doc re-frame-data))
-      (.close doc))))
-
-(defn on-iframe-load [re-frame-data]
-  (fn []
-    (let [doc (.-contentDocument (.getElementById js/document "re-frisk-iframe"))]
-      (swap! db/tool-state assoc :doc doc)
-      (rdom/render
-       [:div {:style {:height "100%"}}
-        [external-main-view re-frame-data db/tool-state doc]]
-       (.getElementById doc "re-frisk-debugger-div")))))
-
-(defn inner-view [re-frame-data]
-  (let [ext-opened? (reaction (:ext-win-opened? @db/tool-state))
-        latest-left (reaction (:latest-left @db/tool-state))]
+(defn main-view [re-frame-data tool-state & [doc]]
+  (let [open-graph-split? (reaction (get @tool-state :graph-opened?))]
     (fn []
-      (when-not @ext-opened?
-        (let [left (or (utils/normalize-draggable (:x @drag/draggable))
-                       (- js/window.innerWidth 30))]
-          [:div {:style (style/inner-view-container left (:offset @drag/draggable))}
-           [:div {:style {:display :flex :flex-direction :column :opacity 0.3}}
-            [:div {:style    style/external-button
-                   :on-click (open-debugger-window re-frame-data)}
-             "\u2197"]
-            [:div {:style {:display :flex :flex 1 :justify-content :center :flex-direction :column}}
-             [:div {:style style/external-button
-                    :on-click #(let []
-                                 (when-not (utils/closed? left)
-                                   (swap! db/tool-state assoc :latest-left (- js/window.innerWidth left)))
-                                 (swap! drag/draggable assoc :x (- js/window.innerWidth
-                                                                   (if (utils/closed? left) @latest-left 30))))}
-              (if (utils/closed? left) "\u2b60" "\u2b62")]
-             [:div {:style style/dragg-button
-                    :on-mouse-down drag/mouse-down-handler}]]]
-           (when-not (utils/closed? left)
-             [:div {:style {:display :flex :flex 1 :width "100%" :height "100%"}}
-              [:iframe {:id "re-frisk-iframe" :src-doc external-hml/html-doc :width "100%" :height "100%"
-                        :style (if (:offset @drag/draggable) {:pointer-events :none} {:pointer-events :all})
-                        :on-load (on-iframe-load re-frame-data)}]])])))))
-
-(defn mount-internal [re-frame-data]
-  (let [div (.createElement js/document "div")]
-    (goog.object/set div "style"
-          (str "position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none;"
-               "margin:0; padding:0; z-index:999999999;pointer-events: none;"))
-    (.appendChild (.-body js/document) div)
-    (rdom/render [inner-view re-frame-data] div)))
+      [splits/v-split :height "100%" :initial-split "0" :document doc :style {:padding "0" :margin "0"}
+       :open-bottom-split? @open-graph-split? :close-bottom-split? (not @open-graph-split?)
+       :panel-1
+       [subs/subs-visibility re-frame-data tool-state]
+       :panel-2
+       [re-com/v-box :size "1"
+        :children
+        [[timeline/timeline-visibility re-frame-data tool-state]
+         [controls re-frame-data tool-state]
+         [splits/h-split :size "1" :initial-split "25" :document doc
+          ;;EVENTS
+          :panel-1 [events/events-list-view re-frame-data tool-state]
+          ;;MAIN (subs, app-db, event)
+          :panel-2 [frisks-view re-frame-data tool-state doc]]]]])))

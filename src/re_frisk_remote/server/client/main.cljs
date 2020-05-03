@@ -9,8 +9,8 @@
    [re-frisk.ui.views :as ui]
    [re-frisk.utils :as utils]
    [re-frisk-remote.delta.delta :as delta]
-   [re-frisk.ui.external-hml :as external-hml]
-   [re-frisk.trace :as trace]))
+   [re-frisk.trace :as trace]
+   [re-frisk.subs-graph :as subs-graph]))
 
 (defn update-app-db [val]
   (reset! (:app-db re-frisk/re-frame-data) val))
@@ -32,14 +32,17 @@
     (catch :default e
       (swap! db/tool-state assoc :subs-delta-error true))))
 
-(defn update-events [{:keys [event op-type] :as value}]
-  (let [events @(:events re-frisk/re-frame-data)
-        first-event (first events)
-        value (assoc value :indx (count events))]
-    (swap! (:events re-frisk/re-frame-data)
-           conj (if op-type
-                  ((trace/normalize-durations (or first-event value)) value)
-                  (assoc value :truncated-name (utils/truncate-name (str (first event))))))))
+(defn update-events [{:keys [event op-type subs?] :as value}]
+  (when-not (:paused? @db/tool-state)
+    (let [events @(:events re-frisk/re-frame-data)
+          first-event (first events)
+          value (assoc value :indx (count events))]
+      (swap! (:events re-frisk/re-frame-data)
+             conj (if op-type
+                    ((trace/normalize-durations (or first-event value)) value)
+                    (assoc value :truncated-name (utils/truncate-name (str (first event))))))
+      (when subs?
+        (subs-graph/update-subs [value])))))
 
 ;SENTE HANDLERS
 (defmulti -event-msg-handler "Multimethod to handle Sente `event-msg`s" :id)
@@ -62,15 +65,16 @@
 
 (defn mount []
   (swap! db/tool-state assoc :doc js/document)
-  (goog.object/set (.getElementById js/document "app") "innerHTML" external-hml/html-doc)
-  (rdom/render [ui/external-main-view re-frisk/re-frame-data db/tool-state js/document]
-               (.getElementById js/document "re-frisk-debugger-div")))
+  (subs-graph/init js/window js/document)
+  (rdom/render [ui/main-view re-frisk/re-frame-data db/tool-state js/document]
+               (.getElementById js/document "app")))
 
 ;ENTRY POINT
 (defn ^:export main [& [port]]
   (let [{:keys [chsk ch-recv state]}
         (sente/make-channel-socket-client!
          "/chsk"
+         nil
          {:type   :auto
           :host   (str "localhost:" (or port js/location.port))
           :packer (sente-transit/get-transit-packer)

@@ -1,18 +1,19 @@
 (ns re-frisk-remote.core
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.subs :as subs]
-            [re-frame.core :as re-frame]
-            [re-frame.db :as db]
-            [re-frisk.diff.diff :as diff]
-            [re-frisk-remote.delta.delta :as delta]
-            [taoensso.sente.packers.transit :as sente-transit]
-            [taoensso.sente :as sente]
-            [taoensso.timbre :as timbre]
-            [cognitect.transit :as transit]
-            [re-frame.trace]
-            [re-frisk.trace :as trace]
-            [reagent.impl.component]
-            [re-frisk.utils :as utils]))
+  (:require
+   [reagent.impl.component]
+   [re-frame.subs :as subs]
+   [re-frame.core :as re-frame]
+   [re-frame.db :as db]
+   [re-frame.trace]
+   [re-frisk.trace :as trace]
+   [re-frisk.utils :as utils]
+   [re-frisk.diff.diff :as diff]
+   [re-frisk-remote.delta.delta :as delta]
+   [taoensso.sente.packers.transit :as sente-transit]
+   [taoensso.sente :as sente]
+   [taoensso.timbre :as timbre]
+   [cognitect.transit :as transit]))
 
 ;; if there are no opened tool web clients we don't want to send any data
 ;; either nil (do not send), or a map with the following optional keys:
@@ -101,6 +102,7 @@
   (let [{:keys [send-fn ch-recv]}
         (sente/make-channel-socket-client!
          "/chsk"
+         nil
          {:type     :auto
           :host     host
           :protocol :http

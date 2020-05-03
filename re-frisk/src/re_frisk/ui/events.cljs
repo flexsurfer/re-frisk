@@ -7,9 +7,9 @@
    [re-com.core :as re-com]
    [re-frisk.ui.components.frisk :as frisk]
    [re-frisk.ui.components.components :as components]
-   [re-frisk.ui.components.github :as github]
    [re-frisk.ui.trace :as trace]
-   [re-frisk.utils :as utils]))
+   [re-frisk.utils :as utils]
+   [re-frisk.ui.subs :as subs]))
 
 (defn event-item [_ tool-state]
   (fn [{:keys [color name app-db-diff selected? op-type indx] :as item} _]
@@ -56,9 +56,9 @@
          ^{:key (str "item" (:indx item))}
          [event-list-item item tool-state])])}))
 
-(defn events-view [re-frame-data tool-state]
+(defn events-list-view [re-frame-data tool-state]
   (let [truncate-checkbox-val (reagent/atom true)
-        checkbox-trace-val    (reagent/atom true)
+        checkbox-trace-val    (reagent/atom false)
         text-val              (reagent/atom "")
         re-frame-events       (:events re-frame-data)
         colored-and-selected
@@ -101,27 +101,24 @@
            :on-change #(reset! checkbox-trace-val %)
            :label "traces"]]]
         ;events
-        [events-scroller filtered-events tool-state]
-        ;bottom buttons
-        [re-com/h-box :style {:padding-top 3} :align :center :justify :between :gap "5px"
-         :children
-         [[github/link]
-          [components/small-button
-           {:on-click #(do (reset! re-frame-events [])
-                           (swap! tool-state dissoc :selected-event))}
-           "clear"]]]]])))
+        [events-scroller filtered-events tool-state]]])))
 
 (defn event-bar [tool-state]
   (let [evnt-key (reaction (first (get-in @tool-state [:selected-event :event])))
         subs?    (reaction (get-in @tool-state [:selected-event :subs?]))
+        subs-graph-opened?  (reaction (get @tool-state :subs-graph-opened?))
         color    (reaction (if @evnt-key (@evnt-key (:events-colors @tool-state)) ""))]
     (fn []
-      [re-com/h-box :style {:background-color "#4e5d6c"}
+      [re-com/h-box :align :center :style {:background-color "#4e5d6c"}
        :children
        [[re-com/label :style {:margin "4px"}
          :label (cond @evnt-key "Event"
                       @subs? "Subscriptions"
                       :else "Event / Trace")]
+        (when @subs?
+          [components/label-button {:on-click #(swap! tool-state update :subs-graph-opened? not)
+                                    :active? @subs-graph-opened?}
+           "Graph"])
         (when @evnt-key
           [re-com/h-box
            :children
@@ -134,15 +131,18 @@
                                  [:events-colors @evnt-key]
                                  (-> % .-target .-value))}]]])]])))
 
-(defn event-view [tool-state]
+(defn frisk-view [tool-state]
   (let [state-atom (reagent/atom frisk/expand-by-default)]
     (fn [_]
-      (let [{:keys [event app-db-diff trace? duration-ms handler-duration-ms
+      (let [subs-graph-opened? (:subs-graph-opened? @tool-state)
+            {:keys [event app-db-diff trace? duration-ms handler-duration-ms
                     fx-duration-ms subs?] :as item}
             (:selected-event @tool-state)]
         (when item
           (if subs?
-            [trace/subs-details item]
+            (if subs-graph-opened?
+              [subs/event-subs-graph-container item]
+              [trace/subs-details item])
             [frisk/Root (if trace?
                           item
                           (merge {:event       event

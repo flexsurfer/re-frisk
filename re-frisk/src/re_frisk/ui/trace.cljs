@@ -1,13 +1,8 @@
 (ns re-frisk.ui.trace
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frisk.ui.components.components :as components]
-            [re-frisk.utils :as utils]))
-
-(def sub-colors
-  {:sub/run     "#219653"
-   :sub/create  "#9b51e0"
-   :sub/dispose "#f2994a"
-   :render      "#007CC2"})
+            [re-frisk.utils :as utils]
+            [re-frisk.ui.components.colors :as colors]))
 
 (defn subs-count [label val color duration-ms]
   [:div {:style {:display        :flex :align-items :center :margin-right 10
@@ -25,15 +20,15 @@
                  :padding 8 :flex-direction :column}}
    [:div {:style {:margin-top 8 :margin-bottom 8}} "Total time: " duration-ms]
    [:div {:style {:display :flex :flex-direction :row :margin-bottom 8}}
-    [subs-count "Created" created-count (get sub-colors :sub/create) created-duration-ms]
-    [subs-count "Run" run-count (get sub-colors :sub/run) run-duration-ms]
-    [subs-count "Disposed" disposed-count (get sub-colors :sub/dispose) disposed-duration-ms]
-    [subs-count "Render" render-count (get sub-colors :render) render-duration-ms]]
+    [subs-count "Created" created-count colors/sub-create created-duration-ms]
+    [subs-count "Run" run-count colors/sub-run run-duration-ms]
+    [subs-count "Disposed" disposed-count colors/sub-dispose disposed-duration-ms]
+    [subs-count "Render" render-count colors/render render-duration-ms]]
    [components/scroller
     (for [{:keys [id duration-ms op-type operation]} subs]
       ^{:key (str "item" id)}
       [:div {:style {:display :flex :flex-direction :row :flex 1 :justify-content :space-between}}
-       [:div {:style {:display :flex :min-width 100 :color (get sub-colors op-type)}} (str op-type)]
+       [:div {:style {:display :flex :min-width 100 :color (get colors/sub-colors op-type)}} (str op-type)]
        [:div {:style {:display :flex :min-width 100}} (str operation)]
        [:div duration-ms]])]])
 
@@ -43,15 +38,15 @@
    [:div {:style {:display :flex :flex-direction :row}}
     duration-ms
     (when-not (zero? created-count)
-      [:div {:style {:background-color (get sub-colors :sub/create) :margin-left 5}}
+      [:div {:style {:background-color colors/sub-create :margin-left 5}}
        created-count])
-    [:div {:style {:background-color (get sub-colors :sub/run) :margin-left 5}}
+    [:div {:style {:background-color colors/sub-run :margin-left 5}}
      run-count]
     (when-not (zero? disposed-count)
-      [:div {:style {:background-color (get sub-colors :sub/dispose) :margin-left 5}}
+      [:div {:style {:background-color colors/sub-dispose :margin-left 5}}
        disposed-count])
     (when-not (zero? render-count)
-      [:div {:style {:background-color (get sub-colors :render) :margin-left 5}}
+      [:div {:style {:background-color colors/render :margin-left 5}}
        render-count])]])
 
 (defn trace-item [{:keys [op-type]} tool-state]

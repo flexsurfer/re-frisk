@@ -3,6 +3,8 @@
   (:require [re-frisk.ui.components.components :as components]
             [re-frisk.utils :as utils]))
 
+(def timeout (atom nil))
+
 (defn change-zoom [tool-state inc?]
   (let [curr (:timeline-zoom @tool-state)]
     (when (or (and (not inc?) (>= curr 0.05))
@@ -12,7 +14,8 @@
                 (+ % (if (< curr 0.1) 0.01 curr))
                 (- % (if (<= curr 0.1) 0.01 (/ curr 2)))))
       (when-let [indx (get-in @tool-state [:selected-event :indx])]
-        (js/setTimeout #(utils/scroll-timeline-event-item (:doc @tool-state) indx)) 200))))
+        (when @timeout (js/clearTimeout @timeout))
+        (reset! timeout (js/setTimeout #(utils/scroll-timeline-event-item (:doc @tool-state) indx) 500))))))
 
 (defn buttons [tool-state]
   [:div {:style {:position :absolute :top 70 :left 0}}

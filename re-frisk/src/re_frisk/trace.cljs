@@ -7,7 +7,8 @@
             [reagent.impl.util :as util]
             [re-frame.interop :as interop]
             [clojure.string :as string]
-            [goog.object :as gob]))
+            [goog.object :as gob]
+            [re-frame.db :as db]))
 
 (defn component-name [c]
   (some-> c .-constructor .-displayName))
@@ -67,12 +68,15 @@
                 (:sub :render)
                 (let [prev  (peek items)
                       trace (select-keys trace [:id :op-type :operation :duration :start :end])
-                      trace (assoc trace :duration-ms (utils/str-ms (:duration trace)))]
+                      trace (assoc trace :duration-ms (utils/str-ms (:duration trace))
+                                         :reaction (:reaction tags)
+                                         :input-signals (:input-signals tags))]
                   (if (:subs? prev)
                     (conj (pop items) (update prev :subs conj trace))
                     (conj items (merge item
-                                       {:op-type :subs :subs? true :subs [trace]
-                                        :start (:start trace)}))))
+                                       {:op-type         :subs :subs? true :subs [trace]
+                                        :app-db-reaction (interop/reagent-id db/app-db)
+                                        :start           (:start trace)}))))
                 items)));(conj items (merge item trace)))))
           []
           (sort-by :id traces)))
