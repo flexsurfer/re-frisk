@@ -70,6 +70,7 @@
                       trace (select-keys trace [:id :op-type :operation :duration :start :end])
                       trace (assoc trace :duration-ms (utils/str-ms (:duration trace))
                                          :reaction (:reaction tags)
+                                         :cached? (:cached? tags)
                                          :input-signals (:input-signals tags))]
                   (if (:subs? prev)
                     (conj (pop items) (update prev :subs conj trace))
@@ -77,44 +78,49 @@
                                        {:op-type         :subs :subs? true :subs [trace]
                                         :app-db-reaction (interop/reagent-id db/app-db)
                                         :start           (:start trace)}))))
-                items)));(conj items (merge item trace)))))
+                items)))                                    ;(conj items (merge item trace)))))
           []
           (sort-by :id traces)))
 
 (defn normalize-durations [first-event]
   (fn [{:keys [subs? subs op-type handler-duration fx-duration start]
         :as   trace}]
-    (let [{:keys [duration handler-duration fx-duration start
+    (let [{:keys [duration handler-duration fx-duration start created-duration-cached
                   run-duration created-duration disposed-duration render-duration]
-           :as trace}
+           :as   trace}
           (cond
             subs?
             (merge trace
-                   (reduce (fn [acc {:keys [duration op-type end]}]
+                   (reduce (fn [acc {:keys [duration op-type end cached?]}]
                              (cond-> (update acc :duration + duration)
                                      :always
                                      (assoc :end end)
                                      (= op-type :sub/run)
                                      (-> (update :run-count inc)
                                          (update :run-duration + duration))
-                                     (= op-type :sub/create)
+                                     (and (= op-type :sub/create) (not cached?))
                                      (-> (update :created-count inc)
                                          (update :created-duration + duration))
+                                     (and (= op-type :sub/create) cached?)
+                                     (-> (update :created-count-cached inc)
+                                         (update :created-duration-cached + duration))
                                      (= op-type :sub/dispose)
                                      (-> (update :disposed-count inc)
                                          (update :disposed-duration + duration))
                                      (= op-type :render)
                                      (-> (update :render-count inc)
                                          (update :render-duration + duration))))
-                           {:duration          0
-                            :run-count         0
-                            :run-duration      0
-                            :render-count      0
-                            :render-duration   0
-                            :created-count     0
-                            :created-duration  0
-                            :disposed-count    0
-                            :disposed-duration 0}
+                           {:duration                0
+                            :run-count               0
+                            :run-duration            0
+                            :render-count            0
+                            :render-duration         0
+                            :created-count           0
+                            :created-duration        0
+                            :disposed-count          0
+                            :disposed-duration       0
+                            :created-count-cached    0
+                            :created-duration-cached 0}
                            subs))
             (= op-type :event)
             (let [handler-fx-duration (+ handler-duration fx-duration)]
@@ -133,6 +139,8 @@
               (assoc :run-duration-ms (utils/str-ms run-duration))
               created-duration
               (assoc :created-duration-ms (utils/str-ms created-duration))
+              created-duration-cached
+              (assoc :created-duration-cached-ms (utils/str-ms created-duration-cached))
               disposed-duration
               (assoc :disposed-duration-ms (utils/str-ms disposed-duration))
               render-duration

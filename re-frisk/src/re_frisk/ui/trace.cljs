@@ -15,20 +15,24 @@
     duration-ms]])
 
 (defn subs-details [{:keys [duration-ms run-count created-count disposed-count subs render-count
-                            run-duration-ms created-duration-ms disposed-duration-ms render-duration-ms]}]
+                            run-duration-ms created-duration-ms disposed-duration-ms render-duration-ms
+                            created-count-cached created-duration-cached-ms]}]
   [:div {:style {:display :flex :flex 1 :background-color "#f3f3f3" :color "#444444"
                  :padding 8 :flex-direction :column}}
    [:div {:style {:margin-top 8 :margin-bottom 8}} "Total time: " duration-ms]
    [:div {:style {:display :flex :flex-direction :row :margin-bottom 8}}
     [subs-count "Created" created-count colors/sub-create created-duration-ms]
+    [subs-count "Cached" created-count-cached colors/sub-create-cached created-duration-cached-ms]
     [subs-count "Run" run-count colors/sub-run run-duration-ms]
     [subs-count "Disposed" disposed-count colors/sub-dispose disposed-duration-ms]
     [subs-count "Render" render-count colors/render render-duration-ms]]
    [components/scroller
-    (for [{:keys [id duration-ms op-type operation]} subs]
+    (for [{:keys [id duration-ms op-type operation cached?]} subs]
       ^{:key (str "item" id)}
       [:div {:style {:display :flex :flex-direction :row :flex 1 :justify-content :space-between}}
-       [:div {:style {:display :flex :min-width 100 :color (get colors/sub-colors op-type)}} (str op-type)]
+       [:div {:style {:display :flex :min-width 100
+                      :color (get colors/sub-colors (if cached? :sub/create-cached op-type))}}
+        (str op-type)]
        [:div {:style {:display :flex :min-width 100}} (str operation)]
        [:div duration-ms]])]])
 

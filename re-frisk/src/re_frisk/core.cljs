@@ -20,13 +20,17 @@
           :events (reagent/atom [])
           :subs   (reagent/atom "not connected")})
 
+(defn get-subs []
+  (reduce-kv #(assoc %1 %2 (deref %3)) {} @subs/query->reaction))
+
 (defn update-db-and-subs []
-  (reset! (:subs re-frame-data) @subs/query->reaction)
+  ;;we need to deref all subscriptions, overwise they won't be deactivated
+  (reset! (:subs re-frame-data) (get-subs))
   (reset! (:app-db re-frame-data) @db/app-db))
 
 (defn trace-cb [traces]
   (when-not (:paused? @data/tool-state)
-    (let [normalized (trace/normalize-traces traces)
+    (let [normalized  (trace/normalize-traces traces)
           first-event (first @(:events re-frame-data))]
       (swap! (:events re-frame-data)
              concat
@@ -39,9 +43,9 @@
 (defn- post-event-callback [value queue]
   (when-not (:paused? @data/tool-state)
     (let [app-db @db/app-db
-          indx (count @(:events re-frame-data))
+          indx   (count @(:events re-frame-data))
           ;;This diff may be expensive
-          diff (diff/diff (:app-db @prev-event) app-db)]
+          diff   (diff/diff (:app-db @prev-event) app-db)]
       (reset! prev-event {:app-db app-db})
       (swap! (:events re-frame-data) conj {:event          value
                                            :app-db-diff    diff
@@ -50,10 +54,41 @@
                                            :truncated-name (utils/truncate-name (str (first value)))})
       (utils/call-and-chill update-db-and-subs 500))))
 
+(defn find-error-trace []
+  #_(select-keys
+     (:trace
+      (reduce (fn [acc {:keys [operation] :as trace}]
+                (cond-> (assoc acc :prev trace)
+                        (and (vector? operation) (= (last operation) :exception))
+                        (assoc :trace (:prev acc))))
+              {}
+              @re-frame.trace/traces))
+     [:operation :op-type]))
+
+(defn register-exception-handler []
+  (let [gOldOnError js/window.onerror]
+    (set! js/window.onerror
+          (fn [error-msg url line-number]
+            (swap! (:events re-frame-data)
+                   concat
+                   [{:event          [:exception]
+                     :truncated-name :exception
+                     :error?         true
+                     :indx           (count @(:events re-frame-data))
+                     :error          (merge
+                                      (find-error-trace)
+                                      {:msg  error-msg
+                                       :url  url
+                                       :line line-number})}])
+            (if gOldOnError
+              (gOldOnError error-msg url line-number)
+              false)))))
+
 (defn enable-re-frisk! [& [opts]]
   (when-not @initialized
     (reset! initialized true)
     (swap! data/tool-state assoc :opts opts)
+    (register-exception-handler)
     (if (re-frame.trace/is-trace-enabled?)
       (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb)
       (when-not (= (:events? opts) false)

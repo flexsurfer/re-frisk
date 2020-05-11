@@ -2,11 +2,11 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require
    [reagent.impl.component]
-   [re-frame.subs :as subs]
    [re-frame.core :as re-frame]
    [re-frame.db :as db]
    [re-frame.trace]
    [re-frisk.trace :as trace]
+   [re-frisk.core :as re-frisk]
    [re-frisk.utils :as utils]
    [re-frisk.diff.diff :as diff]
    [re-frisk-remote.delta.delta :as delta]
@@ -34,11 +34,8 @@
   (let [db @db/app-db]
     (if @normalize-db-fn (@normalize-db-fn db) db)))
 
-(defn- get-subs []
-  (reduce-kv #(assoc %1 %2 (deref %3)) {} @subs/query->reaction))
-
 (defn- send-subs-delta []
-  (let [subs (get-subs)]
+  (let [subs (re-frisk/get-subs)]
     (when-let [d (delta/delta (:prev-subs @send-state) subs)]
       (swap! send-state assoc :prev-subs subs)
       (send [:refrisk/subs-delta d]))))
