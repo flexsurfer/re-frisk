@@ -88,7 +88,7 @@
   (when-not @initialized
     (reset! initialized true)
     (swap! data/tool-state assoc :opts opts)
-    (register-exception-handler)
+    #_(register-exception-handler)
     (if (re-frame.trace/is-trace-enabled?)
       (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb)
       (when-not (= (:events? opts) false)
