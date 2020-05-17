@@ -39,7 +39,7 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 Latest stable version: [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk) [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
 `[re-frisk "1.3.2"]` 
-`[re-frisk-remote "1.3.2"]` 
+`[re-frisk-remote "1.3.3"]` 
 
 **Important**: Please note the following compatibility table:
 
@@ -72,7 +72,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-1. Add re-frisk as a dev dependency `[re-frisk-remote "1.3.2"]` 
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.3.3"]` 
 
 2. Enable re-frisk on default port (4567):
 
@@ -92,7 +92,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
     
     add in `deps.edn`
     
-    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.3.1"}}}}}`
+    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.3.3"}}}}}`
     
     create `re_frisk.clj`
     

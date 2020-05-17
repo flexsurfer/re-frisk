@@ -6,7 +6,6 @@
    [re-frame.db :as db]
    [re-frame.trace]
    [re-frisk.trace :as trace]
-   [re-frisk.core :as re-frisk]
    [re-frisk.utils :as utils]
    [re-frisk.diff.diff :as diff]
    [re-frisk-remote.delta.delta :as delta]
@@ -35,7 +34,7 @@
     (if @normalize-db-fn (@normalize-db-fn db) db)))
 
 (defn- send-subs-delta []
-  (let [subs (re-frisk/get-subs)]
+  (let [subs (utils/get-subs)]
     (when-let [d (delta/delta (:prev-subs @send-state) subs)]
       (swap! send-state assoc :prev-subs subs)
       (send [:refrisk/subs-delta d]))))
@@ -79,7 +78,7 @@
       (send [:refrisk/subs (:prev-subs @send-state)])
       (send [:refrisk/app-db (:prev-app-db @send-state)]))
     (let [db   (get-db)
-          subs (get-subs)]
+          subs (utils/get-subs)]
       (reset! send-state {:prev-event-app-db db
                           :prev-app-db       db
                           :prev-subs         subs})

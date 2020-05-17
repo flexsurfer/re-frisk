@@ -1,7 +1,8 @@
 (ns re-frisk.utils
   (:require [clojure.string :as string]
             [goog.string :as gstring]
-            [goog.string.format]))
+            [goog.string.format]
+            [re-frame.subs :as subs]))
 
 (defn sort-map [value checkbox-val checkbox]
   (if (and checkbox-val (map? value))
@@ -69,3 +70,6 @@
 (defn scroll-event-list-item [doc indx]
   (when-let [elem (.getElementById doc (str "events-list-item" indx))]
     (.scrollIntoView elem #js {:block "center"})))
+
+(defn get-subs []
+  (reduce-kv #(assoc %1 %2 (deref %3)) {} @subs/query->reaction))

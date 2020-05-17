@@ -1,7 +1,6 @@
 (ns re-frisk.core
   (:require [re-frame.core :as re-frame]
             [re-frame.db :as db]
-            [re-frame.subs :as subs]
             [re-frisk.db :as data]
             [re-frisk.ui :as ui]
             [re-frisk.diff.diff :as diff]
@@ -20,12 +19,9 @@
           :events (reagent/atom [])
           :subs   (reagent/atom "not connected")})
 
-(defn get-subs []
-  (reduce-kv #(assoc %1 %2 (deref %3)) {} @subs/query->reaction))
-
 (defn update-db-and-subs []
   ;;we need to deref all subscriptions, overwise they won't be deactivated
-  (reset! (:subs re-frame-data) (get-subs))
+  (reset! (:subs re-frame-data) (utils/get-subs))
   (reset! (:app-db re-frame-data) @db/app-db))
 
 (defn trace-cb [traces]
