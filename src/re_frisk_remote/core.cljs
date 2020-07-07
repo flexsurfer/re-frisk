@@ -1,7 +1,6 @@
 (ns re-frisk-remote.core
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require
-   [reagent.impl.component]
    [re-frame.core :as re-frame]
    [re-frame.db :as db]
    [re-frame.trace]
@@ -116,9 +115,7 @@
     (reset! normalize-db-fn (:normalize-db-fn opts))
     (start-socket-and-router (or host "localhost:4567"))
     (if (re-frame.trace/is-trace-enabled?)
-      (do
-        (set! reagent.impl.component/static-fns trace/static-fns)
-        (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb))
+      (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb)
       (re-frame/add-post-event-callback post-event-callback))))
 
 (defn enable [& [params]]

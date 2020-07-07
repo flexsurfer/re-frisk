@@ -2,44 +2,11 @@
   (:require [re-frisk.diff.diff :as diff]
             [re-frisk.utils :as utils]
             [re-frame.trace]
-            [reagent.ratom :as ratom]
-            [reagent.impl.batching :as batch]
-            [reagent.impl.util :as util]
             [re-frame.interop :as interop]
-            [clojure.string :as string]
-            [goog.object :as gob]
             [re-frame.db :as db]))
 
-(defn component-name [c]
-  (some-> c .-constructor .-displayName))
-
-(def operation-name (memoize (fn [c] (last (string/split (component-name c) #" > ")))))
-
-;; from https://github.com/day8/re-frame-10x/blob/master/src/day8/re_frame_10x.cljs#L24
-(def static-fns
-  {:render
-   (fn mp-render []
-     (this-as c
-       (re-frame.trace/with-trace
-        {:op-type   :render
-         :operation (operation-name c)}
-        (if util/*non-reactive*
-          (reagent.impl.component/do-render c)
-          (let [rat        (gob/get c "cljsRatom")
-                _          (batch/mark-rendered c)
-                res        (if (nil? rat)
-                             (ratom/run-in-reaction #(reagent.impl.component/do-render c) c "cljsRatom"
-                                                    batch/queue-render reagent.impl.component/rat-opts)
-                             (._run rat false))
-                cljs-ratom (gob/get c "cljsRatom")]         ;; actually a reaction
-            (re-frame.trace/merge-trace!
-             {:tags {:reaction      (interop/reagent-id cljs-ratom)
-                     :input-signals (when cljs-ratom
-                                      (map interop/reagent-id (gob/get cljs-ratom "watching" :none)))}})
-            res)))))})
-
 (defn normalize-traces [traces]
-  (reduce (fn [items {:keys [op-type tags duration id start] :as trace}]
+  (reduce (fn [items {:keys [op-type tags duration id] :as trace}]
             (let [op-type (if (= (namespace op-type) "sub") :sub op-type)
                   item    {:indx id :trace? true}]
               (case op-type
@@ -78,12 +45,12 @@
                                        {:op-type         :subs :subs? true :subs [trace]
                                         :app-db-reaction (interop/reagent-id db/app-db)
                                         :start           (:start trace)}))))
-                items)))                                    ;(conj items (merge item trace)))))
+                items)))
           []
           (sort-by :id traces)))
 
 (defn normalize-durations [first-event]
-  (fn [{:keys [subs? subs op-type handler-duration fx-duration start]
+  (fn [{:keys [subs? subs op-type handler-duration fx-duration]
         :as   trace}]
     (let [{:keys [duration handler-duration fx-duration start created-duration-cached
                   run-duration created-duration disposed-duration render-duration]
