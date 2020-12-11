@@ -38,8 +38,8 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 
 Latest stable version: [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk) [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-`[re-frisk "1.3.4"]` 
-`[re-frisk-remote "1.3.4"]` 
+`[re-frisk "1.3.5"]` 
+`[re-frisk-remote "1.3.5"]` 
 
 **Important**: Please note the following compatibility table:
 
