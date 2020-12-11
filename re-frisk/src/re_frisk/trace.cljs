@@ -5,7 +5,7 @@
             [re-frame.interop :as interop]
             [re-frame.db :as db]))
 
-(defn normalize-traces [traces]
+(defn normalize-traces [traces ignore-events]
   (reduce (fn [items {:keys [op-type tags duration id] :as trace}]
             (let [op-type (if (= (namespace op-type) "sub") :sub op-type)
                   item    {:indx id :trace? true}]
@@ -14,24 +14,25 @@
                 #_(conj items (merge item
                                      (select-keys trace [:id :op-type :operation :start :end])))
                 :event
-                (conj items (merge (dissoc item :trace?)
-                                   (assoc (select-keys trace [:id :op-type :operation :duration
-                                                              :start :end])
-                                     :event (:event tags)
-                                     :truncated-name (utils/truncate-name (str (first (:event tags))))
-                                     :app-db-diff (diff/diff (:app-db-before tags) (:app-db-after tags)))))
+                (when (or (not ignore-events) (not (get ignore-events (first (:event tags)))))
+                  (conj items (merge (dissoc item :trace?)
+                                     (assoc (select-keys trace [:id :op-type :operation :duration
+                                                                :start :end])
+                                       :event (:event tags)
+                                       :truncated-name (utils/truncate-name (str (first (:event tags))))
+                                       :app-db-diff (diff/diff (:app-db-before tags) (:app-db-after tags))))))
                 :event/handler
                 (let [prev (peek items)]
-                  (if (= (:op-type prev :event))
+                  (when (= (:op-type prev) :event)
                     (conj (pop items) (assoc prev :handler-duration duration))
-                    (conj items (merge item
-                                       (select-keys trace [:id :op-type :operation :duration])))))
+                    #_(conj items (merge item
+                                         (select-keys trace [:id :op-type :operation :duration])))))
                 :event/do-fx
                 (let [prev (peek items)]
-                  (if (= (:op-type prev :event))
+                  (when (= (:op-type prev) :event)
                     (conj (pop items) (assoc prev :fx-duration duration))
-                    (conj items (merge item
-                                       (select-keys trace [:id :op-type :duration])))))
+                    #_(conj items (merge item
+                                         (select-keys trace [:id :op-type :duration])))))
                 (:sub :render)
                 (let [prev  (peek items)
                       trace (select-keys trace [:id :op-type :operation :duration :start :end])

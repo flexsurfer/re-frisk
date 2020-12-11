@@ -23,6 +23,7 @@
 
 (defonce chsk-send (atom {}))
 (defonce normalize-db-fn (atom nil))
+(defonce ignore-events (atom nil))
 
 (defn- send [message]
   (when (and message @send-state @chsk-send)
@@ -54,14 +55,15 @@
           ;;This diff may be expensive
           diff (diff/diff (:prev-event-app-db @send-state) db)]
       (swap! send-state assoc :prev-event-app-db db)
-      (send [:refrisk/event {:event       value
-                             :app-db-diff diff
-                             :queue       queue}])
+      (when (or (not @ignore-events) (not (get @ignore-events (first value))))
+        (send [:refrisk/event {:event       value
+                               :app-db-diff diff
+                               :queue       queue}]))
       (utils/call-and-chill send-db-and-subs 500))))
 
 (defn trace-cb [traces]
   (utils/call-and-chill send-db-and-subs 500)
-  (doseq [trace (trace/normalize-traces traces)]
+  (doseq [trace (trace/normalize-traces traces @ignore-events)]
     (send [:refrisk/event trace])))
 
 (defmulti event-msg-handler "Sente `event-msg`s handler" :id)
@@ -113,8 +115,9 @@
   (when-not @initialized
     (reset! initialized true)
     (reset! normalize-db-fn (:normalize-db-fn opts))
+    (reset! ignore-events (:ignore-events opts))
     (start-socket-and-router (or host "localhost:4567"))
-    (if (re-frame.trace/is-trace-enabled?)
+    (if false;(re-frame.trace/is-trace-enabled?)
       (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb)
       (re-frame/add-post-event-callback post-event-callback))))
 

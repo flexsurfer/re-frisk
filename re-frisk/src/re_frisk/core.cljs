@@ -26,28 +26,30 @@
 
 (defn trace-cb [traces]
   (when-not (:paused? @data/tool-state)
-    (let [normalized  (trace/normalize-traces traces)
-          first-event (first @(:events re-frame-data))]
+    (let [ignore-events (get-in @data/tool-state [:opts :ignore-events])
+          normalized  (trace/normalize-traces traces ignore-events)
+          first-event (or (first @(:events re-frame-data)) (first normalized))]
       (swap! (:events re-frame-data)
              concat
-             (map (trace/normalize-durations (or first-event
-                                                 (first normalized)))
+             (map (trace/normalize-durations first-event)
                   normalized))
       (subs-graph/update-subs (filter :subs? normalized))
       (utils/call-and-chill update-db-and-subs 500))))
 
 (defn- post-event-callback [value queue]
   (when-not (:paused? @data/tool-state)
-    (let [app-db @db/app-db
+    (let [ignore-events (get-in @data/tool-state [:opts :ignore-events])
+          app-db @db/app-db
           indx   (count @(:events re-frame-data))
           ;;This diff may be expensive
           diff   (diff/diff (:app-db @prev-event) app-db)]
       (reset! prev-event {:app-db app-db})
-      (swap! (:events re-frame-data) conj {:event          value
-                                           :app-db-diff    diff
-                                           :indx           indx
-                                           :queue          queue
-                                           :truncated-name (utils/truncate-name (str (first value)))})
+      (when (or (not ignore-events) (not (get ignore-events (first value))))
+        (swap! (:events re-frame-data) conj {:event          value
+                                             :app-db-diff    diff
+                                             :indx           indx
+                                             :queue          queue
+                                             :truncated-name (utils/truncate-name (str (first value)))}))
       (utils/call-and-chill update-db-and-subs 500))))
 
 (defn find-error-trace []

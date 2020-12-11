@@ -1,7 +1,9 @@
 (ns re-frisk.demo
   (:require [reagent.core :as reagent]
             [reagent.dom :as rdom]
-            [re-frame.core :as re-frame])
+            [re-frame.core :as re-frame]
+            [re-frisk.core :as re-frisk]
+            [re-frisk-remote.core :as re-frisk-remote])
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (enable-console-print!)
@@ -232,5 +234,7 @@
 
 (defn ^:export run
   []
+  ;(re-frisk/enable {:ignore-events #{::timer-db}})
+  ;(re-frisk-remote/enable {:ignore-events #{::timer-db}})
   (re-frame/dispatch-sync [:initialize-db])
   (mount))
