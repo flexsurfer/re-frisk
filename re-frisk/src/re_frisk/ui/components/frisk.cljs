@@ -10,67 +10,55 @@
 
 (def debounce-pending (atom {}))
 (defn debounce [key delay f]
-  (let [old-timeout (key @debounce-pending)
+  (let [old-timeout (get @debounce-pending key)
         new-timeout (js/setTimeout f delay)]
     (swap! debounce-pending assoc key new-timeout)
     (js/clearTimeout old-timeout)))
 
 (defn ExpandButton [{:keys [expanded? path emit-fn]}]
-  [:button {:style {:border 0
-                    :backgroundColor "transparent" :width "20px" :height "20px"}
+  [:button {:style    {:border          0
+                       :backgroundColor "transparent" :width "20px" :height "20px"}
             :on-click #(emit-fn (if expanded? :contract :expand) path)}
    [:svg {:viewBox "0 0 100 100"
-          :width "100%" :height "100%"
-          :style {:transition "all 0.2s ease"
-                  :transform (when expanded? "rotate(90deg)")}}
+          :width   "100%" :height "100%"
+          :style   {:transition "all 0.2s ease"
+                    :transform  (when expanded? "rotate(90deg)")}}
     [:polygon {:points "0,0 0,100 100,50" :stroke "gray" :color "gray"}]]])
 
 (def styles
-  {:shell {:backgroundColor "#FAFAFA"
-           :fontFamily "Consolas,Monaco,Courier New,monospace"
-           :fontSize "12px"
-           :z-index 9999}
-   :strings {:color "#4Ebb4E"}
-   :keywords {:color "purple"}
-   :numbers {:color "blue"}
-   :nil {:color "red"}
+  {:shell                {:backgroundColor "#FAFAFA"
+                          :fontFamily      "Consolas,Monaco,Courier New,monospace"
+                          :fontSize        "12px"
+                          :z-index         9999}
+   :strings              {:color "#4Ebb4E"}
+   :keywords             {:color "purple"}
+   :numbers              {:color "blue"}
+   :nil                  {:color "red"}
    :shell-visible-button {:backgroundColor "#4EE24E"}})
 
 (defn ExpandAllButton [emit-fn data]
-  [:button {:on-click #(emit-fn :expand-all data)
-            :style {:padding "0px"
-                    :borderTopLeftRadius "2px"
-                    :borderBottomLeftRadius "2px"
-                    :cursor "pointer"
-                    :border "1px solid darkgray"
-                    :backgroundColor "white"}}
-   "Expand all"])
+  [:button {:on-click #(emit-fn :expand-all data)}
+   "expand"])
 
 (defn CollapseAllButton [emit-fn data]
-  [:button {:on-click #(emit-fn :collapse-all)
-            :style {:padding "0px"
-                    :cursor "pointer"
-                    :borderTopRightRadius "2px"
-                    :borderBottomRightRadius "2px"
-                    :borderTop "1px solid darkgray"
-                    :borderBottom "1px solid darkgray"
-                    :borderRight "1px solid darkgray"
-                    :borderLeft "0"
-                    :backgroundColor "white"}}
-   "Collapse all"])
+  [:button {:on-click #(emit-fn :collapse-all)}
+   "collapse"])
 
-(def edit-debounce-ms 400)
+(defn button [label emit-fn]
+  [:button {:on-click emit-fn
+            :style    {:paddingLeft             "5px"
+                       :paddingRight            "5px"
+                       :marginLeft              "5px"}}
+   label])
 
-(defn FilterEditBox [emit-fn filter]
-  [:input {:type "text"
-           :style {:flex 1 :margin-left 5}
-           :value filter
+(defn FilterEditBox [emit-fn]
+  [:input {:type        "text"
+           :style       {:flex 1 :margin-left 5}
            :placeholder "Type here to find keys..."
-           :on-change #(emit-fn :filter-change (.. % -target -value)
-                                edit-debounce-ms)}])
+           :on-change   #(emit-fn :filter-change (.. % -target -value))}])
 
 (defn FilterReset [emit-fn]
-  [:button {:style {:margin-right 5 :width 25}
+  [:button {:style    {:margin-right 5 :width 25}
             :on-click #(emit-fn :filter-change "" 0)} "X"])
 
 (defn node-clicked [{:keys [event emit-fn path] :as all}]
@@ -93,51 +81,49 @@
   (and (< (count needle) (count haystack))
        (= needle (subvec haystack 0 (count needle)))))
 
-(defn Node [{:keys [data path emit-fn swappable node matching-paths] :as val}]
+(defn Node [{:keys [data path emit-fn swappable node matching-paths]}]
   [:span {:style {:padding-top "5px"}}
    (when node
      [:span {:style {:padding-left "20px"}}
       [Node node]])
    [:span
-    {:on-click #(node-clicked {:event % :emit-fn emit-fn :path path})
-     :style (merge (when node {:padding-left "10px"})
-                   (when (get matching-paths path)
-                     {:background-color "#fff9db"}))}
+    (merge
+     {:on-click #(node-clicked {:event % :emit-fn emit-fn :path path})
+      :style    (merge (when node {:padding-left "10px"})
+                       (when (get matching-paths path)
+                         {:background-color "#fff9db"}))}
+     (when (get matching-paths path)
+       {:id  (str path)
+        :ref #(emit-fn :filter-ref path %)}))
     (cond
-     (nil? data)
-     [NilText]
+      (nil? data)
+      [NilText]
 
-     (string? data)
-     (if swappable
-       [:input {:type "text"
-                :default-value (str data)
-                :on-change
-                (fn string-changed [e]
-                  (emit-fn :changed path (.. e -target -value)))}]
-       [StringText data])
+      (string? data)
+      (if swappable
+        [:input {:type          "text"
+                 :default-value (str data)
+                 :on-change     (fn string-changed [e] (emit-fn :changed path (.. e -target -value)))}]
+        [StringText data])
 
-     (keyword? data)
-     (if swappable
-       [:input {:type "text"
-                :default-value (name data)
-                :on-change
-                (fn keyword-changed [e]
-                  (emit-fn :changed path (keyword (.. e -target -value))))}]
-       [KeywordText data])
+      (keyword? data)
+      (if swappable
+        [:input {:type          "text"
+                 :default-value (name data)
+                 :on-change     (fn keyword-changed [e] (emit-fn :changed path (keyword (.. e -target -value))))}]
+        [KeywordText data])
 
-     (object? data)
-     "Object"
+      (object? data)
+      "Object"
 
-     (number? data)
-     (if swappable
-       [:input {:type "number"
-                :default-value data
-                :on-change
-                (fn number-changed [e]
-                  (emit-fn :changed path (js/Number (.. e -target -value))))}]
-       [NumberText data])
-     :else
-     (str data))]])
+      (number? data)
+      (if swappable
+        [:input {:type          "number"
+                 :default-value data
+                 :on-change     (fn number-changed [e] (emit-fn :changed path (js/Number (.. e -target -value))))}]
+        [NumberText data])
+      :else
+      (str data))]])
 
 ;; A path is expanded if it is explicitly expanded or if it is a part of
 ;; current selection
@@ -147,17 +133,17 @@
 
 (defn KeyValNode [{[k v] :data :keys [path expanded-paths matching-paths expanded-matching-paths emit-fn swappable]}]
   [:div {:style {:display "flex"}}
-   [DataFrisk {:node {:data k
-                      :emit-fn emit-fn
-                      :path (conj path k)
-                      :matching-paths matching-paths}
-               :data v
-               :swappable swappable
-               :path (conj path k)
-               :expanded-paths expanded-paths
-               :matching-paths matching-paths
+   [DataFrisk {:node                    {:data           k
+                                         :emit-fn        emit-fn
+                                         :path           (conj path k)
+                                         :matching-paths matching-paths}
+               :data                    v
+               :swappable               swappable
+               :path                    (conj path k)
+               :expanded-paths          expanded-paths
+               :matching-paths          matching-paths
                :expanded-matching-paths expanded-matching-paths
-               :emit-fn emit-fn}]])
+               :emit-fn                 emit-fn}]])
 
 (defn MapNode [{:keys [data path expanded-paths matching-paths expanded-matching-paths emit-fn node] :as all}]
   (let [expanded? (is-expanded expanded-paths expanded-matching-paths path)]
@@ -166,8 +152,8 @@
       (if (empty? data)
         [:div {:style {:width "20px"}}]
         [ExpandButton {:expanded? expanded?
-                       :path path
-                       :emit-fn emit-fn}])]
+                       :path      path
+                       :emit-fn   emit-fn}])]
      [:div {:style {:flex 1}}
       (when node
         [Node node])
@@ -187,23 +173,23 @@
       (if (empty? data)
         [:div {:style {:width "20px"}}]
         [ExpandButton {:expanded? expanded?
-                       :path path
-                       :emit-fn emit-fn}])]
+                       :path      path
+                       :emit-fn   emit-fn}])]
      [:div {:style {:flex 1}}
       (when node
         [Node node])
       [:span (if (vector? data) " [" " (")
-        (str (count data) " items")]
+       (str (count data) " items")]
       [:span (if (vector? data) "]" ")")]
       (when expanded?
         (map-indexed (fn [i x] ^{:key i} [:div {:style {:flex 1}}
-                                          [DataFrisk {:data x
-                                                      :swappable swappable
-                                                      :path (conj path i)
-                                                      :expanded-paths expanded-paths
-                                                      :matching-paths matching-paths
+                                          [DataFrisk {:data                    x
+                                                      :swappable               swappable
+                                                      :path                    (conj path i)
+                                                      :expanded-paths          expanded-paths
+                                                      :matching-paths          matching-paths
                                                       :expanded-matching-paths expanded-matching-paths
-                                                      :emit-fn emit-fn}]]) data))]]))
+                                                      :emit-fn                 emit-fn}]]) data))]]))
 
 (defn SetNode [{:keys [data path expanded-paths matching-paths expanded-matching-paths emit-fn swappable node]}]
   (let [expanded? (is-expanded expanded-paths expanded-matching-paths path)]
@@ -212,23 +198,23 @@
       (if (empty? data)
         [:div {:style {:width "20px"}}]
         [ExpandButton {:expanded? expanded?
-                       :path path
-                       :emit-fn emit-fn}])]
+                       :path      path
+                       :emit-fn   emit-fn}])]
      [:div {:style {:flex 1}}
       (when node
         [Node node])
       [:span " #{"
-        (str (count data) " items")]
+       (str (count data) " items")]
       [:span "}"]
       (when expanded?
         (map-indexed (fn [i x] ^{:key i} [:div {:style {:flex 1}}
-                                          [DataFrisk {:data x
-                                                      :swappable swappable
-                                                      :path (conj path x)
-                                                      :expanded-paths expanded-paths
-                                                      :matching-paths matching-paths
+                                          [DataFrisk {:data                    x
+                                                      :swappable               swappable
+                                                      :path                    (conj path x)
+                                                      :expanded-paths          expanded-paths
+                                                      :matching-paths          matching-paths
                                                       :expanded-matching-paths expanded-matching-paths
-                                                      :emit-fn emit-fn}]]) data))]]))
+                                                      :emit-fn                 emit-fn}]]) data))]]))
 
 (defn DataFrisk [{:keys [data] :as all}]
   (cond (map? data) [MapNode all]
@@ -248,40 +234,40 @@
             current-node (if (satisfies? IDeref (:node current)) @(:node current) (:node current))]
         (cond (map? current-node)
               (recur
-                (concat rest (map (fn [[k v]] {:path (conj (:path current) k)
-                                               :node v})
-                                  current-node))
-                (conj expanded-paths (:path current)))
+               (concat rest (map (fn [[k v]] {:path (conj (:path current) k)
+                                              :node v})
+                                 current-node))
+               (conj expanded-paths (:path current)))
               (or (seq? current-node) (vector? current-node))
               (recur
-                (concat rest (map-indexed (fn [i node] {:path (conj (:path current) i)
-                                                        :node node})
-                                          current-node))
-                (conj expanded-paths (:path current)))
+               (concat rest (map-indexed (fn [i node] {:path (conj (:path current) i)
+                                                       :node node})
+                                         current-node))
+               (conj expanded-paths (:path current)))
               :else
               (recur
-                rest
-                (if (coll? current-node)
-                  (conj expanded-paths (:path current))
-                  expanded-paths))))
+               rest
+               (if (coll? current-node)
+                 (conj expanded-paths (:path current))
+                 expanded-paths))))
       expanded-paths)))
 
-(defn apply-filter [state id]
-  (let [filter (filter-parser/parse (get-in state [:data-frisk id :raw-filter]))]
+(defn apply-filter [state id value]
+  (let [filter (filter-parser/parse value)]
     (assoc-in state [:data-frisk id :filter] filter)))
 
-(defn emit-fn-factory [state-atom id swappable]
+(defn emit-fn-factory [state-atom id swappable filter-refs]
   (fn [event & args]
     (case event
       :expand (swap! state-atom update-in [:data-frisk id :expanded-paths] conj-to-set (first args))
       :expand-all (swap! state-atom assoc-in [:data-frisk id :expanded-paths] (expand-all-paths (first args)))
       :contract (swap! state-atom update-in [:data-frisk id :expanded-paths] disj (first args))
       :collapse-all (swap! state-atom assoc-in [:data-frisk id :expanded-paths] #{})
+      :filter-ref (swap! filter-refs #(if (second args)
+                                        (assoc % (first args) (second args))
+                                        (dissoc % (first args))))
       :filter-change
-      (do
-        (swap! state-atom assoc-in [:data-frisk id :raw-filter] (first args))
-        (debounce :filter-change (second args)
-                  #(swap! state-atom apply-filter id)))
+      (debounce :filter-change 400 #(swap! state-atom apply-filter id (first args)))
       :changed (let [[path value] args]
                  (if (seq path)
                    (swap! swappable assoc-in path value)
@@ -316,30 +302,57 @@
 (defn expanded-matching-paths [paths]
   (apply set/union (map prefixes paths)))
 
-(defn Root [data id state-atom]
-  (let [data-frisk (:data-frisk @state-atom)
-        swappable (when (satisfies? IAtom data)
-                    data)
-        filter (or (get-in data-frisk [id :filter]) [])
-        matching (matching-paths data filter)
-        expanded-matching (expanded-matching-paths matching)
-        emit-fn (emit-fn-factory state-atom id swappable)]
-    [re-com/v-box :style {:background-color "#f3f3f3" :color "#444444"}
-     :size "1"
-     :children
-     [[:div {:style {:padding "4px 2px" :display "flex"}}
-       [ExpandAllButton emit-fn data]
-       [CollapseAllButton emit-fn]
-       [:div {:style {:padding "2px" :margin-left "4px" :background-color "#fff9db"}} (count matching)]
-       [FilterEditBox emit-fn (get-in data-frisk [id :raw-filter])]
-       [FilterReset emit-fn]]
-      [components/scroller
-       [DataFrisk {:data data
-                   :swappable swappable
-                   :path []
-                   :expanded-paths (get-in data-frisk [id :expanded-paths])
-                   :matching-paths matching
-                   :expanded-matching-paths expanded-matching
-                   :emit-fn emit-fn}]]]]))
+(defn scroll-frisk-list-item [filter-ref current-search-index dec?]
+  (let [filter-ref @filter-ref
+        len (count filter-ref)
+        indx @current-search-index]
+    (when (> len 0)
+      (let [matching (vec (sort-by :y (map #(hash-map
+                                             :path (first %)
+                                             :y (.-top (.getBoundingClientRect (second %)))
+                                             :el (second %))
+                                           filter-ref)))]
+        (if dec?
+          (if (or (zero? indx)
+                  (>= (dec indx) len))
+            (reset! current-search-index (dec len))
+            (swap! current-search-index dec))
+          (if (>= (inc indx) len)
+            (reset! current-search-index 0)
+            (swap! current-search-index inc)))
+        (when-let [path (get matching indx)]
+          (when-let [elem (:el path)]
+            (.scrollIntoView elem #js {:block "center"})))))))
+
+(defn Root [_ _ _]
+  (let [filter-refs (atom {})
+        current-search-index (atom 0)]
+    (fn [data id state-atom]
+      (let [data-frisk (:data-frisk @state-atom)
+            swappable (when (satisfies? IAtom data)
+                        data)
+            filter (or (get-in data-frisk [id :filter]) [])
+            matching (matching-paths data filter)
+            expanded-matching (expanded-matching-paths matching)
+            emit-fn (emit-fn-factory state-atom id swappable filter-refs)]
+        [re-com/v-box :style {:background-color "#f3f3f3" :color "#444444"}
+         :size "1"
+         :children
+         [[:div {:style {:padding "4px 2px" :display "flex"}}
+           [ExpandAllButton emit-fn data]
+           [CollapseAllButton emit-fn]
+           [:div {:style {:padding "2px" :margin-left "4px" :background-color "#fff9db"}} (count matching)]
+           [button "▲" #(scroll-frisk-list-item filter-refs current-search-index true)]
+           [button "▼" #(scroll-frisk-list-item filter-refs current-search-index false)]
+           [FilterEditBox emit-fn]
+           [FilterReset emit-fn]]
+          [components/scroller
+           [DataFrisk {:data                    data
+                       :swappable               swappable
+                       :path                    []
+                       :expanded-paths          (get-in data-frisk [id :expanded-paths])
+                       :matching-paths          matching
+                       :expanded-matching-paths expanded-matching
+                       :emit-fn                 emit-fn}]]]]))))
 
 (def expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range 1)))
