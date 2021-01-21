@@ -117,7 +117,7 @@
     (reset! normalize-db-fn (:normalize-db-fn opts))
     (reset! ignore-events (:ignore-events opts))
     (start-socket-and-router (or host "localhost:4567"))
-    (if false;(re-frame.trace/is-trace-enabled?)
+    (if (re-frame.trace/is-trace-enabled?)
       (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb)
       (re-frame/add-post-event-callback post-event-callback))))
 
