@@ -38,8 +38,8 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 
 Latest stable version: [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk) [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-`[re-frisk "1.3.6"]` 
-`[re-frisk-remote "1.3.8"]` 
+`[re-frisk "1.3.10"]` 
+`[re-frisk-remote "1.3.10"]` 
 
 **Important**: Please note the following compatibility table:
 
@@ -56,7 +56,7 @@ re-frisk Version     | React Version     | Reagent Versions
 
 re-frisk will be embedded in the DOM of your application. So my suggestion is to use re-frisk-remote, it doesn't affect your application and has more features
  
-1. Add re-frisk as a dev dependency  `[re-frisk "1.3.6"]` 
+1. Add re-frisk as a dev dependency  `[re-frisk "1.3.10"]` 
 
 2. Enable re-frisk
 
@@ -73,7 +73,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-1. Add re-frisk as a dev dependency `[re-frisk-remote "1.3.8"]` 
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.3.10"]` 
 
 2. Enable re-frisk on default port (4567):
 

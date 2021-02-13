@@ -3,7 +3,8 @@
             [re-frisk.filter.filter-parser :as filter-parser]
             [re-frisk.filter.filter-matcher :as filter-matcher]
             [re-com.core :as re-com]
-            [re-frisk.ui.components.components :as components]))
+            [re-frisk.ui.components.components :as components]
+            [reagent.core :as reagent]))
 
 ;;original idea Odin Hole Standal https://github.com/Odinodin/data-frisk-reagent
 (declare DataFrisk)
@@ -51,15 +52,20 @@
                        :marginLeft              "5px"}}
    label])
 
-(defn FilterEditBox [emit-fn]
+(defn FilterEditBox [emit-fn inp-val]
   [:input {:type        "text"
+           :value       @inp-val
            :style       {:flex 1 :margin-left 5}
            :placeholder "Type here to find keys..."
-           :on-change   #(emit-fn :filter-change (.. % -target -value))}])
+           :on-change   #(let [val (.. % -target -value)]
+                           (reset! inp-val val)
+                           (emit-fn :filter-change val))}])
 
-(defn FilterReset [emit-fn]
+(defn FilterReset [emit-fn inp-val]
   [:button {:style    {:margin-right 5 :width 25}
-            :on-click #(emit-fn :filter-change "" 0)} "X"])
+            :on-click #(do
+                         (reset! inp-val "")
+                         (emit-fn :filter-change "" 0))} "X"])
 
 (defn node-clicked [{:keys [event emit-fn path] :as all}]
   (.stopPropagation event)
@@ -326,7 +332,8 @@
 
 (defn Root [_ _ _]
   (let [filter-refs (atom {})
-        current-search-index (atom 0)]
+        current-search-index (atom 0)
+        inp-val (reagent/atom "")]
     (fn [data id state-atom]
       (let [data-frisk (:data-frisk @state-atom)
             swappable (when (satisfies? IAtom data)
@@ -344,8 +351,8 @@
            [:div {:style {:padding "2px" :margin-left "4px" :background-color "#fff9db"}} (count matching)]
            [button "▲" #(scroll-frisk-list-item filter-refs current-search-index true)]
            [button "▼" #(scroll-frisk-list-item filter-refs current-search-index false)]
-           [FilterEditBox emit-fn]
-           [FilterReset emit-fn]]
+           [FilterEditBox emit-fn inp-val]
+           [FilterReset emit-fn inp-val]]
           [components/scroller
            [DataFrisk {:data                    data
                        :swappable               swappable

@@ -60,6 +60,7 @@
   (let [truncate-checkbox-val (reagent/atom true)
         checkbox-trace-val    (reagent/atom false)
         text-val              (reagent/atom "")
+        max-text-val          (reagent/atom "")
         re-frame-events       (:events re-frame-data)
         colored-and-selected
         (reaction
@@ -74,21 +75,28 @@
          (if @checkbox-trace-val
            @colored-and-selected
            (remove :trace? @colored-and-selected)))
+        max-traces-filtered-events
+        (reaction
+         (if (> (int @max-text-val) 0)
+           (take-last (int @max-text-val) @traces-filtered-events)
+           @traces-filtered-events))
         filtered-events
         (reaction
          (if (= @text-val "")
-           @traces-filtered-events
-           (filter (utils/filter-event @text-val) @traces-filtered-events)))]
+           @max-traces-filtered-events
+           (filter (utils/filter-event @text-val) @max-traces-filtered-events)))]
     (fn []
       [re-com/v-box :size "1"
        :children
        [;events filter
         [re-com/h-box
          :children
-         [[re-com/input-text :style {:height :auto :padding "0"} :width "100%"
-           :model text-val :change-on-blur? false :placeholder "Filter events"
-           :on-change #(reset! text-val %)]
-          [components/small-button {:on-click #(reset! text-val "")} "X"]]]
+         [[re-com/box :size "1"
+           :child
+           [re-com/input-text :style {:height :auto :padding "0" }  :width "100%"
+            :model text-val :change-on-blur? false :placeholder "Filter events"
+            :on-change #(reset! text-val %)]]
+          [components/small-button {:on-click #(reset! text-val "") :active? false} "X"]]]
         ;truncate checkbox
         [re-com/h-box :gap "5px"
          :children
@@ -99,7 +107,14 @@
           [re-com/checkbox
            :model checkbox-trace-val
            :on-change #(reset! checkbox-trace-val %)
-           :label "traces"]]]
+           :label "traces"]
+          [re-com/gap :size "100%"]
+          [re-com/h-box
+           :children
+           [[re-com/input-text :style {:height "20px" :padding "0"} :width "30px"
+             :model max-text-val :change-on-blur? false :placeholder "max"
+             :on-change #(reset! max-text-val %)]
+            [components/small-button {:on-click #(reset! max-text-val nil) :active? false} "X"]]]]]
         ;events
         [events-scroller filtered-events tool-state]]])))
 
