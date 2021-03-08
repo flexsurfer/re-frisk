@@ -262,7 +262,7 @@
   (let [filter (filter-parser/parse value)]
     (assoc-in state [:data-frisk id :filter] filter)))
 
-(defn emit-fn-factory [state-atom id swappable filter-refs]
+(defn emit-fn-factory [state-atom id swappable filter-refs inp-val]
   (fn [event & args]
     (case event
       :expand (swap! state-atom update-in [:data-frisk id :expanded-paths] conj-to-set (first args))
@@ -273,7 +273,9 @@
                                         (assoc % (first args) (second args))
                                         (dissoc % (first args))))
       :filter-change
-      (debounce :filter-change 400 #(swap! state-atom apply-filter id (first args)))
+      (do
+        (reset! inp-val (first args))
+        (debounce :filter-change 400 #(swap! state-atom apply-filter id (first args))))
       :changed (let [[path value] args]
                  (if (seq path)
                    (swap! swappable assoc-in path value)
@@ -341,7 +343,7 @@
             filter (or (get-in data-frisk [id :filter]) [])
             matching (matching-paths data filter)
             expanded-matching (expanded-matching-paths matching)
-            emit-fn (emit-fn-factory state-atom id swappable filter-refs)]
+            emit-fn (emit-fn-factory state-atom id swappable filter-refs inp-val)]
         [re-com/v-box :style {:background-color "#f3f3f3" :color "#444444"}
          :size "1"
          :children

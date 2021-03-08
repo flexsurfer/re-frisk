@@ -39,7 +39,7 @@
 
 (defn events-scroller [filtered-events tool-state]
   (reagent/create-class
-   {:display-name "debugger-messages"
+   {:display-name "re_frisk.debugger-messages"
     :component-did-update
     (fn [this]
       (let [n (rdom/dom-node this)]

@@ -88,7 +88,9 @@
     (swap! data/tool-state assoc :opts opts)
     #_(register-exception-handler)
     (if (re-frame.trace/is-trace-enabled?)
-      (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb)
+      (do
+        #_(patch-reagent!)
+        (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb))
       (when-not (= (:events? opts) false)
         (reset! prev-event {:app-db @db/app-db})
         (re-frame/add-post-event-callback post-event-callback)))

@@ -1,8 +1,8 @@
 {:source-paths ["src" "re-frisk/src" "dev" "test"]
 
  :dependencies [[org.clojure/test.check "1.0.0"]
-                [reagent "0.10.0"]
-                [re-frame "0.12.0"]
+                [reagent "1.0.0"]
+                [re-frame "1.2.0"]
                 [com.cognitect/transit-cljs "0.8.256"]
                 [re-frisk/sente "1.15.0"]
                 [com.taoensso/timbre "4.10.0"]

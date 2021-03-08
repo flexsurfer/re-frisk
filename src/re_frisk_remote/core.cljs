@@ -11,7 +11,9 @@
    [taoensso.sente.packers.transit :as sente-transit]
    [taoensso.sente :as sente]
    [taoensso.timbre :as timbre]
-   [cognitect.transit :as transit]))
+   [cognitect.transit :as transit]
+   [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
+   [day8.reagent.impl.batching :refer [patch-next-tick]]))
 
 ;; if there are no opened tool web clients we don't want to send any data
 ;; either nil (do not send), or a map with the following optional keys:
@@ -111,6 +113,11 @@
     (reset! chsk-send send-fn)
     (sente/start-client-chsk-router! ch-recv event-msg-handler)))
 
+(defn patch-reagent! []
+  (patch-custom-wrapper)
+  (patch-wrap-funs)
+  (patch-next-tick))
+
 (defn enable-re-frisk-remote! [& [{:keys [host] :as opts}]]
   (when-not @initialized
     (reset! initialized true)
@@ -118,7 +125,9 @@
     (reset! ignore-events (:ignore-events opts))
     (start-socket-and-router (or host "localhost:4567"))
     (if (re-frame.trace/is-trace-enabled?)
-      (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb)
+      (do
+        (patch-reagent!)
+        (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb))
       (re-frame/add-post-event-callback post-event-callback))))
 
 (defn enable [& [params]]
