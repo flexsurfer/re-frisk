@@ -1,7 +1,10 @@
 (ns re-frisk.subs-graph
-  (:require [re-frisk.ui.components.colors :as colors]))
+  (:require [re-frisk.ui.components.colors :as colors]
+            [reagent.core :as reagent]))
 
 (defonce network (atom nil))
+(defonce reaction->operation (reagent/atom {}))
+(defonce view->reactions (reagent/atom {}))
 (defonce vis (atom nil))
 (defonce doc (atom nil))
 (defonce nodes (atom {}))
@@ -18,8 +21,9 @@
 
 (defn set-root-node [reaction]
   (when-not (get @nodes reaction)
-    (let [data {:id reaction :label "app-db" :color {:background :yellow}}]
+    (let [data {:id "app-db" :label "app-db" :color {:background :yellow}}]
       (swap! nodes assoc reaction data)
+      (swap! reaction->operation assoc reaction "app-db")
       (when @network
         (.add (.-nodes ^js (:data @network)) (clj->js data))))))
 
@@ -44,38 +48,50 @@
 (defn update-subs [traces]
   (when-let [app-db-reaction (:app-db-reaction (first traces))]
     (set-root-node app-db-reaction))
-  (let [new-nodes (atom [])]
+  (doseq [{:keys [subs]} traces]
+    (doseq [{:keys [operation reaction]} subs]
+      (when reaction
+        (swap! reaction->operation assoc reaction operation))))
+  (let [new-nodes (atom {})]
     (doseq [{:keys [subs]} traces]
-      (doseq [{:keys [op-type reaction input-signals operation]} subs]
-        (if-let [old-reaction (get @nodes reaction)]
-          (when (not= op-type (:op-type old-reaction))
-            (let [updated-node (assoc old-reaction
-                                 :op-type op-type
-                                 :color {:background (get colors/sub-colors op-type)})]
-              (swap! nodes assoc reaction updated-node)
-              (when @network
-                (.update (.-nodes ^js (:data @network)) (clj->js [updated-node])))))
-          (let [data {:id      reaction :label operation :color {:background (get colors/sub-colors op-type)}
-                      :font {:color :white}
-                      :op-type op-type}]
-            (swap! nodes assoc reaction data)
-            (swap! new-nodes conj data)))
-        (when input-signals
-          (doseq [input-reaction input-signals]
-            (let [reaction-path (str input-reaction "-" reaction)]
-              (if-let [old-edge (get @edges reaction-path)]
-                (let [updated-edge (update old-edge :value inc)]
-                  (swap! edges assoc reaction-path updated-edge)
-                  (when @network
-                    (.update (.-edges ^js (:data @network)) (clj->js [updated-edge]))))
-                (let [data {:id reaction-path :from input-reaction :to reaction :value 1}]
-                  (swap! edges assoc reaction-path data)
-                  (when @network
-                    (.add (.-edges ^js (:data @network)) (clj->js data))))))))))
+      (doseq [{:keys [op-type input-signals operation reaction]} subs]
+        (when (not= op-type :create-class)
+          (when (and (= op-type :render) input-signals)
+            (swap! view->reactions assoc operation input-signals))
+          (let [operation (str operation)]
+            (when reaction
+              (if-let [old-reaction (get @nodes operation)]
+                (when (not= op-type (:op-type old-reaction))
+                  (let [updated-node (assoc old-reaction
+                                       :op-type op-type
+                                       :color {:background (get colors/sub-colors op-type)})]
+                    (swap! nodes assoc operation updated-node)
+                    (when @network
+                      (if (get @new-nodes operation)
+                        (swap! new-nodes assoc operation updated-node)
+                        (.update (.-nodes ^js (:data @network)) (clj->js [updated-node]))))))
+                (let [data {:id      operation :label operation :color {:background (get colors/sub-colors op-type)}
+                            :font {:color :white}
+                            :op-type op-type}]
+                  (swap! nodes assoc operation data)
+                  (swap! new-nodes assoc operation data))))
+            (when input-signals
+              (doseq [input-reaction input-signals]
+                (let [input-operation (str (get @reaction->operation input-reaction))
+                      reaction-path (str input-operation "-" operation)]
+                  (if-let [old-edge (get @edges reaction-path)]
+                    (let [updated-edge (update old-edge :value inc)]
+                      (swap! edges assoc reaction-path updated-edge)
+                      (when @network
+                        (.update (.-edges ^js (:data @network)) (clj->js [updated-edge]))))
+                    (let [data {:id reaction-path :from input-operation :to operation :value 1}]
+                      (swap! edges assoc reaction-path data)
+                      (when @network
+                        (.add (.-edges ^js (:data @network)) (clj->js data))))))))))))
     (when @network
       (if (> (count @new-nodes) 20)
         (create)
-        (doseq [data @new-nodes]
+        (doseq [data (vals @new-nodes)]
           (.add (.-nodes ^js (:data @network)) (clj->js data)))))))
 
 (defonce event-network (atom nil))

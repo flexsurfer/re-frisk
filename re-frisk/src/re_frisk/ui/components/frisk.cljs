@@ -4,7 +4,9 @@
             [re-frisk.filter.filter-matcher :as filter-matcher]
             [re-com.core :as re-com]
             [re-frisk.ui.components.components :as components]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [re-frisk.clipboard :as clipboard]
+            cljs.pprint))
 
 ;;original idea Odin Hole Standal https://github.com/Odinodin/data-frisk-reagent
 (declare DataFrisk)
@@ -39,11 +41,11 @@
 
 (defn ExpandAllButton [emit-fn data]
   [:button {:on-click #(emit-fn :expand-all data)}
-   "expand"])
+   "exp"])
 
 (defn CollapseAllButton [emit-fn data]
   [:button {:on-click #(emit-fn :collapse-all)}
-   "collapse"])
+   "coll"])
 
 (defn button [label emit-fn]
   [:button {:on-click emit-fn
@@ -151,7 +153,19 @@
                :expanded-matching-paths expanded-matching-paths
                :emit-fn                 emit-fn}]])
 
-(defn MapNode [{:keys [data path expanded-paths matching-paths expanded-matching-paths emit-fn node] :as all}]
+(defn copy [_]
+  (let [ show-copied (reagent/atom nil)]
+    (fn [data]
+      [:span {:on-click (fn []
+                          (reset! show-copied true)
+                          (js/setTimeout #(reset! show-copied false) 2000)
+                          (clipboard/copy-to-clip (with-out-str (cljs.pprint/pprint data))))
+              :style {:cursor :pointer}}
+       " ⎘"
+       (when @show-copied
+         [:span {:style {:background-color :white :border-radius 4 :margin-left 5}} "copied"])])))
+
+(defn MapNode [{:keys [data path expanded-paths expanded-matching-paths emit-fn node] :as all}]
   (let [expanded? (is-expanded expanded-paths expanded-matching-paths path)]
     [:div {:style {:display "flex" :padding-top "3px"}}
      [:div {:style {:flex "0 1 auto"}}
@@ -166,6 +180,7 @@
       [:span " {"]
       [:span (str (count (keys data)) " keys")]
       [:span "}"]
+      [copy data]
       (when expanded?
         (map-indexed (fn [i x] ^{:key i}
                        [:div {:style {:flex 1}}
@@ -187,6 +202,7 @@
       [:span (if (vector? data) " [" " (")
        (str (count data) " items")]
       [:span (if (vector? data) "]" ")")]
+      [copy data]
       (when expanded?
         (map-indexed (fn [i x] ^{:key i} [:div {:style {:flex 1}}
                                           [DataFrisk {:data                    x
@@ -212,6 +228,7 @@
       [:span " #{"
        (str (count data) " items")]
       [:span "}"]
+      [copy data]
       (when expanded?
         (map-indexed (fn [i x] ^{:key i} [:div {:style {:flex 1}}
                                           [DataFrisk {:data                    x
@@ -351,8 +368,8 @@
            [ExpandAllButton emit-fn data]
            [CollapseAllButton emit-fn]
            [:div {:style {:padding "2px" :margin-left "4px" :background-color "#fff9db"}} (count matching)]
-           [button "▲" #(scroll-frisk-list-item filter-refs current-search-index true)]
-           [button "▼" #(scroll-frisk-list-item filter-refs current-search-index false)]
+           [button "↑" #(scroll-frisk-list-item filter-refs current-search-index true)]
+           [button "↓" #(scroll-frisk-list-item filter-refs current-search-index false)]
            [FilterEditBox emit-fn inp-val]
            [FilterReset emit-fn inp-val]]
           [components/scroller
@@ -363,5 +380,24 @@
                        :matching-paths          matching
                        :expanded-matching-paths expanded-matching
                        :emit-fn                 emit-fn}]]]]))))
+
+(defn Root-Simple [_ _ _]
+  (let [filter-refs (atom {})
+        inp-val (reagent/atom "")]
+    (fn [data id state-atom]
+      (let [data-frisk (:data-frisk @state-atom)
+            swappable (when (satisfies? IAtom data)
+                        data)
+            filter (or (get-in data-frisk [id :filter]) [])
+            matching (matching-paths data filter)
+            expanded-matching (expanded-matching-paths matching)
+            emit-fn (emit-fn-factory state-atom id swappable filter-refs inp-val)]
+        [DataFrisk {:data                    data
+                    :swappable               swappable
+                    :path                    []
+                    :expanded-paths          (get-in data-frisk [id :expanded-paths])
+                    :matching-paths          matching
+                    :expanded-matching-paths expanded-matching
+                    :emit-fn                 emit-fn}]))))
 
 (def expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range 1)))

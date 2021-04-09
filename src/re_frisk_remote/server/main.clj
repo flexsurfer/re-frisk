@@ -64,31 +64,11 @@
   (let [session (:session ring-req)
         uid     (:uid     session)]))
 
-;RE-FRISK HANDLERS
-(defmethod -event-msg-handler :refrisk/app-db
+;RE-FRISK MESSAGE
+(defmethod -event-msg-handler :refrisk/message
   [{:keys [?data]}]
   (doseq [uid @listeners]
-    (chsk-send! uid [:refrisk/app-db ?data])))
-
-(defmethod -event-msg-handler :refrisk/app-db-delta
-  [{:keys [?data]}]
-  (doseq [uid @listeners]
-    (chsk-send! uid [:refrisk/app-db-delta ?data])))
-
-(defmethod -event-msg-handler :refrisk/event
-  [{:keys [?data]}]
-  (doseq [uid @listeners]
-    (chsk-send! uid [:refrisk/event ?data])))
-
-(defmethod -event-msg-handler :refrisk/subs
-  [{:keys [?data]}]
-  (doseq [uid @listeners]
-    (chsk-send! uid [:refrisk/subs ?data])))
-
-(defmethod -event-msg-handler :refrisk/subs-delta
-  [{:keys [?data]}]
-  (doseq [uid @listeners]
-    (chsk-send! uid [:refrisk/subs-delta ?data])))
+    (chsk-send! uid [:refrisk/message ?data])))
 
 (defn- client-connected [client-id]
   (when @remote-conn
@@ -126,5 +106,6 @@
                          :access-control-allow-origin #".*"
                          :access-control-allow-methods [:get :put :post :delete]
                          :access-control-allow-credentials "true"))
-                    {:port port})
+                    {:port port
+                     :max-ws 100194304})
     (println (str "re-frisk server has been started at localhost:" port))))

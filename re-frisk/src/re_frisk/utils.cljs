@@ -14,6 +14,14 @@
           value)))
     value))
 
+(defn sort-map-by [value comp]
+  (if (map? value)
+    (try
+      (into (sorted-map-by comp) value)
+      (catch :default e
+        value))
+    value))
+
 (defn on-change-sort [value checkbox-val key]
   (fn [val]
     (reset! checkbox-val val)
@@ -44,7 +52,8 @@
   (= left (- js/window.innerWidth 30)))
 
 (defn str-ms [value]
-  (str (gstring/format "%.2f" value) " ms"))
+  (when-not (string/blank? value)
+    (str (gstring/format "%.2f" value) " ms")))
 
 (declare call-timeout)
 (defonce call-state (atom nil))

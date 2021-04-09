@@ -10,7 +10,9 @@
    [re-frisk.ui.timeline :as timeline]
    [re-frisk.ui.components.components :as components]
    [re-frisk.ui.subs :as subs]
-   [re-frisk.ui.components.github :as github]))
+   [re-frisk.ui.components.github :as github]
+   [re-frisk.ui.stat :as stat]
+   [re-frisk.ui.reagent-views :as reagent-views]))
 
 (defn subs-view [subs checkbox-sorted-val]
   (let [state-atom (reagent/atom frisk/expand-by-default)]
@@ -64,7 +66,7 @@
                              :panel-2 [events/frisk-view tool-state]]]]])))
 
 (defn controls [re-frame-data tool-state]
-  (let [{:keys [timeline-opened? paused? graph-opened?]}  @tool-state]
+  (let [{:keys [timeline-opened? paused? graph-opened? stat-opened? views-opened?]} @tool-state]
     [re-com/h-box :style {:background-color "#4e5d6c"} :align :center
      :children
      [[components/label-button {:on-click #(swap! tool-state update :paused? not)
@@ -79,26 +81,53 @@
       [re-com/gap :size "1"]
       [components/label-button {:on-click #(do
                                              (swap! tool-state assoc :graph-opened? false)
+                                             (swap! tool-state assoc :stat-opened? false)
+                                             (swap! tool-state assoc :views-opened? false)
                                              (swap! tool-state update :timeline-opened? not))
                                 :active? timeline-opened?}
        "Timeline"]
       [re-com/gap :size "5px"]
       [components/label-button {:on-click #(do
                                              (swap! tool-state assoc :timeline-opened? false)
+                                             (swap! tool-state assoc :stat-opened? false)
+                                             (swap! tool-state assoc :views-opened? false)
                                              (swap! tool-state update :graph-opened? not))
                                 :active? graph-opened?}
        "Subs"]
+      [re-com/gap :size "5px"]
+      [components/label-button {:on-click #(do
+                                             (swap! tool-state assoc :timeline-opened? false)
+                                             (swap! tool-state assoc :graph-opened? false)
+                                             (swap! tool-state assoc :stat-opened? false)
+                                             (swap! tool-state update :views-opened? not))
+                                :active? views-opened?}
+       "Views"]
+      [re-com/gap :size "5px"]
+      [components/label-button {:on-click #(do
+                                             (swap! tool-state assoc :timeline-opened? false)
+                                             (swap! tool-state assoc :graph-opened? false)
+                                             (swap! tool-state assoc :views-opened? false)
+                                             (swap! tool-state update :stat-opened? not))
+                                :active? stat-opened?}
+       "Stat"]
       [re-com/gap :size "15px"]
       [github/link]
       [re-com/gap :size "5px"]]]))
 
 (defn main-view [re-frame-data tool-state & [doc]]
-  (let [open-graph-split? (reaction (get @tool-state :graph-opened?))]
+  (let [open-graph-split? (reaction (get @tool-state :graph-opened?))
+        open-stat-split? (reaction (get @tool-state :stat-opened?))
+        open-views-split? (reaction (get @tool-state :views-opened?))]
     (fn []
       [splits/v-split :height "100%" :initial-split "0" :document doc :style {:padding "0" :margin "0"}
-       :open-bottom-split? @open-graph-split? :close-bottom-split? (not @open-graph-split?)
+       :open-bottom-split? (or @open-graph-split? @open-stat-split? @open-views-split?)
+       :close-bottom-split? (not (or @open-graph-split? @open-stat-split? @open-views-split?))
        :panel-1
-       [subs/subs-visibility re-frame-data tool-state]
+       (if @open-views-split?
+         [reagent-views/views re-frame-data]
+         (if @open-stat-split?
+           [stat/stat re-frame-data]
+           [subs/subs-visibility re-frame-data tool-state]))
        :panel-2
        [re-com/v-box :size "1"
         :children

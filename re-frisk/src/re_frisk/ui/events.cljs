@@ -9,15 +9,17 @@
    [re-frisk.ui.components.components :as components]
    [re-frisk.ui.trace :as trace]
    [re-frisk.utils :as utils]
-   [re-frisk.ui.subs :as subs]))
+   [re-frisk.ui.subs :as subs]
+   [re-frisk.ui.components.colors :as colors]))
 
-(defn event-item [_ tool-state]
+(defn event-item [_ tool-state checkbox-trace-val]
   (fn [{:keys [color name app-db-diff selected? op-type indx] :as item} _]
     [:a
      {:href     "#"
       :id       (str "events-list-item" indx)
       :class    (str "list-group-item" (when selected? " active"))
       :style    (merge {:padding     5 :font-size 13 :border-left-width 2
+                        :padding-right 0
                         :white-space :pre :width "100%"}
                        (when (and (nil? app-db-diff) (not selected?))
                          {:opacity "0.7"})
@@ -27,17 +29,17 @@
                   (swap! tool-state assoc :selected-event item)
                   (utils/scroll-timeline-event-item (:doc @tool-state) indx)
                   (.preventDefault event))}
-     (if op-type
+     (if (and op-type checkbox-trace-val)
        [trace/trace-event-item item]
        [:span name])]))
 
-(defn event-list-item [_ tool-state]
+(defn event-list-item [_ tool-state checkbox-trace-val]
   (fn [{:keys [trace? op-type] :as item} _]
     (if (and trace? (not= :event op-type))
       [trace/trace-item item tool-state]
-      [event-item item tool-state])))
+      [event-item item tool-state checkbox-trace-val])))
 
-(defn events-scroller [filtered-events tool-state]
+(defn events-scroller [filtered-events tool-state _]
   (reagent/create-class
    {:display-name "re_frisk.debugger-messages"
     :component-did-update
@@ -46,15 +48,15 @@
         (when (:scroll-bottom? @tool-state)
           (set! (.-scrollTop n) (.-scrollHeight n)))))
     :reagent-render
-    (fn []
+    (fn [_ _ checkbox-trace-val]
       [components/scroller
        {:on-scroll #(let [t (.-target %)]
                       (swap! tool-state assoc
                              :scroll-bottom?
                              (= (- (.-scrollHeight t) (.-offsetHeight t)) (.-scrollTop t))))}
        (for [item @filtered-events]
-         ^{:key (str "item" (:indx item))}
-         [event-list-item item tool-state])])}))
+         ^{:key (str "item" (:indx item) checkbox-trace-val)}
+         [event-list-item item tool-state checkbox-trace-val])])}))
 
 (defn events-list-view [re-frame-data tool-state]
   (let [truncate-checkbox-val (reagent/atom true)
@@ -84,7 +86,9 @@
         (reaction
          (if (= @text-val "")
            @max-traces-filtered-events
-           (filter (utils/filter-event @text-val) @max-traces-filtered-events)))]
+           (filter (utils/filter-event @text-val) @max-traces-filtered-events)))
+        sorted-events
+        (reaction (sort-by :indx @filtered-events))]
     (fn []
       [re-com/v-box :size "1"
        :children
@@ -116,7 +120,7 @@
              :on-change #(reset! max-text-val %)]
             [components/small-button {:on-click #(reset! max-text-val nil) :active? false} "X"]]]]]
         ;events
-        [events-scroller filtered-events tool-state]]])))
+        [events-scroller sorted-events tool-state @checkbox-trace-val]]])))
 
 (defn event-bar [tool-state]
   (let [evnt-key (reaction (first (get-in @tool-state [:selected-event :event])))
@@ -137,7 +141,7 @@
         (when @evnt-key
           [re-com/h-box
            :children
-           [[re-com/label :label @evnt-key :style {:margin "4px" :color "#df691a"}]
+           [[re-com/label :label @evnt-key :style {:margin "4px"}]
             [re-com/label :label "#" :style {:margin "4px"}]
             [:input
              {:style     {:width "60px"} :placeholder "000000" :type "text" :max-length "6"
@@ -146,24 +150,54 @@
                                  [:events-colors @evnt-key]
                                  (-> % .-target .-value))}]]])]])))
 
-(defn frisk-view [tool-state]
+(defn event-count [label val color duration-ms]
+  [:div {:style {:display        :flex :align-items :center :margin-right 10
+                 :flex-direction :row}}
+   label ":"
+   [:div {:style {:display :flex :align-items :center}}
+    (if (string/blank? val)
+      [:div {:style {:width 10}}]
+      [:div {:style {:display       :flex :margin 5 :padding-left 4 :padding-right 4 :background-color color
+                     :border-radius 4 :color :white}}
+       val])
+    duration-ms]])
+
+(defn event-content [_]
   (let [state-atom (reagent/atom frisk/expand-by-default)]
+    (fn [item]
+      (let [{:keys [event app-db-diff trace? duration-ms handler-duration-ms
+                    fx-duration-ms effects coeffects]}
+            item]
+        [:div {:style {:display :flex :flex 1 :background-color "#f3f3f3" :color "#444444"
+                       :padding 8 :flex-direction :column}}
+         (when duration-ms
+           [:div {:style {:display :flex :flex-direction :row :align-items :center
+                          :margin-bottom 10 :border-bottom "solid 1px #CCCCCC"}}
+            [:div {:style {:margin-right 10}} "Total time: " duration-ms]
+            [:div {:style {:margin-right 10}} " | "]
+            [event-count "Handler" "" colors/render handler-duration-ms]
+            [:div {:style {:margin-right 10}} " | "]
+            [event-count "Effects" (count effects) colors/effect fx-duration-ms]])
+         [frisk/Root (if trace?
+                       item
+                       (merge {:event event}
+                              (if duration-ms
+                                {:effects (cond-> effects
+                                            app-db-diff
+                                            (assoc :db app-db-diff))
+                                 :coeffects coeffects}
+                                {:app-db-diff app-db-diff})))
+          0 state-atom]]))))
+
+(defn frisk-view [tool-state]
+  (let []
     (fn [_]
       (let [subs-graph-opened? (:subs-graph-opened? @tool-state)
-            {:keys [event app-db-diff trace? duration-ms handler-duration-ms
-                    fx-duration-ms subs?] :as item}
+            {:keys [subs?] :as item}
             (:selected-event @tool-state)]
         (when item
           (if subs?
             (if subs-graph-opened?
               [subs/event-subs-graph-container item]
               [trace/subs-details item])
-            [frisk/Root (if trace?
-                          item
-                          (merge {:event       event
-                                  :app-db-diff app-db-diff}
-                                 (when duration-ms
-                                   {:trace {:duration         duration-ms
-                                            :handler-duration handler-duration-ms
-                                            :fx-duration      fx-duration-ms}})))
-             0 state-atom]))))))
+            [event-content item]))))))

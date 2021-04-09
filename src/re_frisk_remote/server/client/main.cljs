@@ -10,13 +10,20 @@
    [re-frisk.utils :as utils]
    [re-frisk-remote.delta.delta :as delta]
    [re-frisk.trace :as trace]
-   [re-frisk.subs-graph :as subs-graph]))
+   [re-frisk.subs-graph :as subs-graph]
+   [re-frisk.stat :as stat]))
 
 (defn update-app-db [val]
   (reset! (:app-db re-frisk/re-frame-data) val))
 
 (defn update-subs [val]
   (reset! (:subs re-frisk/re-frame-data) val))
+
+(defn update-init-stat [val]
+  (reset! (:stat re-frisk/re-frame-data) val))
+
+(defn update-views [val]
+  (reset! (:views re-frisk/re-frame-data) val))
 
 (defn apply-app-db-delta [val]
   (try
@@ -41,8 +48,11 @@
              conj (if op-type
                     ((trace/normalize-durations (or first-event value)) value)
                     (assoc value :truncated-name (utils/truncate-name (str (first event))))))
+      (if op-type
+        (stat/update-trace-stat re-frisk/re-frame-data [value])
+        (stat/update-event-stat re-frisk/re-frame-data (first event)))
       (when subs?
-        (subs-graph/update-subs [value])))))
+        (js/setTimeout #(subs-graph/update-subs [value]) 100)))))
 
 ;SENTE HANDLERS
 (defmulti -event-msg-handler "Multimethod to handle Sente `event-msg`s" :id)
@@ -54,14 +64,17 @@
 (defmethod -event-msg-handler :default [_])
 
 (defmethod -event-msg-handler :chsk/recv
-  [{[type data] :?data}]
-  (case type
-    :refrisk/app-db (update-app-db data)
-    :refrisk/event (update-events data)
-    :refrisk/subs (update-subs data)
-    :refrisk/app-db-delta (apply-app-db-delta data)
-    :refrisk/subs-delta (apply-subs-delta data)
-    :noop))
+  [{[msg-type [type data]] :?data}]
+  (when (= msg-type :refrisk/message)
+    (case type
+      :refrisk/app-db (update-app-db data)
+      :refrisk/event (update-events data)
+      :refrisk/subs (update-subs data)
+      :refrisk/app-db-delta (apply-app-db-delta data)
+      :refrisk/subs-delta (apply-subs-delta data)
+      :refrisk/init-stat (update-init-stat data)
+      :refrisk/views (update-views data)
+      :noop)))
 
 (defn mount []
   (swap! db/tool-state assoc :doc js/document)

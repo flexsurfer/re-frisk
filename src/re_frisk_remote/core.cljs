@@ -12,8 +12,9 @@
    [taoensso.sente :as sente]
    [taoensso.timbre :as timbre]
    [cognitect.transit :as transit]
-   [day8.reagent.impl.component :refer [patch-wrap-funs patch-custom-wrapper]]
-   [day8.reagent.impl.batching :refer [patch-next-tick]]))
+   [day8.reagent.impl.component :refer [patch-wrap-funs]]
+   [day8.reagent.impl.batching :refer [patch-next-tick]]
+   [re-frisk.stat :as stat]))
 
 ;; if there are no opened tool web clients we don't want to send any data
 ;; either nil (do not send), or a map with the following optional keys:
@@ -29,7 +30,7 @@
 
 (defn- send [message]
   (when (and message @send-state @chsk-send)
-    (@chsk-send message)))
+    (@chsk-send [:refrisk/message message])))
 
 (defn- get-db []
   (let [db @db/app-db]
@@ -51,11 +52,19 @@
   (send-subs-delta)
   (send-app-db-delta))
 
+(defonce init-stat-sent (atom false))
+
+(defn send-init-stat []
+  (when-not @init-stat-sent
+    (reset! init-stat-sent true)
+    (send [:refrisk/init-stat (stat/get-re-frame-handlers)])))
+
 (defn- post-event-callback [value queue]
   (when @send-state
     (let [db   (get-db)
           ;;This diff may be expensive
           diff (diff/diff (:prev-event-app-db @send-state) db)]
+      (send-init-stat)
       (swap! send-state assoc :prev-event-app-db db)
       (when (or (not @ignore-events) (not (get @ignore-events (first value))))
         (send [:refrisk/event {:event       value
@@ -63,10 +72,17 @@
                                :queue       queue}]))
       (utils/call-and-chill send-db-and-subs 500))))
 
+(defn send-views [views]
+  (when (seq views)
+    (send [:refrisk/views views])))
+
 (defn trace-cb [traces]
-  (utils/call-and-chill send-db-and-subs 500)
-  (doseq [trace (trace/normalize-traces traces @ignore-events)]
-    (send [:refrisk/event trace])))
+  (when @send-state
+    (send-init-stat)
+    (utils/call-and-chill send-db-and-subs 500)
+    (let [traces (trace/update-views-and-get-traces send-views traces)]
+      (doseq [[i trace] (map-indexed vector (trace/normalize-traces traces @ignore-events))]
+        (js/setTimeout #(send [:refrisk/event trace]) (* i 20))))))
 
 (defmulti event-msg-handler "Sente `event-msg`s handler" :id)
 
@@ -88,7 +104,8 @@
       (send [:refrisk/subs subs])
       (send [:refrisk/app-db db]))))
 
-(defmethod event-msg-handler :chsk/recv [{[type data] :?data}]
+(defmethod event-msg-handler :chsk/recv
+  [{[type data] :?data}]
   (case type
     :refrisk/enable (enabled)
     :refrisk/disable (reset! send-state nil)))
@@ -114,7 +131,6 @@
     (sente/start-client-chsk-router! ch-recv event-msg-handler)))
 
 (defn patch-reagent! []
-  (patch-custom-wrapper)
   (patch-wrap-funs)
   (patch-next-tick))
 

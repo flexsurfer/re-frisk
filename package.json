@@ -10,7 +10,8 @@
     "dev-remote": "shadow-cljs watch dev-remote",
     "client": "shadow-cljs watch client",
     "client-release": "shadow-cljs release client-release",
-    "test": "shadow-cljs compile test"
+    "test": "shadow-cljs compile test",
+    "server": "shadow-cljs run re-frisk-remote.core/start"
   },
   "dependencies": {
     "react": "16.13.0",

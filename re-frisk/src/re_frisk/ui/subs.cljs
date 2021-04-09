@@ -5,6 +5,7 @@
 (defn global-subs-graph-container []
   (reagent/create-class
    {:component-did-mount #(subs-graph/create)
+    :component-will-unmount #(subs-graph/destroy)
     :reagent-render
     (fn []
       [:div {:id "global-subs-graph-container"

@@ -6,14 +6,25 @@
                 [com.cognitect/transit-cljs "0.8.256"]
                 [re-frisk/sente "1.15.0"]
                 [com.taoensso/timbre "4.10.0"]
-                [re-com "2.8.0"]]
+                [re-com "2.8.0"]
+
+                ;; REMOTE SERVER
+                [javax.servlet/servlet-api "2.5"]
+                [org.clojure/core.async "1.1.587"]
+                ;; ring.middleware
+                [ring/ring-core "1.8.0"]
+                ;; ring.middleware.cors
+                [ring-cors "0.1.8"]
+                ;; http server
+                [http-kit "2.2.0"]
+                ;; routing
+                [compojure "1.5.2"]]
 
  :builds       {:dev            {:target           :browser
                                  :output-dir       "public/js"
                                  :asset-path       "/js"
                                  :modules          {:main {:entries [re-frisk.demo]}}
-                                 :compiler-options {:closure-defines
-                                                    {"re_frame.trace.trace_enabled_QMARK_" true}}
+                                 :compiler-options {:closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}}
                                  :devtools         {:autoload   true
                                                     :after-load re-frisk.demo/on-js-reload
                                                     :preloads   [re-frisk.preload]
@@ -24,8 +35,7 @@
                                  :output-dir "public/js"
                                  :asset-path "/js"
                                  :modules    {:main {:entries [re-frisk.demo]}}
-                                 :compiler-options {:closure-defines
-                                                    {"re_frame.trace.trace_enabled_QMARK_" true}}
+                                 :compiler-options {:closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}}
                                  :devtools   {:autoload   true
                                               :after-load re-frisk.demo/on-js-reload
                                               :preloads   [re-frisk-remote.preload]

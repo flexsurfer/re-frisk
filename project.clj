@@ -1,4 +1,4 @@
-(defproject re-frisk-remote "1.3.12"
+(defproject re-frisk-remote "1.4.0"
   :description "Take full control of re-frame app"
   :url "https://github.com/flexsurfer/re-frisk"
   :license {:name "MIT"

@@ -9,15 +9,19 @@
             [re-frame.trace]
             [re-frisk.trace :as trace]
             [re-frisk.subs-graph :as subs-graph]
-            [re-frame.interop :as interop]))
+            [re-frame.interop :as interop]
+            [re-frisk.stat :as stat]
+            [day8.reagent.impl.batching :refer [patch-next-tick]]))
 
 (defonce initialized (atom false))
 (defonce prev-event (atom {}))
 
 (defonce re-frame-data
-         {:app-db (reagent/atom "not connected")
+         {:app-db (reagent/atom "no data")
           :events (reagent/atom [])
-          :subs   (reagent/atom "not connected")})
+          :subs   (reagent/atom "no data")
+          :stat   (reagent/atom {})
+          :views  (reagent/atom {})})
 
 (defn update-db-and-subs []
   ;;we need to deref all subscriptions, overwise they won't be deactivated
@@ -29,12 +33,15 @@
     (let [ignore-events (get-in @data/tool-state [:opts :ignore-events])
           normalized  (trace/normalize-traces traces ignore-events)
           first-event (or (first @(:events re-frame-data)) (first normalized))]
-      (swap! (:events re-frame-data)
-             concat
-             (map (trace/normalize-durations first-event)
-                  normalized))
-      (subs-graph/update-subs (filter :subs? normalized))
-      (utils/call-and-chill update-db-and-subs 500))))
+      (when (seq normalized)
+        (swap! (:events re-frame-data)
+               concat
+               (map (trace/normalize-durations first-event)
+                    normalized))
+        (stat/init-stat re-frame-data)
+        (stat/update-trace-stat re-frame-data normalized)
+        (js/setTimeout #(subs-graph/update-subs (filter :subs? normalized)) 100)
+        (utils/call-and-chill update-db-and-subs 500)))))
 
 (defn- post-event-callback [value queue]
   (when-not (:paused? @data/tool-state)
@@ -44,6 +51,8 @@
           ;;This diff may be expensive
           diff   (diff/diff (:app-db @prev-event) app-db)]
       (reset! prev-event {:app-db app-db})
+      (stat/init-stat re-frame-data)
+      (stat/update-event-stat re-frame-data (first value))
       (when (or (not ignore-events) (not (get ignore-events (first value))))
         (swap! (:events re-frame-data) conj {:event          value
                                              :app-db-diff    diff

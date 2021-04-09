@@ -193,6 +193,9 @@
     (fn []
       [:div @text])))
 
+(defn empty-component [])
+(defn empty-component-with-param [param])
+
 (defn simple-example
   []
   (reagent/create-class
@@ -203,6 +206,8 @@
                           (if @form1?
                             [form1]
                             [form2])
+                          [empty-component]
+                          [empty-component-with-param form1?]
                           [:div]
                           [:div {:style    {:background-color "#CCCCCC" :width 150 :margin-top 10}
                                  :on-click #(re-frame/dispatch [::start-time])}
