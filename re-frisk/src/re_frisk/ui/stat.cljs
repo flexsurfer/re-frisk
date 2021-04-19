@@ -1,5 +1,5 @@
 (ns re-frisk.ui.stat
-  (:require [reagent.core :as reagent]
+  (:require [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
             [re-frisk.ui.components.components :as components]
             [re-frisk.utils :as utils]
             [re-frisk.clipboard :as clipboard]))

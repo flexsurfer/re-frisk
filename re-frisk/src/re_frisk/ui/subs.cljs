@@ -1,5 +1,5 @@
 (ns re-frisk.ui.subs
-  (:require [reagent.core :as reagent]
+  (:require [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
             [re-frisk.subs-graph :as subs-graph]))
 
 (defn global-subs-graph-container []

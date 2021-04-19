@@ -1,13 +1,51 @@
 (ns re-frisk.ui.components.splits
-  (:require-macros [re-com.core :refer [handler-fn]])
-  (:require [re-com.util :refer [sum-scroll-offsets]]
-            [re-com.box :refer [flex-child-style flex-flow-style]]
-            [reagent.core :as reagent]))
+  (:require-macros [re-frisk.ui.components.recom :refer [handler-fn]])
+  (:require [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
+            [clojure.string :as string]))
 
 ;;TODO copy https://github.com/Day8/re-com/blob/master/src/re_com/splits.cljs
 
 ;; fixed :on-mouse-leave https://github.com/Day8/re-com/issues/158
 ;; (.getElementById document container-id), document provided from outside, because re-frisk window is not a root window
+
+(defn sum-scroll-offsets
+  "Given a DOM node, I traverse through all ascendant nodes (until I reach body), summing any scrollLeft and scrollTop values
+   and return these sums in a map"
+  [node]
+  (loop [current-node    (.-parentNode node) ;; Begin at parent
+         sum-scroll-left 0
+         sum-scroll-top  0]
+    (if (not= (.-tagName current-node) "BODY")
+      (recur (.-parentNode current-node)
+             (+ sum-scroll-left (.-scrollLeft current-node))
+             (+ sum-scroll-top  (.-scrollTop  current-node)))
+      {:left sum-scroll-left
+       :top  sum-scroll-top})))
+
+(defn flex-child-style
+  [size]
+  (let [split-size      (string/split (string/trim size) #"\s+")                  ;; Split into words separated by whitespace
+        split-count     (count split-size)
+        _               (assert (contains? #{1 3} split-count) "Must pass either 1 or 3 words to flex-child-style")
+        size-only       (when (= split-count 1) (first split-size))         ;; Contains value when only one word passed (e.g. auto, 60px)
+        split-size-only (when size-only (string/split size-only #"(\d+)(.*)")) ;; Split into number + string
+        [_ num units]   (when size-only split-size-only)                    ;; grab number and units
+        pass-through?   (nil? num)                                          ;; If we can't split, then we'll pass this straign through
+        grow-ratio?     (or (= units "%") (= units "") (nil? units))        ;; Determine case for using grow ratio
+        grow            (if grow-ratio? num "0")                            ;; Set grow based on percent or integer, otherwise no grow
+        shrink          (if grow-ratio? "1" "0")                            ;; If grow set, then set shrink to even shrinkage as well
+        basis           (if grow-ratio? "0px" size)                         ;; If grow set, then even growing, otherwise set basis size to the passed in size (e.g. 100px, 5em)
+        flex            (if (and size-only (not pass-through?))
+                          (str grow " " shrink " " basis)
+                          size)]
+    {:-webkit-flex flex
+     :flex flex}))
+
+(defn flex-flow-style
+  "A cross-browser helper function to output flex-flow with all it's potential browser prefixes"
+  [flex-flow]
+  {:-webkit-flex-flow flex-flow
+   :flex-flow flex-flow})
 
 (defn drag-handle
   "Return a drag handle to go into a vertical or horizontal splitter bar:

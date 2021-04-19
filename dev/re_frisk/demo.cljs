@@ -27,7 +27,8 @@
    :jsobj      js/setInterval
    :time-color "#f88"
    :clock?     true
-   :form2-text "FORM 2"})
+   :form2-text "FORM 2"
+   :test {:test1 {:test2 {:test3 {:test4 {:test5 "DEMO"}}}}}})
 
 ;; -- Event Handlers ----------------------------------------------------------
 

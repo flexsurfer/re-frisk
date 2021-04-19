@@ -1,8 +1,8 @@
 (ns re-frisk.ui
-  (:require-macros [reagent.ratom :refer [reaction]])
+  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
   (:require [re-frisk.utils :as utils]
             [re-frisk.ui.style :as style]
-            [reagent.dom :as rdom]
+            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
             [re-frisk.ui.components.drag :as drag]
             [re-frisk.ui.external-hml :as external-hml]
             [re-frisk.db :as db]

@@ -1,6 +1,6 @@
 (ns re-frisk.subs-graph
   (:require [re-frisk.ui.components.colors :as colors]
-            [reagent.core :as reagent]))
+            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]))
 
 (defonce network (atom nil))
 (defonce reaction->operation (reagent/atom {}))

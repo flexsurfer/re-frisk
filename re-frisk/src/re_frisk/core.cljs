@@ -4,14 +4,15 @@
             [re-frisk.db :as data]
             [re-frisk.ui :as ui]
             [re-frisk.diff.diff :as diff]
-            [reagent.core :as reagent]
+            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
             [re-frisk.utils :as utils]
             [re-frame.trace]
             [re-frisk.trace :as trace]
             [re-frisk.subs-graph :as subs-graph]
             [re-frame.interop :as interop]
             [re-frisk.stat :as stat]
-            [day8.reagent.impl.batching :refer [patch-next-tick]]))
+            [day8.reagent.impl.batching :refer [patch-next-tick]]
+            [day8.reagent.impl.component :refer [patch-wrap-funs]]))
 
 (defonce initialized (atom false))
 (defonce prev-event (atom {}))
@@ -28,9 +29,14 @@
   (reset! (:subs re-frame-data) (utils/get-subs))
   (reset! (:app-db re-frame-data) @db/app-db))
 
+(defn update-views [views]
+  (when (seq views)
+    (reset! (:views re-frame-data) views)))
+
 (defn trace-cb [traces]
   (when-not (:paused? @data/tool-state)
     (let [ignore-events (get-in @data/tool-state [:opts :ignore-events])
+          traces (trace/update-views-and-get-traces update-views traces)
           normalized  (trace/normalize-traces traces ignore-events)
           first-event (or (first @(:events re-frame-data)) (first normalized))]
       (when (seq normalized)
@@ -91,6 +97,10 @@
               (gOldOnError error-msg url line-number)
               false)))))
 
+(defn patch-reagent! []
+  (patch-wrap-funs)
+  (patch-next-tick))
+
 (defn enable-re-frisk! [& [opts]]
   (when-not @initialized
     (reset! initialized true)
@@ -98,7 +108,7 @@
     #_(register-exception-handler)
     (if (re-frame.trace/is-trace-enabled?)
       (do
-        #_(patch-reagent!)
+        (patch-reagent!)
         (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb))
       (when-not (= (:events? opts) false)
         (reset! prev-event {:app-db @db/app-db})

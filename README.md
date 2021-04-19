@@ -14,6 +14,10 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 
 <img src="./img/feature-app-db.png" height="300">
 
+### Watching keys from app-db
+
+<img src="./img/feature-watch.png" height="300">
+
 ### Events with app-db difference for each event
 
 <img src="./img/feature-event.png" height="300">
@@ -48,8 +52,8 @@ Render trace is supported only in the re-frisk-remote
 
 ## Usage
 
-`[re-frisk "1.4.0"]` 
-`[re-frisk-remote "1.4.0"]` 
+`[re-frisk "1.5.0"]` 
+`[re-frisk-remote "1.5.0"]` 
 
 **Important**: Please note the following compatibility table:
 
@@ -66,7 +70,7 @@ re-frisk Version     | React Version     | Reagent Versions
 
 re-frisk will be embedded in the DOM of your application. So my suggestion is to use re-frisk-remote, it doesn't affect your application and has more features
  
-1. Add re-frisk as a dev dependency  `[re-frisk "1.4.0"]` 
+1. Add re-frisk as a dev dependency  `[re-frisk "1.5.0"]` 
 
 2. Enable re-frisk
 
@@ -83,7 +87,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-1. Add re-frisk as a dev dependency `[re-frisk-remote "1.4.0"]` 
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.5.0"]` 
 
 2. Enable re-frisk on default port (4567):
 
@@ -103,7 +107,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
     
     add in `deps.edn`
     
-    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.4.0"}}}}}`
+    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.5.0"}}}}}`
     
     create `re_frisk.clj`
     

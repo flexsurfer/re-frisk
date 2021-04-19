@@ -1,7 +1,7 @@
 (ns re-frisk.ui.views
-  (:require-macros [reagent.ratom :refer [reaction]])
+  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
   (:require
-   [reagent.core :as reagent]
+   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
    [re-com.core :as re-com]
    [re-frisk.ui.events :as events]
    [re-frisk.ui.components.splits :as splits]
@@ -19,13 +19,35 @@
     (fn [_]
       [frisk/Root (utils/sort-map @subs @checkbox-sorted-val checkbox-sorted-val) 0 state-atom])))
 
+(defn watch-item [frisk-data item watchers]
+  [re-com/v-box
+   :children
+   [[re-com/h-box :style {:background-color "#4e5d6c"}
+     :children
+     [[:div (str "Watching " item)]
+      [re-com/gap :size "10px"]
+      [components/label-button {:on-click #(swap! watchers disj item)
+                                :active? false}
+       "Stop"]]]
+    [re-com/v-box :style {:padding 10 :color "#444444"}
+     :children
+     [[frisk/Root-Simple frisk-data]]]]])
+
 (defn app-db-view [app-db tool-state]
   (let [state-atom          (reagent/atom frisk/expand-by-default)
+        watchers            (reagent/atom #{})
         checkbox-sorted-val (reagent/atom true)]
     (fn [_]
       [re-com/v-box :size "1"
        :children
-       [[re-com/h-box
+       [(when (seq @watchers)
+          (let [app-db-derefed @app-db]
+            [components/scroller
+             {:style {:background-color "#f3f3f3"}}
+             (for [watcher @watchers]
+               ^{:key watcher}
+               [watch-item (get-in app-db-derefed watcher) watcher watchers])]))
+        [re-com/h-box
          :children
          [[re-com/label :label "app-db"]
           [re-com/gap :size "20px"]
@@ -34,7 +56,13 @@
            :on-change (utils/on-change-sort app-db checkbox-sorted-val :re-frisk-sorted)
            :label "sort"]
           (when (:app-db-delta-error @tool-state)
-            [re-com/label :label "update error" :style {:margin-left "4px" :color "#df691a"}])]]
+            [re-com/label :label "update error" :style {:margin-left "4px" :color "#df691a"}])
+          [re-com/gap :size "48px"]
+          (when-let [filter (get-in @state-atom [:data-frisk 0 :filter])]
+            (when (contains? (first filter) :expr)
+              [components/label-button {:on-click #(swap! watchers conj (mapv :expr filter))
+                                        :active? false}
+               "Watch"]))]]
         [frisk/Root (utils/sort-map @app-db @checkbox-sorted-val checkbox-sorted-val) 0 state-atom]]])))
 
 (defn frisks-view [re-frame-data tool-state doc]

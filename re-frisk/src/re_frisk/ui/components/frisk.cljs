@@ -2,9 +2,8 @@
   (:require [clojure.set :as set]
             [re-frisk.filter.filter-parser :as filter-parser]
             [re-frisk.filter.filter-matcher :as filter-matcher]
-            [re-com.core :as re-com]
             [re-frisk.ui.components.components :as components]
-            [reagent.core :as reagent]
+            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
             [re-frisk.clipboard :as clipboard]
             cljs.pprint))
 
@@ -69,9 +68,9 @@
                          (reset! inp-val "")
                          (emit-fn :filter-change "" 0))} "X"])
 
-(defn node-clicked [{:keys [event emit-fn path] :as all}]
+(defn node-clicked [{:keys [event emit-fn path]}]
   (.stopPropagation event)
-  (emit-fn :filter-change (str path) 0))
+  (emit-fn :filter-change-exp (str path) 0))
 
 (defn NilText []
   [:span {:style (:nil styles)} (pr-str nil)])
@@ -289,6 +288,10 @@
       :filter-ref (swap! filter-refs #(if (second args)
                                         (assoc % (first args) (second args))
                                         (dissoc % (first args))))
+      :filter-change-exp
+      (do
+        (reset! inp-val (first args))
+        (swap! state-atom apply-filter id (first args)))
       :filter-change
       (do
         (reset! inp-val (first args))
@@ -297,6 +300,13 @@
                  (if (seq path)
                    (swap! swappable assoc-in path value)
                    (reset! swappable value))))))
+
+(defn emit-fn-factory-simple [state-atom id]
+  (fn [event & args]
+    (case event
+      :expand (swap! state-atom update-in [:data-frisk id :expanded-paths] conj-to-set (first args))
+      :contract (swap! state-atom update-in [:data-frisk id :expanded-paths] disj (first args))
+      nil)))
 
 (defn walk-paths
   ([data]
@@ -361,43 +371,30 @@
             matching (matching-paths data filter)
             expanded-matching (expanded-matching-paths matching)
             emit-fn (emit-fn-factory state-atom id swappable filter-refs inp-val)]
-        [re-com/v-box :style {:background-color "#f3f3f3" :color "#444444"}
-         :size "1"
-         :children
-         [[:div {:style {:padding "4px 2px" :display "flex"}}
-           [ExpandAllButton emit-fn data]
-           [CollapseAllButton emit-fn]
-           [:div {:style {:padding "2px" :margin-left "4px" :background-color "#fff9db"}} (count matching)]
-           [button "↑" #(scroll-frisk-list-item filter-refs current-search-index true)]
-           [button "↓" #(scroll-frisk-list-item filter-refs current-search-index false)]
-           [FilterEditBox emit-fn inp-val]
-           [FilterReset emit-fn inp-val]]
-          [components/scroller
-           [DataFrisk {:data                    data
-                       :swappable               swappable
-                       :path                    []
-                       :expanded-paths          (get-in data-frisk [id :expanded-paths])
-                       :matching-paths          matching
-                       :expanded-matching-paths expanded-matching
-                       :emit-fn                 emit-fn}]]]]))))
-
-(defn Root-Simple [_ _ _]
-  (let [filter-refs (atom {})
-        inp-val (reagent/atom "")]
-    (fn [data id state-atom]
-      (let [data-frisk (:data-frisk @state-atom)
-            swappable (when (satisfies? IAtom data)
-                        data)
-            filter (or (get-in data-frisk [id :filter]) [])
-            matching (matching-paths data filter)
-            expanded-matching (expanded-matching-paths matching)
-            emit-fn (emit-fn-factory state-atom id swappable filter-refs inp-val)]
-        [DataFrisk {:data                    data
-                    :swappable               swappable
-                    :path                    []
-                    :expanded-paths          (get-in data-frisk [id :expanded-paths])
-                    :matching-paths          matching
-                    :expanded-matching-paths expanded-matching
-                    :emit-fn                 emit-fn}]))))
+        [:div {:style {:background-color "#f3f3f3" :color "#444444" :flex 1 :display :flex :flex-direction :column}}
+         [:div {:style {:padding "4px 2px" :display :flex}}
+          [ExpandAllButton emit-fn data]
+          [CollapseAllButton emit-fn]
+          [:div {:style {:padding "2px" :margin-left "4px" :background-color "#fff9db"}} (count matching)]
+          [button "↑" #(scroll-frisk-list-item filter-refs current-search-index true)]
+          [button "↓" #(scroll-frisk-list-item filter-refs current-search-index false)]
+          [FilterEditBox emit-fn inp-val]
+          [FilterReset emit-fn inp-val]]
+         [components/scroller
+          [DataFrisk {:data                    data
+                      :swappable               swappable
+                      :path                    []
+                      :expanded-paths          (get-in data-frisk [id :expanded-paths])
+                      :matching-paths          matching
+                      :expanded-matching-paths expanded-matching
+                      :emit-fn                 emit-fn}]]]))))
 
 (def expand-by-default (reduce #(assoc-in %1 [:data-frisk %2 :expanded-paths] #{[]}) {} (range 1)))
+
+(defn Root-Simple [_ _ _]
+  (let [state-atom (reagent/atom expand-by-default)]
+    (fn [data]
+      [DataFrisk {:data                    data
+                  :path                    []
+                  :expanded-paths          (get-in @state-atom [:data-frisk 0 :expanded-paths])
+                  :emit-fn                 (emit-fn-factory-simple state-atom 0)}])))

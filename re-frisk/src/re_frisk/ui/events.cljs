@@ -1,8 +1,8 @@
 (ns re-frisk.ui.events
-  (:require-macros [reagent.ratom :refer [reaction]])
+  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
   (:require
-   [reagent.core :as reagent]
-   [reagent.dom :as rdom]
+   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
+   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
    [clojure.string :as string]
    [re-com.core :as re-com]
    [re-frisk.ui.components.frisk :as frisk]
@@ -97,9 +97,11 @@
          :children
          [[re-com/box :size "1"
            :child
-           [re-com/input-text :style {:height :auto :padding "0" }  :width "100%"
-            :model text-val :change-on-blur? false :placeholder "Filter events"
-            :on-change #(reset! text-val %)]]
+           [:input {:type "text"
+                    :style {:height :auto :padding "0" :width "100%"}
+                    :value @text-val
+                    :placeholder "Filter events"
+                    :on-change #(reset! text-val (-> % .-target .-value))}]]
           [components/small-button {:on-click #(reset! text-val "") :active? false} "X"]]]
         ;truncate checkbox
         [re-com/h-box :gap "5px"
@@ -115,9 +117,11 @@
           [re-com/gap :size "100%"]
           [re-com/h-box
            :children
-           [[re-com/input-text :style {:height "20px" :padding "0"} :width "30px"
-             :model max-text-val :change-on-blur? false :placeholder "max"
-             :on-change #(reset! max-text-val %)]
+           [[:input {:type "text"
+                     :style {:height "20px" :padding "0" :width "30px"}
+                     :value @max-text-val
+                     :placeholder "max"
+                     :on-change #(reset! max-text-val (-> % .-target .-value))}]
             [components/small-button {:on-click #(reset! max-text-val nil) :active? false} "X"]]]]]
         ;events
         [events-scroller sorted-events tool-state @checkbox-trace-val]]])))
