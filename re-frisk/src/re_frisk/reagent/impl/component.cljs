@@ -1,4 +1,4 @@
-(ns day8.reagent.impl.component
+(ns re-frisk.reagent.impl.component
   (:require
    [goog.object            :as gobj]
    [clojure.string         :as string]

@@ -1,4 +1,4 @@
-(ns day8.reagent.impl.batching
+(ns re-frisk.reagent.impl.batching
   (:require
    [reagent.impl.batching :as batching]
    [re-frame.trace :as trace :include-macros true]

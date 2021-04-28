@@ -11,8 +11,8 @@
             [re-frisk.subs-graph :as subs-graph]
             [re-frame.interop :as interop]
             [re-frisk.stat :as stat]
-            [day8.reagent.impl.batching :refer [patch-next-tick]]
-            [day8.reagent.impl.component :refer [patch-wrap-funs]]))
+            [re-frisk.reagent.impl.batching :refer [patch-next-tick]]
+            [re-frisk.reagent.impl.component :refer [patch-wrap-funs]]))
 
 (defonce initialized (atom false))
 (defonce prev-event (atom {}))

@@ -12,8 +12,8 @@
    [taoensso.sente :as sente]
    [taoensso.timbre :as timbre]
    [cognitect.transit :as transit]
-   [day8.reagent.impl.component :refer [patch-wrap-funs]]
-   [day8.reagent.impl.batching :refer [patch-next-tick]]
+   [re-frisk.reagent.impl.component :refer [patch-wrap-funs]]
+   [re-frisk.reagent.impl.batching :refer [patch-next-tick]]
    [re-frisk.stat :as stat]))
 
 ;; if there are no opened tool web clients we don't want to send any data
