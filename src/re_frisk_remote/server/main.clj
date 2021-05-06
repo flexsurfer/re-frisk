@@ -108,4 +108,4 @@
                          :access-control-allow-credentials "true"))
                     {:port port
                      :max-ws 100194304})
-    (println (str "re-frisk server has been started at localhost:" port))))
+    (println (str "re-frisk - server has been started at http://localhost:" port))))
