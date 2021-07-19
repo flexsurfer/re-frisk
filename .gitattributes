@@ -1,1 +1,3 @@
-resources/* linguist-detectable=false
+resources/public/* linguist-detectable=false
+public/* linguist-detectable=false
+public/client/* linguist-detectable=false
