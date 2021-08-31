@@ -22,8 +22,8 @@
   [:set (nullify (set/difference b a)) (nullify (set/difference a b))])
 
 (defn- ff [a b k]
-  (when (not= (a k) (b k))
-    [k (delta (a k) (b k))]))
+  (when (not= (get a k) (get b k))
+    [k (delta (get a k) (get b k))]))
 
 (defn- delta-map-vals [a b ks]
   (nullify (into {} (filter some? (map #(ff a b %) ks)))))
