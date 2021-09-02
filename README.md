@@ -2,7 +2,7 @@
 
 Take full control of [re-frame](https://github.com/Day8/re-frame) application.
 
-Latest stable version: [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk) [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
+Latest stable version: [![Clojars](https://img.shields.io/clojars/v/re-frisk.svg)](https://clojars.org/re-frisk) [![Clojars](https://img.shields.io/clojars/dt/re-frisk.svg)](https://clojars.org/re-frisk) [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote) [![Clojars](https://img.shields.io/clojars/dt/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
 ## DEMO
 
