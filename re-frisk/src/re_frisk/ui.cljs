@@ -7,7 +7,8 @@
             [re-frisk.ui.external-hml :as external-hml]
             [re-frisk.db :as db]
             [re-frisk.subs-graph :as subs-graph]
-            [re-frisk.ui.views :as ui.views]))
+            [re-frisk.ui.views :as ui.views]
+            [goog.object :as gobj]))
 
 (defn on-external-window-unload [app]
   (fn []
@@ -16,7 +17,7 @@
 
 (defn mount-external [window doc re-frame-data]
   (let [app (.getElementById doc "re-frisk-debugger-div")]
-    (goog.object/set window "onunload" (on-external-window-unload app))
+    (gobj/set window "onunload" (on-external-window-unload app))
     (swap! db/tool-state assoc :ext-win-opened? true :doc doc)
     (subs-graph/init window doc)
     (rdom/render
@@ -34,7 +35,7 @@
           doc (.-document win)]
       (.open doc)
       (.write doc external-hml/html-doc)
-      (goog.object/set win "onload" #(mount-external win doc re-frame-data))
+      (gobj/set win "onload" #(mount-external win doc re-frame-data))
       (.close doc))))
 
 (defn on-iframe-load [re-frame-data]
@@ -79,8 +80,8 @@
 
 (defn mount-internal [re-frame-data]
   (let [div (.createElement js/document "div")]
-    (goog.object/set div "style"
-                     (str "position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none;"
-                          "margin:0; padding:0; z-index:999999999;pointer-events: none;"))
+    (gobj/set div "style"
+              (str "position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none;"
+                   "margin:0; padding:0; z-index:999999999;pointer-events: none;"))
     (.appendChild (.-body js/document) div)
     (rdom/render [inner-view re-frame-data] div)))
