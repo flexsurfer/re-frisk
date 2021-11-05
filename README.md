@@ -88,7 +88,6 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
 [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
 1. Add re-frisk as a dev dependency `[re-frisk-remote "1.5.2"]` 
-1. Add re-frisk as a dev dependency `[re-frisk-remote "1.5.2"]` 
 
 2. Enable re-frisk on default port (4567):
 
