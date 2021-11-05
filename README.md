@@ -52,8 +52,8 @@ Render trace is supported only in the re-frisk-remote
 
 ## Usage
 
-`[re-frisk "1.5.1"]` 
-`[re-frisk-remote "1.5.1"]` 
+`[re-frisk "1.5.2"]` 
+`[re-frisk-remote "1.5.2"]` 
 
 **Important**: Please note the following compatibility table:
 
@@ -70,7 +70,7 @@ re-frisk Version     | React Version     | Reagent Versions
 
 re-frisk will be embedded in the DOM of your application. So my suggestion is to use re-frisk-remote, it doesn't affect your application and has more features
  
-1. Add re-frisk as a dev dependency  `[re-frisk "1.5.1"]` 
+1. Add re-frisk as a dev dependency  `[re-frisk "1.5.2"]` 
 
 2. Enable re-frisk
 
@@ -87,7 +87,8 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-1. Add re-frisk as a dev dependency `[re-frisk-remote "1.5.1"]` 
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.5.2"]` 
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.5.2"]` 
 
 2. Enable re-frisk on default port (4567):
 
