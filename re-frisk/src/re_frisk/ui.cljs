@@ -56,7 +56,22 @@
     (fn []
       (when-not @ext-opened?
         (let [left (or (utils/normalize-draggable (:x @drag/draggable))
-                       (- js/window.innerWidth 30))]
+                       (- js/window.innerWidth 30))
+              handle-toggle (fn [] 
+                              (when-not (utils/closed? left)
+                                     (swap! db/tool-state assoc :latest-left (- js/window.innerWidth left)))
+                              (swap! drag/draggable assoc :x (- js/window.innerWidth
+                                                                (if (utils/closed? left) @latest-left 30))))
+
+              handle-keydown (fn [e]
+                               (let [input-elements #{"INPUT" "SELECT" "TEXTAREA"}
+                                     input-focused? (contains? input-elements  (.-tagName (.-target e)))]
+                                 (when (and (not input-focused?)
+                                            (= (.-key e) "h")
+                                            (.-ctrlKey e))
+                                   (.preventDefault e)
+                                   (handle-toggle))))
+              _ (js/window.addEventListener "keydown" handle-keydown)]
           [:div {:style (style/inner-view-container left (:offset @drag/draggable))}
            [:div {:style {:display :flex :flex-direction :column :opacity 0.3}}
             [:div {:style    style/external-button
@@ -64,11 +79,7 @@
              "\u2197"]
             [:div {:style {:display :flex :flex 1 :justify-content :center :flex-direction :column}}
              [:div {:style    style/external-button
-                    :on-click #(let []
-                                 (when-not (utils/closed? left)
-                                   (swap! db/tool-state assoc :latest-left (- js/window.innerWidth left)))
-                                 (swap! drag/draggable assoc :x (- js/window.innerWidth
-                                                                   (if (utils/closed? left) @latest-left 30))))}
+                    :on-click handle-toggle}
               (if (utils/closed? left) "\u2b60" "\u2b62")]
              [:div {:style         style/dragg-button
                     :on-mouse-down drag/mouse-down-handler}]]]
