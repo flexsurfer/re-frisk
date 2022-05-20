@@ -33,10 +33,52 @@
      :children
      [[frisk/Root-Simple frisk-data]]]]])
 
-(defn app-db-view [app-db tool-state]
+(defn history-item [events history tool-state]
+  (let [items (map
+               (fn [event]
+                 (when (:app-db-diff event)
+                   (when-let [diff (utils/get-from-diff (:app-db-diff event) (:filter @history))]
+                     [(:indx event) (:truncated-name event) (or (:after diff) (:added diff) diff) event])))
+               @events)]
+    [re-com/v-box :size "1"
+     :children
+     [[re-com/h-box :style {:background-color "#4e5d6c"}
+       :children
+       [[:div (str "History " (:filter-string @history))]
+        [re-com/gap :size "10px"]
+        [components/label-button {:on-click #(reset! history nil)
+                                  :active? false}
+         "Close"]]]
+      [components/scroller
+       {:style {:background-color "#f3f3f3"}}
+       [re-com/v-box :style {:padding 10 :color "#444444"}
+        :children
+        [(doall (for [[idx name diff item] items]
+                  (when diff
+                    ^{:key idx}
+                    [re-com/h-box :align :center :style {:border-bottom "1px solid #ebebeb"}
+                     :children
+                     [[:div {:style {:cursor :pointer
+                                     :width "200px"
+                                     :margin-top "5px"
+                                     :text-overflow :ellipsis
+                                     :white-space :nowrap
+                                     :overflow :hidden
+                                     :color :purple}
+                             :on-click (fn [event]
+                                         (swap! tool-state assoc :selected-event item)
+                                         (utils/scroll-event-list-item (:doc @tool-state) idx)
+                                         (.preventDefault event))}
+                       name]
+                      [re-com/gap :size "10px"]
+                      [frisk/Root-Simple diff]]])))]]]]]))
+
+(defn app-db-view [re-frame-data tool-state]
   (let [state-atom          (reagent/atom frisk/expand-by-default)
         watchers            (reagent/atom #{})
-        checkbox-sorted-val (reagent/atom true)]
+        history             (reagent/atom nil)
+        checkbox-sorted-val (reagent/atom true)
+        app-db (:app-db re-frame-data)]
     (fn [_]
       [re-com/v-box :size "1"
        :children
@@ -47,6 +89,8 @@
              (for [watcher @watchers]
                ^{:key watcher}
                [watch-item (get-in app-db-derefed watcher) watcher watchers])]))
+        (when @history
+          [history-item (:events re-frame-data) history tool-state])
         [re-com/h-box
          :children
          [[re-com/label :label "app-db"]
@@ -59,10 +103,20 @@
             [re-com/label :label "update error" :style {:margin-left "4px" :color "#df691a"}])
           [re-com/gap :size "48px"]
           (when-let [filter (get-in @state-atom [:data-frisk 0 :filter])]
-            (when (contains? (first filter) :expr)
-              [components/label-button {:on-click #(swap! watchers conj (mapv :expr filter))
-                                        :active? false}
-               "Watch"]))]]
+            (when (and (:expr (first filter)) (empty? (remove :expr filter)))
+              [:<>
+               [components/label-button {:on-click #(swap! watchers conj (mapv :expr filter))
+                                         :active? false}
+                "Watch"]
+               [re-com/gap :size "5px"]
+               [:<>
+                [components/label-button
+                 {:on-click #(do (reset! history {:filter filter
+                                                  :filter-string (get-in @state-atom [:data-frisk 0 :filter-string])})
+                                 (swap! tool-state assoc :events-opened? true)
+                                 (swap! tool-state assoc :search-diff-path (get-in @state-atom [:data-frisk 0 :filter-string])))
+                  :active? false}
+                 "History"]]]))]]
         [frisk/Root (utils/sort-map @app-db @checkbox-sorted-val checkbox-sorted-val) 0 state-atom]]])))
 
 (defn frisks-view [re-frame-data tool-state doc]
@@ -88,16 +142,21 @@
                              :panel-1 [re-com/v-box :size "1" :style {:background-color "#4e5d6c"}
                                        :children
                                        ;; APP-DB
-                                       [[app-db-view (:app-db re-frame-data) tool-state]
+                                       [[app-db-view re-frame-data tool-state]
                                         [events/event-bar tool-state]]]
                              ;; EVENT
                              :panel-2 [events/frisk-view tool-state]]]]])))
 
 (defn controls [re-frame-data tool-state]
-  (let [{:keys [timeline-opened? paused? graph-opened? stat-opened? views-opened?]} @tool-state]
+  (let [{:keys [timeline-opened? paused? graph-opened? stat-opened? views-opened? events-opened?]} @tool-state]
     [re-com/h-box :style {:background-color "#4e5d6c"} :align :center
      :children
-     [[components/label-button {:on-click #(swap! tool-state update :paused? not)
+     [[components/label-button
+       {:on-click #(swap! tool-state update :events-opened? not)
+        :active? events-opened?}
+       "Events"]
+      [re-com/gap :size "5px"]
+      [components/label-button {:on-click #(swap! tool-state update :paused? not)
                                 :active? paused?}
        (if paused? "Resume" "Pause")]
       [re-com/gap :size "5px"]

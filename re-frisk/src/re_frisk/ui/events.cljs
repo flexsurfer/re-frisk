@@ -10,10 +10,11 @@
    [re-frisk.ui.trace :as trace]
    [re-frisk.utils :as utils]
    [re-frisk.ui.subs :as subs]
-   [re-frisk.ui.components.colors :as colors]))
+   [re-frisk.ui.components.colors :as colors]
+   [re-frisk.filter.filter-parser :as filter-parser]))
 
 (defn event-item [_ tool-state checkbox-trace-val]
-  (fn [{:keys [color name app-db-diff selected? op-type indx] :as item} _]
+  (fn [{:keys [color name app-db-diff selected? op-type indx search-filter] :as item} _]
     [:a
      {:href     "#"
       :id       (str "events-list-item" indx)
@@ -24,7 +25,12 @@
                        (when (and (nil? app-db-diff) (not selected?))
                          {:opacity "0.7"})
                        (when-not (string/blank? color)
-                         {:border-left-color (str "#" color)}))
+                         {:border-left-color (str "#" color)})
+                       (when (and (not (string/blank? search-filter))
+                                  (not (nil? app-db-diff))
+                                  (utils/get-from-diff app-db-diff (filter-parser/parse search-filter)))
+                         {:border-left-width 4
+                          :border-left-color "#df691a"}))
       :on-click (fn [event]
                   (swap! tool-state assoc :selected-event item)
                   (utils/scroll-timeline-event-item (:doc @tool-state) indx)
@@ -70,6 +76,7 @@
            (doall
             (map #(assoc % :selected? (= (get-in @tool-state [:selected-event :indx]) (:indx %))
                            :name (if @truncate-checkbox-val (:truncated-name %) (str (first (:event %))))
+                           :search-filter (:search-diff-path @tool-state)
                            :color (get clrs (first (:event %))))
                  @re-frame-events))))
         traces-filtered-events
@@ -93,36 +100,54 @@
       [re-com/v-box :size "1"
        :children
        [;events filter
-        [re-com/h-box
-         :children
-         [[re-com/box :size "1"
-           :child
-           [:input {:type "text"
-                    :style {:height :auto :padding "0" :width "100%"}
-                    :value @text-val
-                    :placeholder "Filter events"
-                    :on-change #(reset! text-val (-> % .-target .-value))}]]
-          [components/small-button {:on-click #(reset! text-val "") :active? false} "X"]]]
-        ;truncate checkbox
-        [re-com/h-box :gap "5px"
-         :children
-         [[re-com/checkbox
-           :model truncate-checkbox-val
-           :on-change #(reset! truncate-checkbox-val %)
-           :label "truncate"]
-          [re-com/checkbox
-           :model checkbox-trace-val
-           :on-change #(reset! checkbox-trace-val %)
-           :label "traces"]
-          [re-com/gap :size "100%"]
+        (when (:events-opened? @tool-state)
           [re-com/h-box
            :children
-           [[:input {:type "text"
-                     :style {:height "20px" :padding "0" :width "30px"}
-                     :value @max-text-val
-                     :placeholder "max"
-                     :on-change #(reset! max-text-val (-> % .-target .-value))}]
-            [components/small-button {:on-click #(reset! max-text-val nil) :active? false} "X"]]]]]
+           [[re-com/box :size "1"
+             :child
+             [:input {:type "text"
+                      :style {:height :auto :padding "0" :width "100%"}
+                      :value @text-val
+                      :placeholder "Filter events"
+                      :on-change #(reset! text-val (-> % .-target .-value))}]]
+            [components/small-button {:on-click #(reset! text-val "") :active? false} "X"]]])
+        (when (:events-opened? @tool-state)
+          [re-com/h-box
+           :children
+           [[re-com/box :size "1"
+             :child
+             [:input {:type        "text"
+                      :style       {:height :auto :padding "0" :width "100%"}
+                      :value       (:search-diff-path @tool-state)
+                      :placeholder "Search changes in db"
+                      :on-change   (fn [e]
+                                     (let [val (-> e .-target .-value)]
+                                       (swap! tool-state assoc :search-diff-path val)
+                                       #_(utils/debounce
+                                          :filter-change 400
+                                          #(swap! tool-state assoc :search-diff-path val))))}]]
+            [components/small-button {:on-click #(swap! tool-state dissoc :search-diff-path) :active? false} "X"]]])
+        (when (:events-opened? @tool-state)
+          ;truncate checkbox
+          [re-com/h-box :gap "5px"
+           :children
+           [[re-com/checkbox
+             :model truncate-checkbox-val
+             :on-change #(reset! truncate-checkbox-val %)
+             :label "truncate"]
+            [re-com/checkbox
+             :model checkbox-trace-val
+             :on-change #(reset! checkbox-trace-val %)
+             :label "traces"]
+            [re-com/gap :size "100%"]
+            [re-com/h-box
+             :children
+             [[:input {:type "text"
+                       :style {:height "20px" :padding "0" :width "30px"}
+                       :value @max-text-val
+                       :placeholder "max"
+                       :on-change #(reset! max-text-val (-> % .-target .-value))}]
+              [components/small-button {:on-click #(reset! max-text-val nil) :active? false} "X"]]]]])
         ;events
         [events-scroller sorted-events tool-state @checkbox-trace-val]]])))
 

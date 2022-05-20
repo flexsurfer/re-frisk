@@ -10,50 +10,66 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 
 ## Features
 
-### Current state for app-db and subscriptions sorted by keys
+### - Current state for app-db and subscriptions sorted by keys
 
+<details><summary>screenshot</summary>
 <img src="./img/feature-app-db.png" height="300">
+</details>
 
-### Watching keys from app-db
 
+### - Watching keys from app-db
+<details><summary>screenshot</summary>
 <img src="./img/feature-watch.png" height="300">
+</details>
 
-### Events with app-db difference for each event
+### - History for key in app-db
+<details><summary>screenshot</summary>
+<img src="./img/feature-history.png" height="300">
+</details>
 
+### - Events with app-db difference for each event
+<details><summary>screenshot</summary>
 <img src="./img/feature-event.png" height="300">
+</details>
 
 ### re-frame tracing (**Important**: trace should be [enabled](https://github.com/flexsurfer/re-frisk#enable-traces))
 
-#### Events and timeline (**Important**: with lots of events and high zoom might be slow, pause or clear events when working with timeline)
-
+#### - Events and timeline (**Important**: with lots of events and high zoom might be slow, pause or clear events when working with timeline)
+<details><summary>screenshot</summary>
 <img src="./img/feature-timeline.png" height="300">
+</details>
 
-#### Subscriptions
+#### - Subscriptions
 
 Render trace is supported only in the re-frisk-remote
-
+<details><summary>screenshot</summary>
 <img src="/img/feature-subs.png" height="300">
+</details>
 
-#### Views sorted by mount order with subscripions 
-
+#### - Views sorted by mount order with subscripions 
+<details><summary>screenshot</summary>
 <img src="/img/feature-views.png" height="300">
+</details>
 
-#### re-frame handlres statistics
-
+#### - re-frame handlres statistics
+<details><summary>screenshot</summary>
 <img src="/img/feature-stat.png" height="300">
+</details>
 
-#### Graph for an epoch
-
+#### - Graph for an epoch
+<details><summary>screenshot</summary>
 <img src="/img/feature-event-subs-graph.png" height="300">
+</details>
 
-#### Graph accumulated for an app life with weights (**Important**: with lots of subscriptions rendering might be slow!)
-
+#### - Graph accumulated for an app life with weights (**Important**: with lots of subscriptions rendering might be slow!)
+<details><summary>screenshot</summary>
 <img src="/img/feature-subs-app-graph.png" height="300">
+</details>
 
 ## Usage
 
-`[re-frisk "1.5.2"]` 
-`[re-frisk-remote "1.5.2"]` 
+`[re-frisk "1.6.0"]` 
+`[re-frisk-remote "1.6.0"]` 
 
 **Important**: Please note the following compatibility table:
 
@@ -70,11 +86,15 @@ re-frisk Version     | React Version     | Reagent Versions
 
 re-frisk will be embedded in the DOM of your application. So my suggestion is to use re-frisk-remote, it doesn't affect your application and has more features
  
-1. Add re-frisk as a dev dependency  `[re-frisk "1.5.2"]` 
+1. Add re-frisk as a dev dependency  `[re-frisk "1.6.0"]` 
 
 2. Enable re-frisk
 
-    `:preloads  [re-frisk.preload]`
+    `:preloads [re-frisk.preload]`
+
+    OR if you want a hidden UI and open tool with Ctrl+H
+
+    `:preloads [re-frisk.preload-hidden]`
 
     OR
     
@@ -87,14 +107,14 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
 
 [![Clojars](https://img.shields.io/clojars/v/re-frisk-remote.svg)](https://clojars.org/re-frisk-remote)
 
-1. Add re-frisk as a dev dependency `[re-frisk-remote "1.5.2"]` 
+1. Add re-frisk as a dev dependency `[re-frisk-remote "1.6.0"]` 
 
 2. Enable re-frisk on default port (4567):
 
     `:preloads [re-frisk-remote.preload]`
 
     OR
-    
+
     `(:require [re-frisk-remote.core :as re-frisk-remote])`
     
     `(re-frisk-remote/enable)`
@@ -107,7 +127,7 @@ re-frisk will be embedded in the DOM of your application. So my suggestion is to
     
     add in `deps.edn`
     
-    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.5.1"}}}}}`
+    `:aliases {:dev {:extra-deps {re-frisk-remote {:mvn/version "1.6.0"}}}}}`
     
     create `re_frisk.clj`
     
@@ -147,6 +167,13 @@ External window dimensions
 ```clojure
 (re-frisk/enable {:ext_height 1000 :ext_width 1200})
 ```
+
+Hidden UI, you can open and close tool by Ctrl+H
+
+```clojure
+(re-frisk/enable {:hidden true})
+```
+
 
 If you don't need to watch events you can disable them
 

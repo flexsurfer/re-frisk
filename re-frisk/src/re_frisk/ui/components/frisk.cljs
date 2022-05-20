@@ -5,17 +5,11 @@
             [re-frisk.ui.components.components :as components]
             [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
             [re-frisk.clipboard :as clipboard]
-            cljs.pprint))
+            cljs.pprint
+            [re-frisk.utils :as utils]))
 
 ;;original idea Odin Hole Standal https://github.com/Odinodin/data-frisk-reagent
 (declare DataFrisk)
-
-(def debounce-pending (atom {}))
-(defn debounce [key delay f]
-  (let [old-timeout (get @debounce-pending key)
-        new-timeout (js/setTimeout f delay)]
-    (swap! debounce-pending assoc key new-timeout)
-    (js/clearTimeout old-timeout)))
 
 (defn ExpandButton [{:keys [expanded? path emit-fn]}]
   [:button {:style    {:border          0
@@ -276,7 +270,9 @@
 
 (defn apply-filter [state id value]
   (let [filter (filter-parser/parse value)]
-    (assoc-in state [:data-frisk id :filter] filter)))
+    (-> state
+        (assoc-in [:data-frisk id :filter] filter)
+        (assoc-in [:data-frisk id :filter-string] value))))
 
 (defn emit-fn-factory [state-atom id swappable filter-refs inp-val]
   (fn [event & args]
@@ -295,7 +291,7 @@
       :filter-change
       (do
         (reset! inp-val (first args))
-        (debounce :filter-change 400 #(swap! state-atom apply-filter id (first args))))
+        (utils/debounce :filter-change 400 #(swap! state-atom apply-filter id (first args))))
       :changed (let [[path value] args]
                  (if (seq path)
                    (swap! swappable assoc-in path value)

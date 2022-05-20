@@ -50,39 +50,44 @@
         [ui.views/main-view re-frame-data db/tool-state doc]]
        (.getElementById doc "re-frisk-debugger-div")))))
 
+(defn handle-toggle []
+  (let [left (or (utils/normalize-draggable (:x @drag/draggable))
+                 (- js/window.innerWidth 30))]
+    (when-not (utils/closed? left)
+      (swap! db/tool-state assoc :latest-left (- js/window.innerWidth left)))
+    (swap! drag/draggable assoc :x (- js/window.innerWidth
+                                      (if (utils/closed? left) (:latest-left @db/tool-state) 30)))))
+
+(defn handle-keydown [e]
+  (let [input-elements #{"INPUT" "SELECT" "TEXTAREA"}
+        input-focused? (contains? input-elements  (.-tagName (.-target e)))]
+    (when (and (not input-focused?)
+               (= (.-key e) "h")
+               (.-ctrlKey e))
+      (.preventDefault e)
+      (handle-toggle))))
+
+(defonce listener (js/window.addEventListener "keydown" handle-keydown))
+
 (defn inner-view [re-frame-data]
   (let [ext-opened? (reaction (:ext-win-opened? @db/tool-state))
-        latest-left (reaction (:latest-left @db/tool-state))]
+        hidden (get-in  @db/tool-state [:opts :hidden])]
     (fn []
       (when-not @ext-opened?
         (let [left (or (utils/normalize-draggable (:x @drag/draggable))
-                       (- js/window.innerWidth 30))
-              handle-toggle (fn [] 
-                              (when-not (utils/closed? left)
-                                     (swap! db/tool-state assoc :latest-left (- js/window.innerWidth left)))
-                              (swap! drag/draggable assoc :x (- js/window.innerWidth
-                                                                (if (utils/closed? left) @latest-left 30))))
-
-              handle-keydown (fn [e]
-                               (let [input-elements #{"INPUT" "SELECT" "TEXTAREA"}
-                                     input-focused? (contains? input-elements  (.-tagName (.-target e)))]
-                                 (when (and (not input-focused?)
-                                            (= (.-key e) "h")
-                                            (.-ctrlKey e))
-                                   (.preventDefault e)
-                                   (handle-toggle))))
-              _ (js/window.addEventListener "keydown" handle-keydown)]
+                       (- js/window.innerWidth 30))]
           [:div {:style (style/inner-view-container left (:offset @drag/draggable))}
-           [:div {:style {:display :flex :flex-direction :column :opacity 0.3}}
-            [:div {:style    style/external-button
-                   :on-click (open-debugger-window re-frame-data)}
-             "\u2197"]
-            [:div {:style {:display :flex :flex 1 :justify-content :center :flex-direction :column}}
-             [:div {:style    style/external-button
-                    :on-click handle-toggle}
-              (if (utils/closed? left) "\u2b60" "\u2b62")]
-             [:div {:style         style/dragg-button
-                    :on-mouse-down drag/mouse-down-handler}]]]
+           (when-not (and hidden (utils/closed? left))
+             [:div {:style {:display :flex :flex-direction :column :opacity 0.3}}
+              [:div {:style    style/external-button
+                     :on-click (open-debugger-window re-frame-data)}
+               "\u2197"]
+              [:div {:style {:display :flex :flex 1 :justify-content :center :flex-direction :column}}
+               [:div {:style    style/external-button
+                      :on-click handle-toggle}
+                (if (utils/closed? left) "\u2b60" "\u2b62")]
+               [:div {:style         style/dragg-button
+                      :on-mouse-down drag/mouse-down-handler}]]])
            (when-not (utils/closed? left)
              [:div {:style {:display :flex :flex 1 :width "100%" :height "100%"}}
               [:iframe {:id      "re-frisk-iframe" :src-doc external-hml/html-doc :width "100%" :height "100%"

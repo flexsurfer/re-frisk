@@ -82,3 +82,16 @@
 
 (defn get-subs []
   (reduce-kv #(assoc %1 %2 (deref %3)) {} @subs/query->reaction))
+
+(def debounce-pending (atom {}))
+(defn debounce [key delay f]
+  (let [old-timeout (get @debounce-pending key)
+        new-timeout (js/setTimeout f delay)]
+    (swap! debounce-pending assoc key new-timeout)
+    (js/clearTimeout old-timeout)))
+
+(defn get-from-diff [app-db-diff search-filter]
+  (if (> (count search-filter) 1)
+    (get-in app-db-diff (mapv :expr search-filter))
+    (when-let [expr (:expr (first search-filter))]
+      (get app-db-diff expr))))

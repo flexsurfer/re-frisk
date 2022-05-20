@@ -3,6 +3,7 @@
             [reagent.dom :as rdom]
             [re-frame.core :as re-frame]
             [re-frisk.core :as re-frisk]
+            re-frisk.db
             [re-frisk-remote.core :as re-frisk-remote])
   (:require-macros [reagent.ratom :refer [reaction]]))
 
@@ -28,6 +29,7 @@
    :time-color "#f88"
    :clock?     true
    :form2-text "FORM 2"
+   :namespaced/keyword "test"
    :test {:test1 {:test2 {:test3 {:test4 {:test5 "DEMO"}}}}}})
 
 ;; -- Event Handlers ----------------------------------------------------------
@@ -100,6 +102,11 @@
  ::change-db3
  (fn [{db :db} _]
    {:db (assoc db :change-db 3)}))
+
+(re-frame/reg-event-fx
+ ::change-ns-keyword
+ (fn [{db :db} _]
+     {:db (assoc db :namespaced/keyword "test2")}))
 
 (re-frame/reg-event-fx
  ::do-nothing1
@@ -220,6 +227,9 @@
                                  :on-click #(re-frame/dispatch [::change-form])}
                            "change form"]
                           [:div {:style    {:background-color "#CCCCCC" :width 150 :margin-top 10}
+                                 :on-click #(re-frame/dispatch [::change-ns-keyword])}
+                           "change ns keyword"]
+                          [:div {:style    {:background-color "#CCCCCC" :width 150 :margin-top 10}
                                  :on-click #(do (re-frame/dispatch [::change-db1])
                                                 (re-frame/dispatch [::change-db2])
                                                 (re-frame/dispatch [::change-db3]))}
@@ -231,7 +241,9 @@
                            "dispatch 3 events doing nothing"]]))}))
 
 (defn mount []
-  (rdom/render [simple-example] (js/document.getElementById "app")))
+  (rdom/render [simple-example] (js/document.getElementById "app"))
+  (swap! re-frisk.db/tool-state update :ext-win-opened? not)
+  (swap! re-frisk.db/tool-state update :ext-win-opened? not))
 
 (defn on-js-reload []
   (mount))
