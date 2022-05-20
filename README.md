@@ -10,59 +10,47 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 
 ## Features
 
-### - Current state for app-db and subscriptions sorted by keys
-
-<details><summary>screenshot</summary>
+<details><summary>Current state for app-db and subscriptions sorted by keys</summary>
 <img src="./img/feature-app-db.png" height="300">
 </details>
 
-
-### - Watching keys from app-db
-<details><summary>screenshot</summary>
+<details><summary>Watching keys from app-db</summary>
 <img src="./img/feature-watch.png" height="300">
 </details>
 
-### - History for key in app-db
-<details><summary>screenshot</summary>
+<details><summary>History for key in app-db</summary>
 <img src="./img/feature-history.png" height="300">
 </details>
 
-### - Events with app-db difference for each event
-<details><summary>screenshot</summary>
+<details><summary>Events with app-db difference for each event</summary>
 <img src="./img/feature-event.png" height="300">
 </details>
 
 ### re-frame tracing (**Important**: trace should be [enabled](https://github.com/flexsurfer/re-frisk#enable-traces))
 
-#### - Events and timeline (**Important**: with lots of events and high zoom might be slow, pause or clear events when working with timeline)
-<details><summary>screenshot</summary>
+(Note: With lots of events and high zoom might be slow, pause or clear events when working with timeline)
+<details><summary>Events and timeline</summary>
 <img src="./img/feature-timeline.png" height="300">
 </details>
 
-#### - Subscriptions
-
-Render trace is supported only in the re-frisk-remote
-<details><summary>screenshot</summary>
+<details><summary>Subscriptions</summary>
 <img src="/img/feature-subs.png" height="300">
 </details>
 
-#### - Views sorted by mount order with subscripions 
-<details><summary>screenshot</summary>
+<details><summary>Views sorted by mount order with subscripions </summary>
 <img src="/img/feature-views.png" height="300">
 </details>
 
-#### - re-frame handlres statistics
-<details><summary>screenshot</summary>
+<details><summary>re-frame handlres statistics</summary>
 <img src="/img/feature-stat.png" height="300">
 </details>
 
-#### - Graph for an epoch
-<details><summary>screenshot</summary>
+<details><summary>Graph for an epoch</summary>
 <img src="/img/feature-event-subs-graph.png" height="300">
 </details>
 
-#### - Graph accumulated for an app life with weights (**Important**: with lots of subscriptions rendering might be slow!)
-<details><summary>screenshot</summary>
+(Note: with lots of subscriptions rendering might be slow!)
+<details><summary> Graph accumulated for an app life with weights</summary>
 <img src="/img/feature-subs-app-graph.png" height="300">
 </details>
 
