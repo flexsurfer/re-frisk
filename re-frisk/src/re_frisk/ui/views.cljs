@@ -1,7 +1,7 @@
 (ns re-frisk.ui.views
-  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
+  (:require-macros [re-frisk.inlined-deps.reagent.v1v2v0.reagent.ratom :refer [reaction]])
   (:require
-   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.core :as reagent]
    [re-com.core :as re-com]
    [re-frisk.ui.events :as events]
    [re-frisk.ui.components.splits :as splits]

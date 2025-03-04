@@ -4,7 +4,7 @@
             [re-frisk.ui.components.frisk :as frisk]
             [re-frisk.ui.components.colors :as colors]
             [re-com.core :as re-com]
-            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]))
+            [re-frisk.inlined-deps.reagent.v1v2v0.reagent.core :as reagent]))
 
 (defn input-signals [name subs]
   (when-let [signals (get @subs-graph/view->reactions name)]

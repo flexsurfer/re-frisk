@@ -1,9 +1,9 @@
 (ns re-frisk.reagent.impl.batching
   (:require
-   [reagent.impl.batching :as batching]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.impl.batching :as batching]
    [re-frame.trace :as trace :include-macros true]
    [clojure.string :as string]
-   [reagent.impl.component :as component]))
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.impl.component :as component]))
 
 (def operation-name (memoize (fn [c] (last (string/split (component/component-name c) #" > ")))))
 

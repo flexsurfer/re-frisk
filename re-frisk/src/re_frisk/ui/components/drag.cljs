@@ -1,6 +1,6 @@
 (ns re-frisk.ui.components.drag
   (:require [goog.events :as goog-events]
-            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent])
+            [re-frisk.inlined-deps.reagent.v1v2v0.reagent.core :as reagent])
   (:import [goog.events EventType]))
 
 (defonce draggable (reagent/atom {}))

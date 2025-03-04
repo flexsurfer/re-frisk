@@ -6,7 +6,7 @@
   :source-paths ["src"]
   :plugins      [[thomasa/mranderson "0.5.3"]]
   :profiles {:mranderson {:mranderson {:project-prefix "re-frisk.inlined-deps"}
-                          :dependencies ^:replace [^:source-dep [reagent "1.0.0"
+                          :dependencies ^:replace [^:source-dep [reagent "1.2.0"
                                                                  :exclusions [cljsjs/react
                                                                               cljsjs/react-dom
                                                                               cljsjs/react-dom-server]]]}}

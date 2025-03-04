@@ -3,7 +3,7 @@
             [re-frisk.filter.filter-parser :as filter-parser]
             [re-frisk.filter.filter-matcher :as filter-matcher]
             [re-frisk.ui.components.components :as components]
-            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
+            [re-frisk.inlined-deps.reagent.v1v2v0.reagent.core :as reagent]
             [re-frisk.clipboard :as clipboard]
             cljs.pprint
             [re-frisk.utils :as utils]))

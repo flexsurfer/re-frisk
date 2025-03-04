@@ -1,8 +1,8 @@
 (ns re-frisk.ui.events
-  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
+  (:require-macros [re-frisk.inlined-deps.reagent.v1v2v0.reagent.ratom :refer [reaction]])
   (:require
-   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
-   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.core :as reagent]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.dom :as rdom]
    [clojure.string :as string]
    [re-com.core :as re-com]
    [re-frisk.ui.components.frisk :as frisk]
