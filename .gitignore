@@ -19,3 +19,8 @@ resources/re-frisk/js/
 /public/js/
 /node_modules/
 /.shadow-cljs/
+
+.cpcache/
+.clj-kondo/
+.lsp/
+.direnv/
