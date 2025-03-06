@@ -1,6 +1,7 @@
 (ns re-frisk.ui.events
   (:require-macros [re-frisk.inlined-deps.reagent.v1v2v0.reagent.ratom :refer [reaction]])
   (:require
+   [react]
    [re-frisk.inlined-deps.reagent.v1v2v0.reagent.core :as reagent]
    [re-frisk.inlined-deps.reagent.v1v2v0.reagent.dom :as rdom]
    [clojure.string :as string]
@@ -46,23 +47,25 @@
       [event-item item tool-state checkbox-trace-val])))
 
 (defn events-scroller [filtered-events tool-state _]
-  (reagent/create-class
-   {:display-name "re_frisk.debugger-messages"
-    :component-did-update
-    (fn [this]
-      (let [n (rdom/dom-node this)]
-        (when (:scroll-bottom? @tool-state)
-          (set! (.-scrollTop n) (.-scrollHeight n)))))
-    :reagent-render
-    (fn [_ _ checkbox-trace-val]
-      [components/scroller
-       {:on-scroll #(let [t (.-target %)]
-                      (swap! tool-state assoc
-                             :scroll-bottom?
-                             (= (- (.-scrollHeight t) (.-offsetHeight t)) (.-scrollTop t))))}
-       (for [item @filtered-events]
-         ^{:key (str "item" (:indx item) checkbox-trace-val)}
-         [event-list-item item tool-state checkbox-trace-val])])}))
+  (let [child-ref (react/createRef)]
+    (reagent/create-class
+     {:display-name "re_frisk.debugger-messages"
+      :component-did-update
+      (fn []
+        (let [n (.-current child-ref)]
+          (when (:scroll-bottom? @tool-state)
+            (set! (.-scrollTop n) (.-scrollHeight n)))))
+      :reagent-render
+      (fn [_ _ checkbox-trace-val]
+        [components/scroller
+         {:on-scroll #(let [t (.-target %)]
+                        (swap! tool-state assoc
+                               :scroll-bottom?
+                               (= (- (.-scrollHeight t) (.-offsetHeight t)) (.-scrollTop t))))
+          :ref child-ref}
+         (for [item @filtered-events]
+           ^{:key (str "item" (:indx item) checkbox-trace-val)}
+           [event-list-item item tool-state checkbox-trace-val])])})))
 
 (defn events-list-view [re-frame-data tool-state]
   (let [truncate-checkbox-val (reagent/atom true)
