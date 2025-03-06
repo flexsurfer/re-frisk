@@ -1,7 +1,7 @@
 (ns re-frisk-remote.server.client.main
-  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
+  (:require-macros [re-frisk.inlined-deps.reagent.v1v2v0.reagent.ratom :refer [reaction]])
   (:require
-   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.dom :as rdom]
    [taoensso.sente :as sente]
    [taoensso.sente.packers.transit :as sente-transit]
    [re-frisk.core :as re-frisk]

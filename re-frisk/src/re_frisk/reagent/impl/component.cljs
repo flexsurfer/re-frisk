@@ -4,11 +4,11 @@
    [clojure.string         :as string]
    [re-frame.trace         :as trace :include-macros true]
    [re-frame.interop       :as interop]
-   [reagent.impl.component :as component]
-   [reagent.impl.batching  :as batch]
-   [reagent.impl.util      :as util]
-   [reagent.ratom          :as ratom]
-   [reagent.debug          :refer-macros [dev? warn error warn-unless assert-callable]]))
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.impl.component :as component]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.impl.batching  :as batch]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.impl.util      :as util]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.ratom          :as ratom]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.debug          :refer-macros [dev? warn error warn-unless assert-callable]]))
 
 (def operation-name (memoize (fn [c] (last (string/split (component/component-name c) #" > ")))))
 
@@ -82,7 +82,7 @@
 
 (defn patch-wrap-funs
   []
-  (set! reagent.impl.component/wrap-funs wrap-funs))
+  (set! re-frisk.inlined-deps.reagent.v1v2v0.reagent.impl.component/wrap-funs wrap-funs))
 
 ;(defonce original-create-class reagent.impl.component/create-class)
 
