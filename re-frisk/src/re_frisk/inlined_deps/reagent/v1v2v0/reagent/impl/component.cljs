@@ -46,7 +46,7 @@
 
 (defn ^boolean reagent-class? [c]
   (and (fn? c)
-       (some? (some-> c (.-prototype) (.-reagentRender)))))
+       (some? (some-> ^js c (.-prototype) (.-reagentRender)))))
 
 (defn ^boolean react-class? [c]
   (and (fn? c)
