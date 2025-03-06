@@ -10,10 +10,9 @@
                  [re-frame "1.2.0"]
                  ;; handlerForForeign
                  [com.cognitect/transit-cljs "0.8.256"]
-                 ;; web communications (fork is used because of https://github.com/ptaoussanis/sente/pull/357)
-                 [re-frisk/sente "1.15.0"]
+                 [re-frisk/sente "1.20.0"]
                  ;; ns-blacklist
-                 [com.taoensso/timbre "4.10.0"]
+                 [com.taoensso/timbre "6.6.1"]
 
                  ;; REMOTE SERVER
                  [javax.servlet/servlet-api "2.5"]
@@ -23,7 +22,7 @@
                  ;; ring.middleware.cors
                  [ring-cors "0.1.8"]
                  ;; http server
-                 [http-kit "2.2.0"]
+                 [http-kit "2.8.0"]
                  ;; routing
                  [compojure "1.5.2"]
                  ;; REMOTE CLIENT
