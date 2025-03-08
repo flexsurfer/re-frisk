@@ -10,7 +10,7 @@
                  [re-frame "1.2.0"]
                  ;; handlerForForeign
                  [com.cognitect/transit-cljs "0.8.256"]
-                 [re-frisk/sente "1.20.0"]
+                 [com.taoensso/sente "1.20.0"]
                  ;; ns-blacklist
                  [com.taoensso/timbre "6.6.1"]
 
