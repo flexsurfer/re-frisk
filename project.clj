@@ -6,7 +6,7 @@
   :source-paths ["src" "dev" "re-frisk/src"]
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.11.4"]
-                 [reagent "1.1.1"]
+                 [reagent "1.2.0"]
                  [re-frame "1.2.0"]
                  ;; handlerForForeign
                  [com.cognitect/transit-cljs "0.8.256"]
@@ -27,4 +27,4 @@
                  [compojure "1.5.2"]
                  ;; REMOTE CLIENT
                  ;; client UI
-                 [re-com "2.8.0"]])
+                 [re-com "2.21.30"]])

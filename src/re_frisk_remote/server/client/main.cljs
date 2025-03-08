@@ -1,7 +1,7 @@
 (ns re-frisk-remote.server.client.main
   (:require-macros [re-frisk.inlined-deps.reagent.v1v2v0.reagent.ratom :refer [reaction]])
   (:require
-   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.dom :as rdom]
+   [re-frisk.inlined-deps.reagent.v1v2v0.reagent.dom.client :as rdclient]
    [taoensso.sente :as sente]
    [taoensso.sente.packers.transit :as sente-transit]
    [re-frisk.core :as re-frisk]
@@ -79,8 +79,8 @@
 (defn mount []
   (swap! db/tool-state assoc :doc js/document)
   (subs-graph/init js/window js/document)
-  (rdom/render [ui/main-view re-frisk/re-frame-data db/tool-state js/document]
-               (.getElementById js/document "app")))
+  (let [root (rdclient/create-root (.getElementById js/document "app"))]
+    (rdclient/render root [ui/main-view re-frisk/re-frame-data db/tool-state js/document])))
 
 ;ENTRY POINT
 (defn ^:export main [& [port]]
