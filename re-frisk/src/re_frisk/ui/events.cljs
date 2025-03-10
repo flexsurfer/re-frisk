@@ -1,8 +1,8 @@
 (ns re-frisk.ui.events
-  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
+  (:require-macros [reagent.ratom :refer [reaction]])
   (:require
-   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
-   [re-frisk.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+   [reagent.core :as reagent]
+   [reagent.dom :as rdom]
    [clojure.string :as string]
    [re-com.core :as re-com]
    [re-frisk.ui.components.frisk :as frisk]
@@ -50,9 +50,9 @@
    {:display-name "re_frisk.debugger-messages"
     :component-did-update
     (fn [this]
-      (let [n (rdom/dom-node this)]
-        (when (:scroll-bottom? @tool-state)
-          (set! (.-scrollTop n) (.-scrollHeight n)))))
+      #_(let [n (rdom/dom-node this)]
+          (when (:scroll-bottom? @tool-state)
+            (set! (.-scrollTop n) (.-scrollHeight n)))))
     :reagent-render
     (fn [_ _ checkbox-trace-val]
       [components/scroller

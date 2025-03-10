@@ -1,5 +1,5 @@
 (ns re-frisk.ui.trace
-  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
+  (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frisk.ui.components.components :as components]
             [re-frisk.utils :as utils]
             [re-frisk.ui.components.colors :as colors]))

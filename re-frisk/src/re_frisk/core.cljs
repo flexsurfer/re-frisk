@@ -4,7 +4,7 @@
             [re-frisk.db :as data]
             [re-frisk.ui :as ui]
             [re-frisk.diff.diff :as diff]
-            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
+            [reagent.core :as reagent]
             [re-frisk.utils :as utils]
             [re-frame.trace]
             [re-frisk.trace :as trace]
@@ -108,7 +108,7 @@
     #_(register-exception-handler)
     (if (re-frame.trace/is-trace-enabled?)
       (do
-        (patch-reagent!)
+        #_(patch-reagent!)
         (re-frame.trace/register-trace-cb :re-frisk-trace trace-cb))
       (when-not (= (:events? opts) false)
         (reset! prev-event {:app-db @db/app-db})

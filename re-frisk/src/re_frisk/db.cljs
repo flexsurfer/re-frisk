@@ -1,5 +1,5 @@
 (ns re-frisk.db
-  (:require [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
+  (:require [reagent.core :as reagent]
             [re-frame.trace :as trace]))
 
 (defonce
