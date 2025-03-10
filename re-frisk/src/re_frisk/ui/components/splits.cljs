@@ -1,6 +1,6 @@
 (ns re-frisk.ui.components.splits
   (:require-macros [re-frisk.ui.components.recom :refer [handler-fn]])
-  (:require [re-frisk.inlined-deps.reagent.v1v0v0.reagent.core :as reagent]
+  (:require [reagent.core :as reagent]
             [clojure.string :as string]))
 
 ;;TODO copy https://github.com/Day8/re-com/blob/master/src/re_com/splits.cljs

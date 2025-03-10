@@ -1,8 +1,8 @@
 (ns re-frisk.ui
-  (:require-macros [re-frisk.inlined-deps.reagent.v1v0v0.reagent.ratom :refer [reaction]])
+  (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frisk.utils :as utils]
             [re-frisk.ui.style :as style]
-            [re-frisk.inlined-deps.reagent.v1v0v0.reagent.dom :as rdom]
+            [reagent.dom.client :as rdom]
             [re-frisk.ui.components.drag :as drag]
             [re-frisk.ui.external-hml :as external-hml]
             [re-frisk.db :as db]
@@ -10,20 +10,18 @@
             [re-frisk.ui.views :as ui.views]
             [goog.object :as gobj]))
 
-(defn on-external-window-unload [app]
+(defn on-external-window-unload [root]
   (fn []
-    (rdom/unmount-component-at-node app)
+    (rdom/unmount root)
     (swap! db/tool-state assoc :ext-win-opened? false)))
 
 (defn mount-external [window doc re-frame-data]
-  (let [app (.getElementById doc "re-frisk-debugger-div")]
-    (gobj/set window "onunload" (on-external-window-unload app))
+  (let [root (rdom/create-root (.getElementById doc "re-frisk-debugger-div"))]
+    (gobj/set window "onunload" (on-external-window-unload root))
     (swap! db/tool-state assoc :ext-win-opened? true :doc doc)
     (subs-graph/init window doc)
-    (rdom/render
-     [:div {:style {:height "100%"}}
-      [ui.views/main-view re-frame-data db/tool-state doc]]
-     app)))
+    (rdom/render root [:div {:style {:height "100%"}}
+                       [ui.views/main-view re-frame-data db/tool-state doc]])))
 
 (defn open-debugger-window [re-frame-data]
   (fn []
@@ -46,9 +44,9 @@
       (swap! db/tool-state assoc :doc doc)
       (subs-graph/init win doc)
       (rdom/render
+       (rdom/create-root (.getElementById doc "re-frisk-debugger-div"))
        [:div {:style {:height "100%"}}
-        [ui.views/main-view re-frame-data db/tool-state doc]]
-       (.getElementById doc "re-frisk-debugger-div")))))
+        [ui.views/main-view re-frame-data db/tool-state doc]]))))
 
 (defn handle-toggle []
   (let [left (or (utils/normalize-draggable (:x @drag/draggable))
@@ -99,5 +97,5 @@
     (gobj/set div "style"
               (str "position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none;"
                    "margin:0; padding:0; z-index:999999999;pointer-events: none;"))
-    (.appendChild (.-body js/document) div)
-    (rdom/render [inner-view re-frame-data] div)))
+    (.appendChild ^js (.-body js/document) div)
+    (rdom/render (rdom/create-root div) [inner-view re-frame-data])))

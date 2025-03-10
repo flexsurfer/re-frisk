@@ -14,8 +14,8 @@
     "server": "shadow-cljs run re-frisk-remote.core/start"
   },
   "dependencies": {
-    "react": "16.13.0",
-    "react-dom": "16.13.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "shadow-cljs": "^2.18.0"
   }
 }

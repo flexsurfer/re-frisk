@@ -1,6 +1,6 @@
 (ns re-frisk.demo
   (:require [reagent.core :as reagent]
-            [reagent.dom :as rdom]
+            [reagent.dom.client :as rdom]
             [re-frame.core :as re-frame]
             [re-frisk.core :as re-frisk]
             re-frisk.db
@@ -241,7 +241,7 @@
                            "dispatch 3 events doing nothing"]]))}))
 
 (defn mount []
-  (rdom/render [simple-example] (js/document.getElementById "app"))
+  (rdom/render (rdom/create-root (js/document.getElementById "app")) [simple-example])
   (swap! re-frisk.db/tool-state update :ext-win-opened? not)
   (swap! re-frisk.db/tool-state update :ext-win-opened? not))
 
