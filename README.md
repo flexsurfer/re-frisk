@@ -1,3 +1,7 @@
+##   After 9 years of leading development on a ClojureScript + React Native Web3 application — I'm now open to new opportunities.
+
+##  Feel free to reach out: [flexsurfer@pm.me]
+
 # re-frisk
 
 Take full control of [re-frame](https://github.com/Day8/re-frame) application.
