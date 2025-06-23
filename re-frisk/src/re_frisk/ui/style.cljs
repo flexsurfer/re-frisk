@@ -1,7 +1,7 @@
 (ns re-frisk.ui.style
   (:require [re-frisk.utils :as utils]))
 
-(defn inner-view-container [left dragging?]
+(defn inner-view-container [width dragging?]
   (merge {:position       :fixed
           :top            0
           :bottom         0
@@ -10,9 +10,9 @@
           :pointer-events :all
           :flex-direction :row
           :flex           1
-          :left           left}
-         (when (and (not dragging?) (not (utils/closed? left)))
-           {:transition "left 0.5s"})))
+          :width          (str width "px")}
+         (when (and (not dragging?) (not (utils/closed? width)))
+           {:transition "width 0.5s"})))
 
 (def external-button
   {:width                     30

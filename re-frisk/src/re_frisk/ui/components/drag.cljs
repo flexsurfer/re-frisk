@@ -6,13 +6,16 @@
 (defonce draggable (reagent/atom {}))
 
 (defn mouse-move-handler [evt]
-  (swap! draggable assoc :x (- (.-clientX evt) (:offset @draggable))))
+  (swap! draggable (fn [{:keys [offset] :as state}]
+                     (assoc state :width (+ (- (.-innerWidth js/window) (.-clientX evt)) offset)))))
 
 (defn mouse-up-handler [evt]
     (goog-events/unlisten js/window EventType.MOUSEMOVE mouse-move-handler)
     (swap! draggable dissoc :offset))
 
 (defn mouse-down-handler [evt]
+  ;; Offset is the distance from pointer to the left corner of the re-frisk panel,
+  ;; it is used on the move handler to get the full width of the panel from move coordinate.
   (swap! draggable assoc :offset (- (.-clientX evt) (.-left (.getBoundingClientRect (.-target evt)))))
   (goog-events/listen js/window EventType.MOUSEMOVE mouse-move-handler))
 
