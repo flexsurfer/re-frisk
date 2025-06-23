@@ -44,12 +44,12 @@
 
 (defn normalize-draggable [x]
   (when x
-    (cond (< x 30) 30
+    (cond (< x 0) 0
           (> x (- js/window.innerWidth 30)) (- js/window.innerWidth 30)
           :else x)))
 
 (defn closed? [width]
-  (= 30 width))
+  (= 0 width))
 
 (defn str-ms [value]
   (when-not (string/blank? value)

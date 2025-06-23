@@ -50,12 +50,12 @@
 
 (defn handle-toggle []
   (let [width (or (utils/normalize-draggable (:width @drag/draggable))
-                  30)]
+                  0)]
     (when-not (utils/closed? width)
       (swap! db/tool-state assoc :latest-width width))
     (swap! drag/draggable assoc :width (if (utils/closed? width)
                                          (:latest-width @db/tool-state)
-                                         30))))
+                                         0))))
 
 (defn handle-keydown [e]
   (let [input-elements #{"INPUT" "SELECT" "TEXTAREA"}
@@ -74,7 +74,7 @@
     (fn []
       (when-not @ext-opened?
         (let [width (or (utils/normalize-draggable (:width @drag/draggable))
-                        30)]
+                        0)]
           [:div {:style (style/inner-view-container width (:offset @drag/draggable))}
            (when-not (and hidden (utils/closed? width))
              [:div {:style {:display :flex :flex-direction :column :opacity 0.3}}

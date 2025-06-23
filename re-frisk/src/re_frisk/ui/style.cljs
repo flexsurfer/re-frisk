@@ -15,7 +15,8 @@
            {:transition "width 0.5s"})))
 
 (def external-button
-  {:width                     30
+  {:margin-left -30
+   :width                     30
    :height                    30
    :background-color          "#df691a"
    :color                     :white
@@ -27,7 +28,8 @@
    :justify-content           :center})
 
 (def dragg-button
-  {:width                     30
+  {:margin-left -30
+   :width                     30
    :height                    60
    :background-color          "#df691a"
    :display                   :flex
