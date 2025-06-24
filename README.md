@@ -60,14 +60,14 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 
 ## Usage
 
-`[re-frisk "1.7.0"]` 
+`[re-frisk "1.7.1"]` 
 `[re-frisk-remote "1.6.0"]` 
 
 **Important**: Please note the following compatibility table:
 
 re-frisk Version     | React Version    | Reagent Versions 
 -------------------- |------------------|-----------------
-`^1.7.0`             | ^React 18        | ^1.2.x          |
+`^1.7.1`             | ^React 18        | ^1.2.x          |
 `^1.3.4`             | React 16.13.0    | 1.x.x           |
 `1.1.0-1.3.3`        | React 16.13.0    | 0.10.x          |
 `1.0.0`              | React 16.9.0     | 0.9.x           |
@@ -79,7 +79,7 @@ re-frisk Version     | React Version    | Reagent Versions
 
 re-frisk will be embedded in the DOM of your application. So my suggestion is to use re-frisk-remote, it doesn't affect your application and has more features
  
-1. Add re-frisk as a dev dependency  `[re-frisk "1.7.0"]` 
+1. Add re-frisk as a dev dependency  `[re-frisk "1.7.1"]` 
 
 2. Enable re-frisk
 
