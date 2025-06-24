@@ -51,12 +51,13 @@
        (.getElementById doc "re-frisk-debugger-div")))))
 
 (defn handle-toggle []
-  (let [left (or (utils/normalize-draggable (:x @drag/draggable))
-                 (- js/window.innerWidth 30))]
-    (when-not (utils/closed? left)
-      (swap! db/tool-state assoc :latest-left (- js/window.innerWidth left)))
-    (swap! drag/draggable assoc :x (- js/window.innerWidth
-                                      (if (utils/closed? left) (:latest-left @db/tool-state) 30)))))
+  (let [width (or (utils/normalize-draggable (:width @drag/draggable))
+                  0)]
+    (when-not (utils/closed? width)
+      (swap! db/tool-state assoc :latest-width width))
+    (swap! drag/draggable assoc :width (if (utils/closed? width)
+                                         (:latest-width @db/tool-state)
+                                         0))))
 
 (defn handle-keydown [e]
   (let [input-elements #{"INPUT" "SELECT" "TEXTAREA"}
@@ -74,10 +75,10 @@
         hidden (get-in  @db/tool-state [:opts :hidden])]
     (fn []
       (when-not @ext-opened?
-        (let [left (or (utils/normalize-draggable (:x @drag/draggable))
-                       (- js/window.innerWidth 30))]
-          [:div {:style (style/inner-view-container left (:offset @drag/draggable))}
-           (when-not (and hidden (utils/closed? left))
+        (let [width (or (utils/normalize-draggable (:width @drag/draggable))
+                        0)]
+          [:div {:style (style/inner-view-container width (:offset @drag/draggable))}
+           (when-not (and hidden (utils/closed? width))
              [:div {:style {:display :flex :flex-direction :column :opacity 0.3}}
               [:div {:style    style/external-button
                      :on-click (open-debugger-window re-frame-data)}
@@ -85,10 +86,10 @@
               [:div {:style {:display :flex :flex 1 :justify-content :center :flex-direction :column}}
                [:div {:style    style/external-button
                       :on-click handle-toggle}
-                (if (utils/closed? left) "\u2b60" "\u2b62")]
+                (if (utils/closed? width) "\u2b60" "\u2b62")]
                [:div {:style         style/dragg-button
                       :on-mouse-down drag/mouse-down-handler}]]])
-           (when-not (utils/closed? left)
+           (when-not (utils/closed? width)
              [:div {:style {:display :flex :flex 1 :width "100%" :height "100%"}}
               [:iframe {:id      "re-frisk-iframe" :src-doc external-hml/html-doc :width "100%" :height "100%"
                         :style   (if (:offset @drag/draggable) {:pointer-events :none} {:pointer-events :all})
