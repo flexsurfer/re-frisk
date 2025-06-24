@@ -9,8 +9,8 @@
 
    ;External window opened
    :ext-win-opened?    false
-   ;Latest opened position
-   :latest-left        600
+   ;Latest opened width
+   :latest-width       600
    ;Options provided by user {:ext_height :ext_width :events?}
    :opts               nil
 
