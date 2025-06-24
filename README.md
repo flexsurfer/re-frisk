@@ -68,7 +68,7 @@ https://flexsurfer.github.io/conduit-re-frisk-demo/
 re-frisk Version     | React Version    | Reagent Versions 
 -------------------- |------------------|-----------------
 `^1.7.1`             | ^React 18        | ^1.2.x          |
-`^1.3.4`             | React 16.13.0    | 1.x.x           |
+`1.3.4-1.6.1`        | React 16.13.0    | 1.x.x           |
 `1.1.0-1.3.3`        | React 16.13.0    | 0.10.x          |
 `1.0.0`              | React 16.9.0     | 0.9.x           |
 `0.5.3`              | React 16 - 16.8.6 | 0.8.x           | 
